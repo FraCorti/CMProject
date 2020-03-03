@@ -1,14 +1,14 @@
 \section{Introduction}
-At the beginning, we provide a short description of the problem. Next, we talk about the implemented method to find the gradient and the activation function used in the experiments. At the end, we provide some information about regularization.
+At the beginning, we provide a short description of the problem. Next, we talk about the implemented method to find the gradient and the activation function used in the experiments. At the end, we provide some information about the used regularization method.
 \subsection{Neural network}
 Let M be a neural network with specific topology.
 \\
 The main goal of this project was to learn and develop three different optimization methods for M.
 We exploit:
 \begin{itemize}
-	\item Standard momentum descend approach;
-	\item Algorithm of the class of limited-memory quasi-Newton methods for L\_2 regularization;
-	\item Algorithm of the class of bundle methods for L\_1 regularization;
+	\item Standard momentum descent approach;
+	\item Algorithm of the class of limited-memory quasi-Newton methods for L2 regularization;
+	\item Algorithm of the class of bundle methods for L1 regularization;
 \end{itemize}
 \subsection{Back-propagation}
 The back-propagation algorithm can be divided in two equally important part:
@@ -26,18 +26,44 @@ Desirable properties of this function can be:
 	\item Monotonic;
 	\item Smooth functions with a monotonic derivative;
 	\item Approximates identity near the origin;
-
-Scrivere activation function che usiamo con relative proprietà
 \end{itemize}
+
+For the aim of our project, we chose to use two different activation function:
+\begin{itemize}
+	\item Sigmoid (or standard logistic function):
+	\begin{itemize}
+		\item It is defined between (0,1); 		
+			\begin{align*}
+			&f(x) = \sigma(x) = \frac{1}{1 + e^{-x}} \\
+			&f'(x) = \sigma'(x) = f(x)(1 - f(x)),
+			\end{align*} 
+	\end{itemize}
+	\item TanH;
+	\begin{itemize}
+		\item It is defined between (-1,1); 		
+		\begin{align*}
+		&f(x) = \sigma(x) = \frac{e^{x}-e^{-x}}{e^{x} + e^{-x}} \\
+		&f'(x) = \sigma'(x) = 1 - f(x)^{2},
+		\end{align*} 
+	\end{itemize}
+\end{itemize}
+
+
 \subsection{Regularization}
  In machine learning, is used to insure a trade off between accuracy in training set and complexity of the model.
  We implemented and used two type of regularization, L1 (or Lasso) and L2. They are implemented adding at the objective Loss Function a penalty term multiplied by a lambda parameter.
- Inserire formula????
+\begin{align*}
+	{\mathbf{W} \in \mathbb{R}^n} {\ \mathit{L}(\mathbf{W}) + \lambda\Omega(\mathbf{W})}{}{}
+	\label{eq:reg}
+\end{align*}
  
-\subsubsection{L1 regularization}
- Inserire formula L1???? 
-\subsubsection{L2 regularization}
- Inserire formula L2????
+\paragraph*{L1 regularization}
+Usually named as Lasso regression it was defined as follow:
+$\Omega(\textbf{W}) = \sum_{i=1}^{k} |w_i| = \|\textbf{W}\|_1$.
+\paragraph*{L2 regularization}
+Usually named as Ridge regression it was defined as follow:
+$\Omega(\textbf{W}) = \sum_{i=1}^{k}w_i^2 = \|\textbf{W}\|_2^2$. 
  
-The first section of your report should contain a description of the problem and the methods that you plan to use.This is intended just as a brief recall, to introduce some notation and specify which variants of the methods you are planning to use exactly. Discuss the reasons behind the choices you make (the one you can make, that is, since several of them will be dictated by the statement of the project and cannot be questioned).Your target audience should be someone who is already sufficiently familiar with the content of the course. This is not the place to show your knowledge and repeat a large part of the theory: we are sure that you all can do that,1
-2 Structure of your report2given enough time, books, slides, and internet bandwidth. A more in-depth mathematical part is expected in the next stage.In case adapting the algorithm to your problem requires some further mathematical derivation (example: developingan exact line search for your problem, when possible, or adapting an algorithm to deal more efficiently with the special structure of your problem), you are supposed to discuss it here with all the necessary mathematical detail. You are advised to send us a version of this section by e-mail as soon as it is done, so that we can catch misunderstandings as soon as possible and minimize the amount of work wasted. Note that we do not want to see code at this point: that would be premature to produce (for you) and unnecessarily complicated to read (for us).
+ 
+%The first section of your report should contain a description of the problem and the methods that you plan to use.This is intended just as a brief recall, to introduce some notation and specify which variants of the methods you are planning to use exactly. Discuss the reasons behind the choices you make (the one you can make, that is, since several of them will be dictated by the statement of the project and cannot be questioned).Your target audience should be someone who is already sufficiently familiar with the content of the course. This is not the place to show your knowledge and repeat a large part of the theory: we are sure that you all can do that,1
+%2 Structure of your report2given enough time, books, slides, and internet bandwidth. A more in-depth mathematical part is expected in the next stage.In case adapting the algorithm to your problem requires some further mathematical derivation (example: developingan exact line search for your problem, when possible, or adapting an algorithm to deal more efficiently with the special structure of your problem), you are supposed to discuss it here with all the necessary mathematical detail. You are advised to send us a version of this section by e-mail as soon as it is done, so that we can catch misunderstandings as soon as possible and minimize the amount of work wasted. Note that we do not want to see code at this point: that would be premature to produce (for you) and unnecessarily complicated to read (for us).
