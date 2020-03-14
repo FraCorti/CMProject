@@ -1,12 +1,60 @@
 \section{Method}
 
 \subsection{Momentum descent approach}
+The momentum descent approach is a variant of the more known stochastic gradient descent. It and all its variant are probably the most used optimization algorithms for machine learning.\\
+This algorithm is a gradient-based optimization. The main idea of this type of algorithm is to minimize a loss function (or cost/error function) following the advice given by the gradient computed in the current point of the function.
+\\
+What can be a problem in the gradient descent is the large amount of example that at every iteration it must compute. Quite the opposite is the stochastic gradient descent where there is an online training. Unfortunately, the SGD is not much stable as the classical GD, but requires only the evaluation of one example for iteration. 
+Form now on, when we use talk about SDG, we refers to SDG with a subset of training dataset, called mini-batch or batch SDG.
+\\
+The convergence rate is of $O(\frac{1}{\sqrt{k}})$ (after k steps) when the algorithm is applied to a convex problem, if it is applied to a strongly convex problem the convergence rate is of $O(\frac{1}{k})$. (Mettere ref a libro di deeplearning)
+\\
+Momentum descent approach use the method of momentum to accelerate learning. It introduce a variable \textbf{v} in that we take account of the speed and direction at witch the parameters move through parameter space. The role of momentum is determined by the hyperparameter $\alpha\in[0,1)$.
+The update rule is the following:
+\begin{equation}
+\label{classical_momentum}
+\textbf{v}_k = \alpha\textbf{v}_{k-1} + \eta\nabla\textit{L}(\textbf{W}_k).
+\end{equation}
+\begin{equation}
+\label{update_momentum}
+\textbf{W}_k = \textbf{W}_{k-1}  + \textbf{v}_k.
+\end{equation}
+There is a variant of the momentum that is the Nesterov momentum. The main idea is to add a correction factor to the Nesterov momentum,  for this reason they differs in place where the gradient is evaluated. With Nesterov momentum the rate of convergence goes from $O(\frac{1}{k})$ to $O(\frac{1}{k^2})$.
+The update rule for the velocity vector \textbf{v} is the following:
+\begin{equation}
+\label{nesterov_momentum}
+\textbf{v}_k = \alpha\textbf{v}_{k-1} + \eta\nabla\textit{L}(\textbf{W}_k + \alpha\textbf{v}_{k-1}).
+\end{equation}
+\subsubsection{Algorithm}
+\begin{algorithm}[H]
+	\caption{Stochastic Gradient Descent Algorithm. The learning rate $\eta$, the $\alpha$ term and the maximum number of iterations are given.}
+	\label{alg:sgd}
+	\begin{algorithmic}[1]
+		\Require{Learning rate $\eta$ and momentum parameter $\alpha$}
+		\Require{Maximum number of iteration and error threshold}
+		\Procedure{Stochastic Gradient Descent}{}
+		\State Initialize \textbf{W} and \textbf{v}
+		\State $k \gets 0$
+		\While {$k < max\_iterations$ \&\& $error\_th<e$}
+		\State Sample a mini-batch of \textit{m} training examples \{\textit{$(x_0,y_0),(x_1,y_1),...,(x_m,y_m)$}\}
+		\If {Nesterov Momentum}
+		\State $\tilde{\textbf{W}} \gets \textbf{W} + \alpha \textbf{v}$
+		\EndIf
+		\State Compute gradient estimate: $\textbf{g} \gets \frac {1}{m} \nabla \sum_i\textit{L}(\tilde{\textbf{W}})$
+		\State Compute velocity update: $\textbf{v} \gets \alpha \textbf{v} - \eta \textbf{g}$
+		\State Apply update: $\textbf{W} \gets \textbf{W} + \textbf{v}$
+		\EndWhile
+		\EndProcedure
+	\end{algorithmic}
+\end{algorithm}
+
+
 
  algorithm What is its complexity?
 
 Is the algorithm(if it is iterative) guaranteed to converge? Is it going to be stable and return a good approximation of the solution(if it is direct)?  Are there any relevant convergence results?
 
-Are the hypotheses of theseconvergence results (convexity, compactness, differentiability, etc.) satisfied by your problem? If not, what are the“closest” possible results you have available, and why exactly they arenotapplicable?  Do you expect this to berelevant in practice?
+Are the hypotheses of these convergence results (convexity, compactness, differentiability, etc.) satisfied by your problem? If not, what are the“closest” possible results you have available, and why exactly they are not applicable?  Do you expect this to be relevant in practice?
 
 \subsection{Limited-memory quasi-Newton methods}
 
