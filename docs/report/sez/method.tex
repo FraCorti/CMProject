@@ -27,6 +27,7 @@ The update rule for the velocity vector \textbf{v} is the following:
 \textbf{v}_k = \alpha\textbf{v}_{k-1} + \eta\nabla\textit{L}(\textbf{W}_k + \alpha\textbf{v}_{k-1}).
 \end{equation}
 \subsubsection{Algorithm}
+The limited-memory BFGS can be stated formally as follows.
 \begin{algorithm}[H]
 	\caption{Stochastic Gradient Descent Algorithm. The learning rate $\eta$, the $\alpha$ term and the maximum number of iterations are given.}
 	\label{alg:sgd}
@@ -89,13 +90,37 @@ Since the inverse Hessian approximation $H_{k}$ will generally be dense, the cos
 In this way, the set of vector pairs includes curvature information from the \textit{m} most recent iterations. Usually \textit{m} between 3 and 20 is chosen. 
 
 We now describe the updating processes. An iteration \textit{k}, the current iterate $x_{k}$ and the set of vector pairs is given by $\{s_{i},y_{i}\}$ for $i=k-m, ..., k-1$. We first choose some initial Hessian approximation $H^0_{k}$(in contrast to the standard BFGS iteration, this initial approximation is allowed to vary from iteration to iteration) and find by repeated application of the formula (5) that the L-BFGS approximation $H_{k}$ satisfies the following formula: 
-\begin{equation} \label{8}
-\begin{split}
-
-\end{split}
+\begin{equation} 
+\begin{aligned}
+&H_{k}=(V^T_{k-1}\cdots V^T_{k-m})H^0_{k}(V_{k-m}\cdots V_{k-1})\\           
+&+\rho_{k-m}(V^T_{k-1}\cdots V^T_{k-m+1})s_{k-m}s^T_{k-m}(V_{k-m+1}\cdots V_{k-1})\\
+&+\rho_{k-m+1}(V^T_{k-1}\cdots V^T_{k-m+2})s_{k-m+1}s^T_{k-m+1}(V_{k-m+2}\cdots V_{k-1})\\
+&+ \cdots \\
+&+\rho_{k-1}s_{k-1}s^T_{k-1}.  
+\end{aligned}
 \end{equation}
+From this expression we can derive a recursive procedure to compute the product $H_{k}\nabla f_{k}$ efficiently.
 
-algorithm What is its complexity?
+\begin{algorithm}[H]
+	\caption{L-BFGS two loop recursion}
+	\label{}
+	\begin{algorithmic}[3]
+		\State $q \gets \nabla f_{k}$;
+		\For{$i=k-1,k-2,\cdots ,k-m$}
+        \State $ \alpha_{i} \gets \rho_{i}s^T_{i}q$;
+        \State $q \gets q - \alpha_{i}y_{i}$; 
+      \EndFor
+ 	  \State $r \gets H^0_{k}q$;
+ 	  \For{$i=k-m,k-m+1,\cdots, k-1$}
+ 	  \State $\beta \gets \rho_{i}y^T_{i}r$; 
+ 	  \State $r \gets r + s_{i}(\alpha_{i}-\beta)$
+ 	  \EndFor
+		\State \textbf{stop} with result $H_{k}\nabla f_{k}=r$.
+		\EndProcedure 
+	\end{algorithmic}
+\end{algorithm}
+
+\texttt{algorithm What is its complexity?}
 
 \subsubsection{Algorithm Convergence}
 \texttt{ Is the algorithm(if it is iterative) guaranteed to converge? Is it going to be stable and return a good approximation of the solution(if it is direct)?  Are there any relevant convergence results?}
@@ -104,7 +129,7 @@ algorithm What is its complexity?
 \begin{algorithm}[H]
 	\caption{L-BFGS.}
 	\label{alg:sgd}
-	\begin{algorithmic}[1]
+	\begin{algorithmic}[3]
 		\Require{Starting point $x_0$;}
 		\Require{Integer m>0;}
 		\Require{Maximum number of iteration and error threshold;}
