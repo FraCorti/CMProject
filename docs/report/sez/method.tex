@@ -57,12 +57,26 @@ Is the algorithm(if it is iterative) guaranteed to converge? Is it going to be s
 Are the hypotheses of these convergence results (convexity, compactness, differentiability, etc.) satisfied by your problem? If not, what are the“closest” possible results you have available, and why exactly they are not applicable?  Do you expect this to be relevant in practice?
 
 \subsection{Limited-memory quasi-Newton methods}
+Limited-memory quasi-Newton methods are useful for solving large problems whose Hessian matrices cannot be computed at a reasonable cost or are not sparse.  
+These methods maintain simple and compact approximations of Hessian matrices: instead of storing fully dense \textit{n} $\times$ \textit{n} approximations, they save only a few vectors of length \textit{n} that represent an approximation of it. 
+ 
+The main idea of the L-BFGS algorithm is to use curvature information from only the most recent iterations to construct the Hessian approximation. Curvature information from earlier iterations, which is less likely to be relevant to the actual behavior of the Hessian at the current iteration is discarded in the interest of saving storage. 
+
+\subsubsection{Limited memory BFGS}
 L-BGFS algorithm derive from the BFGS method. So we begin our description of the L-BGFS method by recalling BFGS. 
 Each step of the BGFS method has the form
 \begin{equation}
 \label{stepBFGS}
-\nabla
+x_{k+1}=x_{k}-\alpha_{k}H_{k}\nabla f_{k} ,
 \end{equation}
+where $\alpha_{k}$ is the step length and $H_{k}$
+is updated at every iteration by means of the formula
+
+\begin{equation}
+H_{k+1} = V^T_{k}H_{k}V_{k}+ \rho_{k}s_{k}s^T_{k}
+\end{equation}
+where
+	 
 
  algorithm What is its complexity?
 
