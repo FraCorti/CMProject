@@ -1,10 +1,11 @@
 \section{Method}
 
 \subsection{Momentum descent approach}
-The momentum descent approach is a variant \texttt{an adjustment??} of the more known stochastic gradient descent. It and all its variant are probably the most used optimization algorithms for machine learning.\\
-This algorithm is a gradient-based optimization. The main idea of this type of algorithm is to minimize a loss function (or cost/error function) following the advice\texttt{(direction??)} given by the gradient computed in the current point of the function.
+The momentum descent approach add to the more known stochastic gradient descent a technique for accelerating gradient descent that accumulates a velocity vector in directions of persistent reduction in the objective across iterations. 
 \\
-What can be a problem in the gradient descent is the large amount of example that at every iteration it must compute. Quite the opposite\texttt{Troppo informale?} is the stochastic gradient descent where there is an online training. Unfortunately\texttt{Troppo informale?}, the SGD is not as much stable as the classical GD, but requires only the evaluation of one example for \texttt{every??} iteration. 
+This algorithm is a gradient-based optimization. The main idea of this type of algorithm is to minimize a loss function (or cost/error function) following the direction given by the gradient computed in the current point of the function.
+\\
+What can be a problem in the gradient descent is the large amount of example that must be computed for each iteration. The opposite happens in the stochastic gradient descent where there is an online training. However, he SGD is not as stable as the classical GD, but it requires only the evaluation of one example for each iteration. 
 Form now on, when we use talk about SDG, we refers to SDG with a subset of training dataset, called mini-batch or batch SDG.
 \\
 The convergence rate is of $O(\frac{1}{\sqrt{k}})$ (after k steps) when the algorithm is applied to a convex problem, if it is applied to a strongly convex problem the convergence rate is of $O(\frac{1}{k})$. (Mettere ref a libro di deeplearning)
