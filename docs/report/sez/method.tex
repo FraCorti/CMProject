@@ -86,9 +86,16 @@ s_{k}=x_{k+1}-x_{k}, & \qquad
 y_{k}=\nabla f_{k+1} - \nabla f_{k}.
 \end{align}
 Since the inverse Hessian approximation $H_{k}$ will generally be dense, the cost of storing and manipulating it is prohibitive when the number of variable is large. To handle this problem, we store a \textit{modified} version of $H_{k}$, by storing a certain number (say, \textit{m}) of the vector pairs $\{s_{i},y_{i}\}$ used in the formulas (5) and (6). The product $H_{k}\nabla f_{k}$ can be obtained by performing a sequence of inner products and vector summations involving $\nabla f_{k}$ and the pairs $\{s_{i},y_{i}\}$. After the new iterate is computed, the oldest vector pair in the set of pairs $\{s_{i},y_{i}\}$ is replaced by the new pair $\{s_{k},y_{k}\}$ obtained from the current step (7).
-In this way, the set of vector pairs includes curvature information from the \textit{m} most recent iterations. Usually \textit{m} between 3 and 20 is chosen.
+In this way, the set of vector pairs includes curvature information from the \textit{m} most recent iterations. Usually \textit{m} between 3 and 20 is chosen. 
 
- algorithm What is its complexity?
+We now describe the updating processes. An iteration \textit{k}, the current iterate $x_{k}$ and the set of vector pairs is given by $\{s_{i},y_{i}\}$ for $i=k-m, ..., k-1$. We first choose some initial Hessian approximation $H^0_{k}$(in contrast to the standard BFGS iteration, this initial approximation is allowed to vary from iteration to iteration) and find by repeated application of the formula (5) that the L-BFGS approximation $H_{k}$ satisfies the following formula: 
+\begin{equation} \label{8}
+\begin{split}
+
+\end{split}
+\end{equation}
+
+algorithm What is its complexity?
 
 \subsubsection{Algorithm Convergence}
 \texttt{ Is the algorithm(if it is iterative) guaranteed to converge? Is it going to be stable and return a good approximation of the solution(if it is direct)?  Are there any relevant convergence results?}
