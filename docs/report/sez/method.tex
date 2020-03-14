@@ -100,6 +100,31 @@ algorithm What is its complexity?
 \subsubsection{Algorithm Convergence}
 \texttt{ Is the algorithm(if it is iterative) guaranteed to converge? Is it going to be stable and return a good approximation of the solution(if it is direct)?  Are there any relevant convergence results?}
 
+\subsubsection{Algorithm}
+\begin{algorithm}[H]
+	\caption{L-BFGS.}
+	\label{alg:sgd}
+	\begin{algorithmic}[1]
+		\Require{Starting point $x_0$;}
+		\Require{Integer m>0;}
+		\Require{Maximum number of iteration and error threshold;}
+		\Procedure{LBFGS}{}
+		\State Compute $k \gets 0$;
+		\Repeat
+		\State Choose \textbf{$H^0_k$};
+		\State Compute $p_k \gets H_k\nabla \textit{f}_k$;
+		\State Compute $x_{k+1} \gets x_{k}+ \alpha_{k}p_{k}$ where $\alpha_{k}$ is chosen to satisfy the Wolfe condition;
+		\If {k>m}
+		\State Discard the vector pair \{$s_{k-m},y_{k-m}$\} from storage;
+		\EndIf
+		\State Compute and save $s_k \gets x_{k+1}-x_{k}, y_k=\nabla \textit{f}_{k+1}-\textit{f}_k$;
+		\State $k \gets k+1$
+		\Until{\textbf{convergence.}}
+		\EndProcedure 
+	\end{algorithmic}
+\end{algorithm}
+
+
 Limited-memory variants  of  the  quasi-Newton  approach use  Hessian  approximations  that  can  be stored compactly by using just a few vectors of length \textit{n}. These methods are fairly robust, inexpensive, and easy to implement, but they do not converge rapidly.
 
  
