@@ -1,10 +1,10 @@
 \section{Method}
 
 \subsection{Momentum descent approach}
-The momentum descent approach is a variant of the more known stochastic gradient descent. It and all its variant are probably the most used optimization algorithms for machine learning.\\
-This algorithm is a gradient-based optimization. The main idea of this type of algorithm is to minimize a loss function (or cost/error function) following the advice given by the gradient computed in the current point of the function.
+The momentum descent approach is a variant \texttt{an adjustment??} of the more known stochastic gradient descent. It and all its variant are probably the most used optimization algorithms for machine learning.\\
+This algorithm is a gradient-based optimization. The main idea of this type of algorithm is to minimize a loss function (or cost/error function) following the advice\texttt{(direction??)} given by the gradient computed in the current point of the function.
 \\
-What can be a problem in the gradient descent is the large amount of example that at every iteration it must compute. Quite the opposite is the stochastic gradient descent where there is an online training. Unfortunately, the SGD is not much stable as the classical GD, but requires only the evaluation of one example for iteration. 
+What can be a problem in the gradient descent is the large amount of example that at every iteration it must compute. Quite the opposite\texttt{Troppo informale?} is the stochastic gradient descent where there is an online training. Unfortunately\texttt{Troppo informale?}, the SGD is not as much stable as the classical GD, but requires only the evaluation of one example for \texttt{every??} iteration. 
 Form now on, when we use talk about SDG, we refers to SDG with a subset of training dataset, called mini-batch or batch SDG.
 \\
 The convergence rate is of $O(\frac{1}{\sqrt{k}})$ (after k steps) when the algorithm is applied to a convex problem, if it is applied to a strongly convex problem the convergence rate is of $O(\frac{1}{k})$. (Mettere ref a libro di deeplearning)
@@ -19,7 +19,7 @@ The update rule is the following:
 \label{update_momentum}
 \textbf{W}_k = \textbf{W}_{k-1}  + \textbf{v}_k.
 \end{equation}
-There is a variant of the momentum that is the Nesterov momentum. The main idea is to add a correction factor to the Nesterov momentum,  for this reason they differs in place where the gradient is evaluated. With Nesterov momentum the rate of convergence goes from $O(\frac{1}{k})$ to $O(\frac{1}{k^2})$.
+The Nesterov momentum is a variant of the classical Momentum, the main idea is to add a correction factor to the Nesterov momentum,  for this reason they differs in place where the gradient is evaluated. With Nesterov momentum the rate of convergence goes from $O(\frac{1}{k})$ to $O(\frac{1}{k^2})$.
 The update rule for the velocity vector \textbf{v} is the following:
 \begin{equation}
 \label{nesterov_momentum}
@@ -57,8 +57,12 @@ Is the algorithm(if it is iterative) guaranteed to converge? Is it going to be s
 Are the hypotheses of these convergence results (convexity, compactness, differentiability, etc.) satisfied by your problem? If not, what are the“closest” possible results you have available, and why exactly they are not applicable?  Do you expect this to be relevant in practice?
 
 \subsection{Limited-memory quasi-Newton methods}
-
-
+L-BGFS algorithm derive from the BFGS method. So we begin our description of the L-BGFS method by recalling BFGS. 
+Each step of the BGFS method has the form
+\begin{equation}
+\label{stepBFGS}
+\nabla
+\end{equation}
 
  algorithm What is its complexity?
 
