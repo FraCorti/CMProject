@@ -104,6 +104,7 @@ From this expression we can derive a recursive procedure to compute the product 
 	\caption{L-BFGS two loop recursion}
 	\label{}
 	\begin{algorithmic}[3]
+	
 		\State $q \gets \nabla f_{k}$;
 		\For{$i=k-1,k-2,\cdots ,k-m$}
         \State $ \alpha_{i} \gets \rho_{i}s^T_{i}q$;
@@ -125,9 +126,6 @@ A method for choosing $H^0_{k}$ that has proved effective in practice is to set 
 \end{equation}
 As discussed in \texttt{REF sezione convergenza}, $\gamma_{k}$ is the scaling factor that attempts to estimate the size of the true Hessian matrix along the most recent search direction. This choice helps to ensure that the search direction $p_{k}$ is well scaled, and as result the step length $\alpha_{k}=1$ is accepted in most iterations. As discussed in \texttt{REF sezione convergenza}, it is important that the line search be based on the Wolfe conditions (\texttt{REF sez conv}) or strong Wolfe conditions(\texttt{REF sez conv}), so that BFGS updating is stable. 
 \texttt{algorithm What is its complexity?}
-
-\subsubsection{Algorithm Convergence}
-\texttt{ Is the algorithm(if it is iterative) guaranteed to converge? Is it going to be stable and return a good approximation of the solution(if it is direct)?  Are there any relevant convergence results?}
 
 \subsubsection{Algorithm}
 \begin{algorithm}[H]
@@ -156,6 +154,8 @@ As discussed in \texttt{REF sezione convergenza}, $\gamma_{k}$ is the scaling fa
 
 Limited-memory variants  of  the  quasi-Newton  approach use  Hessian  approximations  that  can  be stored compactly by using just a few vectors of length \textit{n}. These methods are fairly robust, inexpensive, and easy to implement, but they do not converge rapidly.
 
+\subsubsection{Algorithm Convergence}
+\texttt{ Is the algorithm(if it is iterative) guaranteed to converge? Is it going to be stable and return a good approximation of the solution(if it is direct)?  Are there any relevant convergence results?}
  
   Are the hypotheses of theseconvergence results (convexity, compactness, differentiability, etc.) satisfied by your problem? If not, what are the“closest” possible results you have available, and why exactly they arenotapplicable?  Do you expect this to berelevant in practice?
 
