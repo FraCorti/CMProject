@@ -27,7 +27,6 @@ The update rule for the velocity vector \textbf{v} is the following:
 \textbf{v}_k = \alpha\textbf{v}_{k-1} + \eta\nabla\textit{L}(\textbf{W}_k + \alpha\textbf{v}_{k-1}).
 \end{equation}
 \subsubsection{Algorithm}
-The limited-memory BFGS can be stated formally as follows.
 \begin{algorithm}[H]
 	\caption{Stochastic Gradient Descent Algorithm. The learning rate $\eta$, the $\alpha$ term and the maximum number of iterations are given.}
 	\label{alg:sgd}
@@ -115,11 +114,16 @@ From this expression we can derive a recursive procedure to compute the product 
  	  \State $\beta \gets \rho_{i}y^T_{i}r$; 
  	  \State $r \gets r + s_{i}(\alpha_{i}-\beta)$
  	  \EndFor
-		\State \textbf{stop} with result $H_{k}\nabla f_{k}=r$.
-		\EndProcedure 
+	  \State \textbf{stop} with result $H_{k}\nabla f_{k}=r$
 	\end{algorithmic}
 \end{algorithm}
+Without considering the multiplication $H^0_{k}q $, the two-loop recursion scheme requires $4mn$ multiplications; if $H^0_{k}$ is diagonal, then $n$ additional multiplications are needed. Apart from being inexpensive, this recursion has the advantage that the multiplication by the initial matrix $H^0_{k}$ is isolated from the rest of the computations, allowing this matrix to be chosen freely and to vary between iterations. We may even use an implicit choice of $H^0_{k}$ by defining some initial approximation $B^0_{k}$ to the Hessian (not its inverse) and obtaining $r$ by solving the system $B^0_{k}r = q$. 
 
+A method for choosing $H^0_{k}$ that has proved effective in practice is to set $H^0_{k}=\gamma_{k}I$  where 
+\begin{equation}
+\gamma_{k}= \frac{s^T_{k-1}y_{k-1}}{y^T_{k-1}y_{k-1}}
+\end{equation}
+As discussed in \texttt{REF sezione convergenza}, $\gamma_{k}$ is the scaling factor that attempts to estimate the size of the true Hessian matrix along the most recent search direction. This choice helps to ensure that the search direction $p_{k}$ is well scaled, and as result the step length $\alpha_{k}=1$ is accepted in most iterations. As discussed in \texttt{REF sezione convergenza}, it is important that the line search be based on the Wolfe conditions (\texttt{REF sez conv}) or strong Wolfe conditions(\texttt{REF sez conv}), so that BFGS updating is stable. 
 \texttt{algorithm What is its complexity?}
 
 \subsubsection{Algorithm Convergence}
@@ -129,7 +133,7 @@ From this expression we can derive a recursive procedure to compute the product 
 \begin{algorithm}[H]
 	\caption{L-BFGS.}
 	\label{alg:sgd}
-	\begin{algorithmic}[3]
+	\begin{algorithmic}[4]
 		\Require{Starting point $x_0$;}
 		\Require{Integer m>0;}
 		\Require{Maximum number of iteration and error threshold;}
