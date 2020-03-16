@@ -5,12 +5,12 @@ The momentum descent approach add to the stochastic gradient descent a technique
 \\
 This algorithm is a gradient-based optimization. The main idea of this type of algorithm is to minimize a loss function (or cost/error function) following the direction given by the gradient computed in the current point of the function.
 \\
-What can be a problem in the gradient descent is the large amount of example that must be computed for each iteration. The opposite happens in the stochastic gradient descent where there is an online training. However, he SGD is not as stable as the classical GD, but it requires only the evaluation of one example for each iteration. 
-Form now on, when we use talk about SDG, we refers to SDG with a subset of training dataset, called mini-batch or batch SDG.
+What can be a problem in the gradient descent is the large amount of example that must be computed for each iteration. The opposite happens in the stochastic gradient descent where there is an online training. However, the SGD is not as stable as the classical GD, but it requires only the evaluation of one example for each iteration. 
+Form now on, when we talk about SGD, we refers to SGD with a subset of training dataset, called mini-batch or batch SGD.
 \\
-The convergence rate is of $O(\frac{1}{\sqrt{k}})$ (after k steps) when the algorithm is applied to a convex problem, if it is applied to a strongly convex problem the convergence rate is of $O(\frac{1}{k})$. (Mettere ref a libro di deeplearning)
-\\
-Momentum descent approach use the method of momentum to accelerate learning. It introduce a variable \textbf{v} in that we take account of the speed and direction at witch the parameters move through parameter space. The role of momentum is determined by the hyperparameter $\alpha\in[0,1)$.
+The convergence rate is of $O(\frac{1}{\sqrt{k}})$ (after k steps) when the algorithm is applied to a convex problem, if it is applied to a strongly convex problem the convergence rate is of $O(\frac{1}{k})$.\\
+
+Momentum descent approach use momentum to accelerate learning. It introduce a variable \textbf{v} that take account of the speed and direction at which the parameters move through parameter space. The role of momentum is determined by the hyperparameter $\alpha\in[0,1)$.
 The update rule is the following:
 \begin{equation}
 \label{classical_momentum}
@@ -49,14 +49,6 @@ The update rule for the velocity vector \textbf{v} is the following:
 	\end{algorithmic}
 \end{algorithm}
 
-
-
- algorithm What is its complexity?
-
-Is the algorithm(if it is iterative) guaranteed to converge? Is it going to be stable and return a good approximation of the solution(if it is direct)?  Are there any relevant convergence results?
-
-Are the hypotheses of these convergence results (convexity, compactness, differentiability, etc.) satisfied by your problem? If not, what are the“closest” possible results you have available, and why exactly they are not applicable?  Do you expect this to be relevant in practice?
-
 \subsection{Limited-memory quasi-Newton methods}
 Limited-memory quasi-Newton methods are useful for solving large problems whose Hessian matrices cannot be computed at a reasonable cost or are not sparse.  
 These methods maintain simple and compact approximations of Hessian matrices: instead of storing fully dense \textit{n} $\times$ \textit{n} approximations, they save only a few vectors of length \textit{n} that represent an approximation of it. 
@@ -88,7 +80,7 @@ y_{k}=\nabla f_{k+1} - \nabla f_{k}.
 Since the inverse Hessian approximation $H_{k}$ will generally be dense, the cost of storing and manipulating it is prohibitive when the number of variable is large. To handle this problem in L-BFGS, we store a \textit{modified} version of $H_{k}$, by storing a certain number (say, \textit{m}) of the vector pairs $\{s_{i},y_{i}\}$ used in the formulas (5) and (6). The product $H_{k}\nabla f_{k}$ can be obtained by performing a sequence of inner products and vector summations involving $\nabla f_{k}$ and the pairs $\{s_{i},y_{i}\}$. After the new iterate is computed, the oldest vector pair in the set of pairs $\{s_{i},y_{i}\}$ is replaced by the new pair $\{s_{k},y_{k}\}$ obtained from the current step (7).
 In this way, the set of vector pairs includes curvature information from the \textit{m} most recent iterations. Usually \textit{m} between 3 and 20 is chosen. 
 
-We now describe the updating processes. An iteration \textit{k}, the current iterate $x_{k}$ and the set of vector pairs is given by $\{s_{i},y_{i}\}$ for $i=k-m, ..., k-1$. We first provide a sparse symmetric ans positive definite Hessian approximation $H^0_{k}$ which approximates the inverse Hessian of $f$ 
+We now describe the updating processes. An iteration \textit{k}, the current iterate $x_{k}$ and the set of vector pairs is given by $\{s_{i},y_{i}\}$ for $i=k-m, ..., k-1$. We first provide a sparse symmetric and positive definite Hessian approximation $H^0_{k}$ which approximates the inverse Hessian of $f$ 
 %in contrast to the standard BFGS iteration, 
 (this initial approximation is allowed to vary from iteration to iteration) and find by repeated application of the formula (5) that the L-BFGS approximation $H_{k}$ satisfies the following formula: 
 \begin{equation} 
@@ -100,7 +92,7 @@ We now describe the updating processes. An iteration \textit{k}, the current ite
 &+\rho_{k-1}s_{k-1}s^T_{k-1}.  
 \end{aligned}
 \end{equation}
-From this expression and given the number $m$ of BFGS corrections that are to be kept we can derive a recursive procedure to compute the product $H_{k}\nabla f_{k}$ efficiently.
+From this expression and given the number $m$ of BFGS corrections that are store we can derive a recursive procedure to compute the product $H_{k}\nabla f_{k}$ efficiently.
 
 \begin{algorithm}[H]
 	\caption{L-BFGS two loop recursion}
