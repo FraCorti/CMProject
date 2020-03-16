@@ -5,12 +5,12 @@ The momentum descent approach add to the stochastic gradient descent a technique
 \\
 This algorithm is a gradient-based optimization. The main idea of this type of algorithm is to minimize a loss function (or cost/error function) following the direction given by the gradient computed in the current point of the function.
 \\
-What can be a problem in the gradient descent is the large amount of example that must be computed for each iteration. The opposite happens in the stochastic gradient descent where there is an online training. However, he SGD is not as stable as the classical GD, but it requires only the evaluation of one example for each iteration. 
-Form now on, when we use talk about SDG, we refers to SDG with a subset of training dataset, called mini-batch or batch SDG.
+What can be a problem in the gradient descent is the large amount of examples that must be computed for each iteration. The opposite happens in the stochastic gradient descent where there is online training. However, the SGD is not as stable as the classical GD, but it requires only the evaluation of one example for each iteration. 
+Form now on, when we use to talk about SDG, we refer to SDG with a subset of the training dataset, called mini-batch or batch SDG.
 \\
-The convergence rate is of $O(\frac{1}{\sqrt{k}})$ (after k steps) when the algorithm is applied to a convex problem, if it is applied to a strongly convex problem the convergence rate is of $O(\frac{1}{k})$. (Mettere ref a libro di deeplearning)
+The convergence rate is of $O(\frac{1}{\sqrt{k}})$ (after k steps) when the algorithm is applied to a convex problem if it is applied to a strongly convex problem the convergence rate is of $O(\frac{1}{k})$. (Mettere ref a libro di deeplearning)
 \\
-Momentum descent approach use the method of momentum to accelerate learning. It introduce a variable \textbf{v} in that we take account of the speed and direction at witch the parameters move through parameter space. The role of momentum is determined by the hyperparameter $\alpha\in[0,1)$.
+Momentum descent approach uses the method of momentum to accelerate learning. It introduces a variable \textbf{v} in that we take account of the speed and direction at which the parameters move through parameter space. The role of momentum is determined by the hyperparameter $\alpha\in[0,1)$.
 The update rule is the following:
 \begin{equation}
 \label{classical_momentum}
@@ -20,7 +20,7 @@ The update rule is the following:
 \label{update_momentum}
 \textbf{W}_k = \textbf{W}_{k-1}  + \textbf{v}_k.
 \end{equation}
-The Nesterov momentum is a variant of the classical Momentum, the main idea is to add a correction factor to the Nesterov momentum,  for this reason they differs in place where the gradient is evaluated. With Nesterov momentum the rate of convergence goes from $O(\frac{1}{k})$ to $O(\frac{1}{k^2})$.
+The Nesterov momentum is a variant of the classical Momentum, the main idea is to add a correction factor to the Nesterov momentum,  for this reason they differ in the place where the gradient is evaluated. With Nesterov momentum, the rate of convergence goes from $O(\frac{1}{k})$ to $O(\frac{1}{k^2})$.
 The update rule for the velocity vector \textbf{v} is the following:
 \begin{equation}
 \label{nesterov_momentum}
@@ -64,7 +64,7 @@ These methods maintain simple and compact approximations of Hessian matrices: in
 The main idea of the L-BFGS algorithm is to use curvature information from only the most recent iterations to construct the Hessian approximation. Curvature information from earlier iterations, which is less likely to be relevant to the actual behavior of the Hessian at the current iteration is discarded in the interest of saving storage. 
 
 \subsubsection{Limited memory BFGS}
-L-BGFS algorithm derive from the BFGS method. So we begin our description of the L-BGFS method by recalling BFGS. 
+L-BGFS algorithm derives from the BFGS method. So we begin our description of the L-BGFS method by recalling BFGS. 
 Each step of the BGFS method has the form
 \begin{equation}
 \label{stepBFGS}
@@ -168,11 +168,11 @@ Limited-memory variants  of  the  quasi-Newton  approach use  Hessian  approxima
 	\end{algorithmic}
 \end{algorithm}
 
-Each iteration can be performed at cost of $O(m*n)$ aritmetic operation, where m is the number of steps stored in memory by parameter declaration.
+Each iteration can be performed at cost of $O(m*n)$ arithmetic operation, where m is the number of steps stored in memory by parameter declaration.
 
 \subsubsection{Algorithm Convergence}
 
-L-BFGS guarantee global convergence under specific assumption:
+L-BFGS guarantee global convergence under specific assumptions:
 \begin{itemize} \label{convergence:assumption}
 	\item The objective function f is twice continuously differentiable;
 	\item The level set $ \mathcal{L} = \{x \in R^n | \mathit{f(x)}  \leq  \mathit{f(x_0)}\}$ is convex, and there exist positive constants m and M such that 
@@ -184,7 +184,7 @@ L-BFGS guarantee global convergence under specific assumption:
 
 The second point of this assumption implies that $\nabla^2f(x)$ is positive definite on $\mathcal{L}$ and that $\mathit{f}$ has a unique minimizer $x^*$ in $\mathcal{L}$.
 \\
-We can prove that, let $B_0$ be any symmetric positive definite initial matrix, and let $x_0$ be a starting point for which previous assumption is satisfied. Then the sequence \{$x_k$\} generated by Algorithm \ref{alg:LBFGS} (with $\epsilon$ = 0) converges to the minimizer $x^*$ of $\mathit{f}$.
+We can prove that, let $B_0$ be any symmetric positive definite initial matrix, and let $x_0$ be a starting point for which previous assumptions are satisfied. Then the sequence \{$x_k$\} generated by Algorithm \ref{alg:LBFGS} (with $\epsilon$ = 0) converges to the minimizer $x^*$ of $\mathit{f}$.
 \\
 Moreover, we can say that in this case, the rate of convergence of the iterates
 is linear.
