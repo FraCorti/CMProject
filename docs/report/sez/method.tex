@@ -126,7 +126,21 @@ A method for choosing $H^0_{k}$ that has proved effective in practice is to set 
 \begin{equation}
 \gamma_{k}= \frac{s^T_{k-1}y_{k-1}}{y^T_{k-1}y_{k-1}}
 \end{equation}
-$\gamma_{k}$ is the scaling factor that attempts to estimate the size of the true Hessian matrix along the most recent search direction. This choice helps to ensure that the search direction $p_{k}$ is well scaled, and as result the step length $\alpha_{k}=1$ is accepted in most iterations. It is important that the line search be based on the Wolfe conditions or strong Wolfe conditions, so that BFGS updating is stable. 
+$\gamma_{k}$ is the scaling factor that attempts to estimate the size of the true Hessian matrix along the most recent search direction. This choice helps to ensure that the search direction $p_{k}$ is well scaled, and as result the step length $\alpha_{k}=1$ is accepted in most iterations. To keep update stable of BFGS algorithm, it is important that line search be based on the wolf condition
+\begin{equation}
+f(x_k + \alpha_kp_k ) \leq f (x_k ) + c_1 \alpha_k \nabla f_k^T p_k,
+\end{equation}
+\begin{equation}
+\nabla f(x_k + \alpha_{k} p_k )^T p_k \geq c_2 \nabla f_k^T p_k ,
+\end{equation}
+or strong Wolfe conditions
+\begin{equation}
+f(x_k + \alpha_kp_k ) \leq f (x_k ) + c_1 \alpha_k \nabla f_k^T p_k,
+\end{equation}
+\begin{equation}
+|\nabla f(x_k + \alpha_{k} p_k )^T p_k| \leq c_2 |\nabla f_k^T p_k| ,
+\end{equation}
+with 0<$c_1$<$c_2$<1.
 
 \subsubsection{Algorithm}
 Limited-memory variants  of  the  quasi-Newton  approach use  Hessian  approximations  that  can  be stored compactly by using just a few vectors of length \textit{n}. These methods are fairly robust, inexpensive, and easy to implement, but they do not converge rapidly.
@@ -153,6 +167,8 @@ Limited-memory variants  of  the  quasi-Newton  approach use  Hessian  approxima
 		\EndProcedure 
 	\end{algorithmic}
 \end{algorithm}
+
+Each iteration can be performed at cost of $O(m*n)$ aritmetic operation, where m is the number of steps stored in memory by parameter declaration.
 
 \subsubsection{Algorithm Convergence}
 
