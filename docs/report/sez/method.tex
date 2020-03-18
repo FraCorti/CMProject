@@ -8,16 +8,9 @@ This algorithm is a gradient-based optimization. The main idea of this type of a
 What can be a problem in the gradient descent is the large amount of example that must be computed for each iteration. The opposite happens in the stochastic gradient descent where there is an online training. However, the SGD is not as stable as the classical GD, but it requires only the evaluation of one example for each iteration. 
 Form now on, when we talk about SGD, we refers to SGD with a subset of training dataset, called mini-batch or batch SGD.
 \\
-Convergence of this algorithm is strictly connected to the choice of $\eta$, the learning rate parameter. It is important to gradually decrease $\eta$ over iterations, in order to guarantee convergence. A sufficient condition to ensure convergence of momentum descent is that 
-\begin{equation}
-\label{assumption:momentum_descent}
-\sum_k \eta_k=\infty \  \text{ and } \ \sum_k \eta_k^2 < \infty
-\end{equation}
+The convergence rate is of $O(\frac{1}{\sqrt{k}})$ (after k steps) when the algorithm is applied to a convex problem, if it is applied to a strongly convex problem the convergence rate is of $O(\frac{1}{k})$.\\
 
-The convergence rate is of $O(\frac{1}{\sqrt{k}})$ (after k steps) when the algorithm is applied to a convex problem. 
-Moreover, if we assume that the Hessian matrix $\nabla^2f(x^*)$ is positive definite, means that the loss function is a strongly convex function and the convergence rate is $O(\frac{1}{k})$. \cite{goodfellow}
-\\
-Momentum descent approach uses the method of momentum to accelerate learning. It introduces a variable \textbf{v} in that we take account of the speed and direction at which the parameters move through parameter space. The role of momentum is determined by the hyperparameter $\alpha\in[0,1)$.
+Momentum descent approach use momentum to accelerate learning. It introduce a variable \textbf{v} that take account of the speed and direction at which the parameters move through parameter space. The role of momentum is determined by the hyperparameter $\alpha\in[0,1)$.
 The update rule is the following:
 \begin{equation}
 \label{classical_momentum}
@@ -65,25 +58,23 @@ where $L_{k}(p)$ is the first order model and the remaining is the second order 
 
 Theoretically  the Hessian matrix $\nabla^2 f(k)$ need to be recomputed at every iteration. Instead in the Quasi-Netwon method the Hessian is substitute by an approximation $B_{k}$. Moreover in the BFGS we update $B_{k}$ using the curvature measured at previously step to avoid using $O(n^2)$ storage. The information about the approximated Hessian is stored inside vectors of length $n$. 
 
-The main idea of the L-BFGS algorithm is to use curvature information from only the most recent iterations to construct the Hessian approximation. Curvature information from earlier iterations, which is less likely to be relevant to the actual behavior of the Hessian at the current iteration is discarded in the interest of saving storage \cite{numerical}.
+The main idea of the L-BFGS algorithm is to use curvature information from the $m$ recent iterations to construct the Hessian approximation, earlier iterations parameters are discarded in the interest of saving storage. 
 
 \subsubsection{Limited memory BFGS}
-In the Broyden–Fletcher–Goldfarb–Shanno algorithm (BFGS) each step use the information given by the gradient $\nabla f_{k}$ and the approximated Hessian $H_{k}$ to minimize  a function updating parameters $x_{k}$. 
-So every step has the following form: 
+In the Broyden–Fletcher–Goldfarb–Shanno algorithm (BFGS) each step use the information given by the gradient $\nabla f_{k}$ and the approximated Hessian $H_{k}\textrm{ (or }B_{k})$ to minimize  a function updating parameters $x_{k}$. Each step has the form: 
 \begin{equation}
-\label{stepBFGS}
-x_{k+1}=x_{k}-\alpha_{k}H_{k}\nabla f_{k},
-\end{equation}
-where $\alpha_{k}$ is the learning rate/step length.
+x_{k+1} = x_{k} - \alpha_{k}H_{k}\nabla f_{k}
+\end{equation} 
+where $\alpha_{k}$ is the step length.
 
 In L-BFGS method to handle the complexity to store an approximation of the Hessian, we save a certain number of vector $m$ composed of 
 \begin{align}
 s_{k}=x_{k+1}-x_{k}, & \qquad
 y_{k}=\nabla f_{k+1} - \nabla f_{k}.
 \end{align}
-The method use 
+we can now approximate the product $H_{k}\nabla f_{k}$ by doing multiple products and vector summation using the $m$ vectors $\{s_{i},y_{i}\}$. At step $k$ after we compute the new iterate the oldest vector $\{s_{m},y_{m}\}$ is replaced with the new one.
 
-We can now approximate the product $H_{k}\nabla f_{k}$ by doing multiple products and vector summation using the $m$ vectors $\{s_{i},y_{i}\}$ . After we compute the new iterate the oldest vector $\{s_{m},y_{m}\}$ is replaced with the new one.
+We first choose some initial Hessian approximation $H^0_{k}$ and then we find $H_{k}$ with
 
 \begin{equation} 
 \begin{aligned}
@@ -95,6 +86,14 @@ We can now approximate the product $H_{k}\nabla f_{k}$ by doing multiple product
 \end{aligned}
 \end{equation}
 
+where
+\begin{align}
+\rho_{k}= \frac{1}{y^T_{k}s_{k}}, & \qquad
+V_{k} = I - \rho_{k} y_{k}s^T_{k},
+\end{align}
+formulas taken from \cite{numerical}.
+
+Now we can derive an algorithm to compute the product $H_{k}\nabla f_{k}$
 
 \begin{algorithm}[H]
 	\caption{L-BFGS two loop recursion}
