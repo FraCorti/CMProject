@@ -56,12 +56,12 @@ m_{k}(p)=L_{k}(p)+ \frac{1}{2}(p-k)^T\nabla^2 f(k)(p-k).
 \end{equation}
 where $L_{k}(p)$ is the first order model and the remaining is the second order term. Then we minimize the function using the information given by the model $m_{k}$.
 
-Theoretically  the Hessian matrix $\nabla^2 f(k)$ need to be recomputed at every iteration. Instead in the Quasi-Netwon method the Hessian is substitute by an approximation $B_{k}$. Moreover in the BFGS we update $B_{k}$ using the curvature measured at previously step to avoid using $O(n^2)$ storage. The information about the approximated Hessian is stored inside vectors of length $n$. 
+Theoretically  the Hessian matrix $\nabla^2 f(k)$ need to be recomputed at every iteration. Instead in the Quasi-Netwon method the Hessian is substitute by an approximation $B_{k} \textrm{ (or } H_{k})$ to reduce the cost. Moreover in the BFGS we update $B_{k}$ using the curvature measured at previously step to avoid using $O(n^2)$ storage. The information about the approximated Hessian is stored inside vectors of length $n$. 
 
 The main idea of the L-BFGS algorithm is to use curvature information from the $m$ recent iterations to construct the Hessian approximation, earlier iterations parameters are discarded in the interest of saving storage. 
 
 \subsubsection{Limited memory BFGS}
-In the Broyden–Fletcher–Goldfarb–Shanno algorithm (BFGS) each step use the information given by the gradient $\nabla f_{k}$ and the approximated Hessian $H_{k}\textrm{ (or }B_{k})$ to minimize  a function updating parameters $x_{k}$. Each step has the form: 
+In the Broyden–Fletcher–Goldfarb–Shanno algorithm (BFGS) each step use the information given by the gradient $\nabla f_{k}$ and the approximated Hessian $H_{k}\textrm{ (or }B_{k})$ to minimize  a function updating its parameters $x_{k}$. Each step has the form: 
 \begin{equation}
 x_{k+1} = x_{k} - \alpha_{k}H_{k}\nabla f_{k}
 \end{equation} 
@@ -74,7 +74,7 @@ y_{k}=\nabla f_{k+1} - \nabla f_{k}.
 \end{align}
 we can now approximate the product $H_{k}\nabla f_{k}$ by doing multiple products and vector summation using the $m$ vectors $\{s_{i},y_{i}\}$. At step $k$ after we compute the new iterate the oldest vector $\{s_{m},y_{m}\}$ is replaced with the new one.
 
-We first choose some initial Hessian approximation $H^0_{k}$ and then we find $H_{k}$ with
+We first choose some initial Hessian approximation $H^0_{k}$ that is allowed to vary from iteration to iteration and then we find $H_{k}$ with
 
 \begin{equation} 
 \begin{aligned}
@@ -119,7 +119,7 @@ A method for choosing $H^0_{k}$ that has proved effective in practice is to set 
 \begin{equation}
 \gamma_{k}= \frac{s^T_{k-1}y_{k-1}}{y^T_{k-1}y_{k-1}}
 \end{equation}
-$\gamma_{k}$ is the scaling factor that attempts to estimate the size of the true Hessian matrix along the most recent search direction \texttt{ref libro}. This choice helps to ensure that the search direction $p_{k}$ is well scaled, and as result the step length $\alpha_{k}=1$ is accepted in most iterations. To keep update stable of BFGS algorithm, it is important that line search be based on the Wolfe conditions
+$\gamma_{k}$ is the scaling factor that attempts to estimate the size of the true Hessian matrix along the most recent search direction \cite{numerical}. This choice helps to ensure that the search direction $p_{k}$ is well scaled, and as result the step length $\alpha_{k}=1$ is accepted in most iterations. To keep update stable of BFGS algorithm, it is important that line search be based on the Wolfe conditions
 \begin{equation}
 f(x_k + \alpha_kp_k ) \leq f (x_k ) + c_1 \alpha_k \nabla f_k^T p_k,
 \end{equation}
