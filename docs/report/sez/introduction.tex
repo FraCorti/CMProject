@@ -58,9 +58,17 @@ MSE = \frac{1}{n} \sum_{i=1}^n (\widehat{y}-y)_{i}^2
 where $n$ represents the number of sample input data we passed into in the model. Since purpose of neural networks is to build models that fits data, we want to minimize the \textit{Loss Function} in order to have good prediction on unseen data. This minimization process is done through optimization algorithms. To minimize the \textit{Loss Function} it must have certain properties.	
 
 \subsubsection{Loss Function properties}
+In an optimization problem given $X$ any set and $f: X \rightarrow \mathbb{R}$ any function we want
+\begin{equation}
+(P) \quad f_{*} = min \{f(x) : x \in X\}
+\end{equation}
+where X is the feasible region, f is the objective function and, $v(P) = f_{*}$ is the optimal value. In our case $X \subseteq \mathbb{R}^{n}$ and we want to be sure that exist an optimal solution.
+
+So we want to find any optimal solution: $x_{*} \in X  \textnormal{ such that} f(x_{*}) = f_{*}$ but this can be impossible for many reasons. For the \textit{Weierstrass} theorem to ensure that our function has an optimal solution we need that $X \subseteq \mathbb{R}^{n}$ is compact and $f$ is continuous (or lower semi-continuous) and differentiable. 
+
 \begin{itemize}
 	\item \textbf{Continuity}:
-	\item \textbf{Differentiability}:
+	\item  \textbf{Differentiability}:
 	\item \textbf{Convexity}: 
 \end{itemize}
 \subsection{Properties}
