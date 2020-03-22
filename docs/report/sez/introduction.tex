@@ -30,6 +30,7 @@ Desirable properties of this function can be:
 
 For the aim of our project, we chose to use two different activation function:
 \begin{itemize}
+	\label{sigmoid}
 	\item Sigmoid (or standard logistic function):
 	\begin{itemize}
 		\item It is defined between (0,1); 		
@@ -39,6 +40,7 @@ For the aim of our project, we chose to use two different activation function:
 			\end{align*} 
 	\end{itemize}
 	\item TanH;
+	\label{tanH}
 	\begin{itemize}
 		\item It is defined between (-1,1); 		
 		\begin{align*}
@@ -64,12 +66,16 @@ In an optimization problem given $X$ any set and $f: X \rightarrow \mathbb{R}$ a
 \end{equation}
 where X is the feasible region, f is the objective function and, $v(P) = f_{*}$ is the optimal value. In our case $X \subseteq \mathbb{R}^{n}$ and we want to be sure that exist an optimal solution.
 
-So we want to find any optimal solution: $x_{*} \in X  \textnormal{ such that} f(x_{*}) = f_{*}$ but this can be impossible for many reasons. For the \textit{Weierstrass} theorem to ensure that our function has an optimal solution we need that $X \subseteq \mathbb{R}^{n}$ is compact and $f$ is continuous (or lower semi-continuous) and differentiable. 
+So we want to find any optimal solution: $x_{*} \in X  \textnormal{ such that } f(x_{*}) = f_{*}$ but this can be impossible for many reasons. For the \textit{Weierstrass} theorem to ensure that our function has an optimal solution we need that $X \subseteq \mathbb{R}^{n}$ is compact and $f$ is continuous (or lower semi-continuous) and differentiable. 
 
 \begin{itemize}
-	\item \textbf{Continuity}:
-	\item  \textbf{Differentiability}:
-	\item \textbf{Convexity}: 
+	\item \textbf{Continuity}: \textit{Loss Function} is a two variables function, $\widehat{y}$ and $y$. A function $f$ having two variables is Lipschitz continuous on its domain if $\exists L>0$ such that 
+	\begin{equation}
+	\parallel f(x_{1},y_{1}) - f(x_{1}) \parallel \leq L(\parallel x_{1}-x_{2}\parallel +  \parallel y_{1}-y_{2}\parallel) \quad \forall (x_{1},y_{1}),(x_{2},y_{2}) \in \textnormal{domain} f.  
+	\end{equation} 
+	\texttt{TODO}
+	\item  \textbf{Differentiability}:  we are going to use \textit{sigmoid} (sez \ref{sigmoid}) and \textit{hyperbolic tangent} (sez \ref{tanH}) as activation functions. These function are continuous and twice differentiable with bounded Lipschitz continuous derivative. So \textit{Mean Squared Error} is a differentiable function since the network is a composition of continuously differentiable functions.
+	\item \textbf{Convexity}: all the functions used as activated function ($sigmoid$ and $tanH$) are not convex functions. Since our $MSE$ \textit{Loss Function} is obtained combining these not convex functions $MSE$ is not convex.
 \end{itemize}
 \subsection{Properties}
 \subsection{Regularization}

@@ -68,12 +68,12 @@ x_{k+1} = x_{k} - \alpha_{k}H_{k}\nabla f_{k}
 \end{equation} 
 where $\alpha_{k}$ is the step length.
 
-In L-BFGS method to handle the complexity to store an approximation of the Hessian, we save a certain number of vector $m$ composed of 
+In L-BFGS method to handle the complexity to store an approximation of the Hessian we save a certain number of vector $m$ composed of 
 \begin{align}
 s_{k}=x_{k+1}-x_{k}, & \qquad
 y_{k}=\nabla f_{k+1} - \nabla f_{k}.
 \end{align}
-we can now approximate the product $H_{k}\nabla f_{k}$ by doing multiple products and vector summation using the $m$ vectors $\{s_{i},y_{i}\}$. At step $k$ after we compute the new iterate the oldest vector $\{s_{m},y_{m}\}$ is replaced with the new one.
+We can now approximate the product $H_{k}\nabla f_{k}$ by doing multiple products and vector summation using the $m$ vectors $\{s_{i},y_{i}\}$. At step $k$ after we compute the new iterate and the oldest vector $\{s_{m},y_{m}\}$ is replaced with the new one.
 
 We first choose some initial Hessian approximation $H^0_{k}$ that is allowed to vary from iteration to iteration and then we find $H_{k}$ with
 
