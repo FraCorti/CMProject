@@ -58,6 +58,7 @@ MSE = \frac{1}{n} \sum_{i=1}^n (\widehat{y}-y)_{i}^2
 where $n$ represents the number of sample input data we passed into in the model. Since purpose of neural networks is to build models that fits data, we want to minimize the \textit{Loss Function} in order to have good prediction on unseen data. This minimization process is done through optimization algorithms. To minimize the \textit{Loss Function} it must have certain properties.	
 
 \subsubsection{Loss Function properties}
+\label{LF:Properties}
 In an optimization problem given $X$ any set and $f: X \rightarrow \mathbb{R}$ any function we want
 \begin{equation}
 (P) \quad f_{*} = min \{f(x) : x \in X\}
@@ -68,10 +69,10 @@ So we want to find any optimal solution: $x_{*} \in X  \textnormal{ such that} f
 
 \begin{itemize}
 	\item \textbf{Continuity}:
-	\item  \textbf{Differentiability}:
+	\item \textbf{Differentiability}:
 	\item \textbf{Convexity}: 
 \end{itemize}
-\subsection{Properties}
+
 \subsection{Regularization}
  In machine learning, is used to insure a trade off between accuracy in training set and complexity of the model.
  We implemented and used two type of regularization, L1 and L2. They are implemented adding at the objective Loss Function a penalty term multiplied by a lambda parameter.
