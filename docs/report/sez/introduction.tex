@@ -76,9 +76,9 @@ So we want to find any optimal solution: $x_{*} \in X  \textnormal{ such that } 
 	\end{equation} 
 	neural networks are a series of function composition: 
 	\begin{equation}
-	h(\vec{x}) = \phi_{k}(b_{k} + \sum_{j}w_{kj} \phi_{j}(b_{j} + \sum_{i}w_{ji}\vec{x}))
+	h(x) = \phi_{k}(b_{k} + \sum_{j}w_{kj} \phi_{j}(b_{j} + \sum_{i}w_{ji}x))
 	\end{equation}
-	where $\vec{x}$ is the input vector and $\phi_{i}$ is an activation function. Since the activation functions used in the network are Lipschitz functions and the composition of a $k_{1}$-Lipschitz function, $f_{1}$, with a $k_{2}$-Lipschitz function, $f_{2}$, is a $k_{1}k_{2}$-Lipschitz function, the \textit{Loss Function} is a Lipschitz function. Moreover, as shown in \cite{lipschitzContinuity}, using $L(f)$ as a constant of some function $f$ we can compute an upper bound on the Lipschitz constant for the entire feed-forward neural network. 
+	where $x$ is the input and $\phi_{i}$ is an activation function. Since the activation functions used in the network are Lipschitz functions and the composition of a $k_{1}$-Lipschitz function, $f_{1}$, with a $k_{2}$-Lipschitz function, $f_{2}$, is a $k_{1}k_{2}$-Lipschitz function, the \textit{Loss Function} is a Lipschitz function. Moreover, as shown in \cite{lipschitzContinuity}, using $L(f)$ as a constant of some function $f$ we can compute an upper bound on the Lipschitz constant for the entire feed-forward neural network. 
 	\item  \textbf{Differentiability}:  we are going to use \textit{sigmoid} (sez \ref{sigmoid}) and \textit{hyperbolic tangent} (sez \ref{tanH}) as activation functions. These function are continuous and twice differentiable with bounded Lipschitz continuous derivative. So \textit{Mean Squared Error} is a differentiable function since the network is a composition of continuously differentiable functions.
 	\item \textbf{Convexity}: all the functions used as activated function ($sigmoid$ and $tanH$) are not convex functions. Since our $MSE$ \textit{Loss Function} is obtained combining these not convex functions $MSE$ is not convex.
 \end{itemize}
