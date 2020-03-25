@@ -65,7 +65,7 @@ In an optimization problem given $X$ any set and $f: X \rightarrow \mathbb{R}$ a
 \begin{equation}
 (P) \quad f_{*} = min \{f(x) : x \in X\}
 \end{equation}
-where X is the feasible region, f is the objective function and, $v(P) = f_{*}$ is the optimal value. In our case $X \subseteq \mathbb{R}^{n}$ and we want to be sure that exist an optimal solution.
+where X is the feasible region, f is the objective function and $v(P) = f_{*}$ is the optimal value. In our case $X \subseteq \mathbb{R}^{n}$ and we want to be sure that exist an optimal solution.
 
 So we want to find any optimal solution: $x_{*} \in X  \textnormal{ such that } f(x_{*}) = f_{*}$ but this can be impossible for many reasons. For the \textit{Weierstrass} theorem to ensure that our function has an optimal solution we need that $X \subseteq \mathbb{R}^{n}$ is compact and $f$ is continuous (or lower semi-continuous) and differentiable. 
 
@@ -79,7 +79,7 @@ So we want to find any optimal solution: $x_{*} \in X  \textnormal{ such that } 
 	h(x) = \phi_{k}(b_{k} + \sum_{j}w_{kj} \phi_{j}(b_{j} + \sum_{i}w_{ji}x))
 	\end{equation}
 	where $x$ is the input and $\phi_{i}$ is an activation function. Since the activation functions used in the network are Lipschitz functions and the composition of a $k_{1}$-Lipschitz function, $f_{1}$, with a $k_{2}$-Lipschitz function, $f_{2}$, is a $k_{1}k_{2}$-Lipschitz function, the \textit{Loss Function} is a Lipschitz function. Moreover, as shown in \cite{lipschitzContinuity}, using $L(f)$ as a constant of some function $f$ we can compute an upper bound on the Lipschitz constant for the entire feed-forward neural network. 
-	\item  \textbf{Differentiability}:  we are going to use \textit{sigmoid} (sez \ref{sigmoid}) and \textit{hyperbolic tangent} (sez \ref{tanH}) as activation functions. These function are continuous and twice differentiable with bounded Lipschitz continuous derivative. So \textit{Mean Squared Error} is a differentiable function since the network is a composition of continuously differentiable functions.
+	\item  \textbf{Differentiability}:  we are going to use \textit{sigmoid} (section \ref{sigmoid}) and \textit{hyperbolic tangent} (section \ref{tanH}) as activation functions. These function are continuous and twice differentiable with bounded Lipschitz continuous derivative. So \textit{Mean Squared Error} is a differentiable function since the network is a composition of continuously differentiable functions.
 	\item \textbf{Convexity}: all the functions used as activated function ($sigmoid$ and $tanH$) are not convex functions. Since our $MSE$ \textit{Loss Function} is obtained combining these not convex functions $MSE$ is not convex.
 \end{itemize}
 
