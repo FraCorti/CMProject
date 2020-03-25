@@ -29,7 +29,7 @@ The update rule is the following:
 \label{update_momentum}
 \textbf{W}_k = \textbf{W}_{k-1}  + \textbf{v}_k.
 \end{equation}
-The Nesterov momentum is a variant of the classical Momentum, the main idea is to add a correction factor to the Nesterov momentum,  for this reason they differs in place where the gradient is evaluated. With Nesterov momentum the rate of convergence goes from $O(\frac{1}{k})$ to $O(\frac{1}{k^2})$.
+The Nesterov momentum is a variant of the classical Momentum, the main idea is to add a correction factor at the classical momentum,  for this reason they differs in place where the gradient is evaluated. With Nesterov momentum the rate of convergence goes from $O(\frac{1}{k})$ to $O(\frac{1}{k^2})$.
 The update rule for the velocity vector \textbf{v} is the following:
 \begin{equation}
 \label{nesterov_momentum}
