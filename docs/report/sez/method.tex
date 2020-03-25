@@ -59,7 +59,7 @@ The update rule for the velocity vector \textbf{v} is the following:
 \end{algorithm}
 
 \subsection{Limited-memory quasi-Newton methods}
-Limited-memory Quasi-Newton methods are useful for solving large unconstrained optimization problems whose Hessian matrices cannot be computed at a reasonable cost. More formally to minimize a function using the second order information, we create a quadratic model that approximate the function at the current $x_{k}$:
+Limited-memory Quasi-Newton methods are useful for solving large unconstrained optimization problems in which Hessian matrices cannot be computed at a reasonable cost. More formally to minimize a function using the second order information, we create a quadratic model that approximate the function at the current $x_{k}$:
 \begin{equation}
 m_{k}(p)=L_{k}(p)+ \frac{1}{2}(p-k)^T\nabla^2 f(k)(p-k).
 \end{equation}
@@ -77,7 +77,7 @@ x_{k+1} = x_{k} - \alpha_{k}H_{k}\nabla f_{k}
 \end{equation} 
 where $\alpha_{k}$ is the step length.
 
-In L-BFGS method to handle the complexity to store an approximation of the Hessian we save a certain number of vector $m$ composed of 
+In L-BFGS method to handle the complexity of storing an approximation of the Hessian, we save a certain number of vector $m$ composed of 
 \begin{align}
 s_{k}=x_{k+1}-x_{k}, & \qquad
 y_{k}=\nabla f_{k+1} - \nabla f_{k}.
