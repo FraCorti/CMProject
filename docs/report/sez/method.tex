@@ -1,23 +1,12 @@
 \section{Method}
 
 \subsection{Momentum descent approach}
-The momentum descent approach add to the stochastic gradient descent a technique for accelerating gradient descent that accumulates a velocity vector in directions of persistent reduction in the objective across iterations. 
+The momentum descent approach add to the deterministic gradient descent a technique for accelerating gradient descent that accumulates a velocity vector in directions of persistent reduction in the objective across iterations. 
 \\
 This algorithm is a gradient-based optimization. The main idea of this type of algorithm is to minimize a loss function (or cost/error function) following the direction given by the gradient computed in the current point of the function.
 \\
 What can be a problem in the gradient descent is the large amount of example that must be computed for each iteration. The opposite happens in the stochastic gradient descent where there is an online training. However, the SGD is not as stable as the classical GD, but it requires only the evaluation of one example for each iteration. 
 Form now on, when we talk about SGD, we refers to SGD with a subset of training dataset, called mini-batch or batch SGD.
-
-Convergence of this algorithm is strictly connected to the choice of $\eta$, the learning rate parameter. It is important to gradually decrease $\eta$ over iterations, in order to guarantee convergence. A sufficient condition to ensure convergence of momentum descent is that 
-\begin{equation}
-\label{assumption:momentum_descent}
-\sum_k \eta_k=\infty \  \text{ and } \ \sum_k \eta_k^2 < \infty
-\end{equation}
-\\
-The convergence rate is of $O(\frac{1}{\sqrt{k}})$ (after k steps) when the algorithm is applied to a convex problem. 
-Moreover, if we assume that the Hessian matrix $\nabla^2f(x^*)$ is positive definite, means that the loss function is a strongly convex function and the convergence rate is $O(\frac{1}{k})$. \cite{goodfellow}
-\\
-Our objective function is not convex, so we need more constraint in order to use what we said before. The properties shown in \ref*{LF:Properties} ensure the convergence of the method as proved in \cite{gradientProof}.
 
 Momentum descent approach use momentum to accelerate learning. It introduce a variable \textbf{v} that take account of the speed and direction at which the parameters move through parameter space. The role of momentum is determined by the hyperparameter $\alpha\in[0,1)$.
 The update rule is the following:
@@ -35,28 +24,54 @@ The update rule for the velocity vector \textbf{v} is the following:
 \label{nesterov_momentum}
 \textbf{v}_k = \alpha\textbf{v}_{k-1} + \eta\nabla\textit{L}(\textbf{W}_k + \alpha\textbf{v}_{k-1}).
 \end{equation}
+
 \subsubsection{Algorithm}
 \begin{algorithm}[H]
-	\caption{Stochastic Gradient Descent Algorithm. The learning rate $\eta$, the $\alpha$ term and the maximum number of iterations are given.}
+	\caption{Momentum Descent Algorithm. The learning rate $\eta$, the $\alpha$ term and the maximum number of iterations are given.}
 	\label{alg:sgd}
 	\begin{algorithmic}[1]
 		\Require{Learning rate $\eta$ and momentum parameter $\alpha$}
 		\Require{Maximum number of iteration and error threshold}
-		\Procedure{Stochastic Gradient Descent}{}
+		\Procedure{Momentum Descent}{}
 		\State Initialize \textbf{W} and \textbf{v}
 		\State $k \gets 0$
 		\While {$k < max\_iterations$ \&\& $error\_th<e$}
-		\State Sample a mini-batch of \textit{m} training examples \{\textit{$(x_0,y_0),(x_1,y_1),...,(x_m,y_m)$}\}
 		\If {Nesterov Momentum}
 		\State $\tilde{\textbf{W}} \gets \textbf{W} + \alpha \textbf{v}$
 		\EndIf
-		\State Compute gradient estimate: $\textbf{g} \gets \frac {1}{m} \nabla \sum_i\textit{L}(\tilde{\textbf{W}})$
+		\State Compute gradient estimate: $\textbf{g} \gets \frac {1}{n} \nabla \sum_i\textit{L}(\tilde{\textbf{W}})$
 		\State Compute velocity update: $\textbf{v} \gets \alpha \textbf{v} - \eta \textbf{g}$
 		\State Apply update: $\textbf{W} \gets \textbf{W} + \textbf{v}$
 		\EndWhile
 		\EndProcedure
 	\end{algorithmic}
 \end{algorithm}
+
+\subsubsection{Method convergence}
+Convergence of this algorithm is strictly connected to the choice of $\eta$, the learning rate parameter. It is important to gradually decrease $\eta$ over iterations, in order to guarantee convergence. A sufficient condition to ensure convergence of momentum descent is that 
+\begin{equation}
+\label{assumption:momentum_descent}
+\sum_k \eta_k=\infty \  \text{ and } \ \sum_k \eta_k^2 < \infty
+\end{equation}
+\\
+The convergence rate is of $O(\frac{1}{\sqrt{k}})$ (after k steps) when the algorithm is applied to a convex problem. 
+Moreover, if we assume that the Hessian matrix $\nabla^2f(x^*)$ is positive definite, means that the loss function is a strongly convex function and the convergence rate is $O(\frac{1}{k})$. \cite{goodfellow}
+
+Our objective function is not convex, so we need more constraint in order to use what we said before.
+D.P. Bertsekas proved the following, which appears as proposition 1.2.4 of \cite{bert03}.
+\\ Let \{$x_k$\} be a sequence generated by a gradient method $x_{k+1}=x_k+\alpha_kd_k$. Assume that for some constant L>0. we have
+\begin{equation}
+\label{assumption:momentum_descent2}
+\| \nabla f(x)-\nabla f(y)\|\leq L\|x-y\|, \forall x,y \in R^n
+\end{equation}
+and that there exist positive scalars $c_1$, $c_2$ such that for all $k$  we have respect the Armijo-Wolfe conditions.
+Suppose also that
+\begin{equation}
+\label{assumption:momentum_descent4}
+\eta_k \to 0 \  \text{ , } \ \sum_k \eta_k = \infty
+\end{equation}
+The either $f(x^k)\to - \infty$ or else \{$f(x_k)$\} converges to a finite value and $\nabla f(x_k) \to 0$. Furthermore, every limit point of \{$x_k$\} is a stationary point of $f$.
+The first fundamentals observation is that the loss function that we choose is a quadratic loss function and it is two times Lipschitz continue and derivable (as we said in \ref{LF:Properties}).
 
 \subsection{Limited-memory quasi-Newton methods}
 Limited-memory Quasi-Newton methods are useful for solving large unconstrained optimization problems in which Hessian matrices cannot be computed at a reasonable cost. More formally to minimize a function using the second order information, we create a quadratic model that approximate the function at the current $x_{k}$:
