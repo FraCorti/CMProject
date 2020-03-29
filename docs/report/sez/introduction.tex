@@ -17,6 +17,7 @@ The back-propagation algorithm can be divided in two equally important part:
 	\item Use the knowledge of the gradient to do the next step depending on the optimizer chosen;
 \end{itemize}
 \subsection{Activation function}
+\label{activationFunction}
 The activation function of a node defines the output of that node given an input or set of inputs. 
 Desirable properties of this function can be:
 \begin{itemize}
@@ -50,14 +51,18 @@ For the aim of our project, we chose to use two different activation function:
 	\end{itemize}
 \end{itemize}
 \subsection{Loss Function}
-The \textit{Loss Function} is a function used to evaluate the performance of a model, it receives a vector values $y$ computed by passing input data to the model and compare it with the desired vector values $\widehat{y}$.
-Moreover the train phase of a supervised machine learning algorithm can be seen as an optimization (in our case minimization) of the \textit{Loss Function} $f(x)$ by altering $x$.   
-
-There are several \textit{Loss Function} used in machine learning algorithms but we are going to focus on the \textit{Mean Squared Error} (MSE). This is obtained by the formula: 	
+The \textit{Loss Function} is a function used to evaluate the performance of a model, given the $h(w)$ vector compute by the network and the desired vector values $\widehat{y}$ measures the average of the squares of the errors. There are several \textit{Loss Function} used in machine learning algorithms but we are going to focus on the \textit{Mean Squared Error} (MSE). This is obtained by the formula: 	
 \begin{equation}
-MSE = \frac{1}{n} \sum_{i=1}^n (\widehat{y}-y)_{i}^2
+MSE = \frac{1}{n} \sum_{i=1}^n (h(w) - \widehat{y})_{i}^2
 \end{equation}
-where $n$ represents the number of sample input data we passed into in the model. Since purpose of neural networks is to build models that fits data, we want to minimize the \textit{Loss Function} in order to have good prediction on unseen data. This minimization process is done through optimization algorithms but to minimize the \textit{Loss Function} it must have certain properties.	
+where $n$ represents the number of sample input data we passed into in the model. 
+The \textit{Loss Function} can be represented as a composition of the Euclidean norm and the quadratic function
+\begin{equation}
+MSE = \frac{1}{n} \parallel h(w) - \widehat{y} \parallel_{2}^2  
+\end{equation}
+
+Moreover the train phase of a supervised machine learning algorithm can be seen as an optimization (in our case minimization) of the \textit{Loss Function} by altering the weights of the network $w$.   
+Since the purpose of neural networks is to build models that fits data, we want to minimize the \textit{Loss Function} in order to have good prediction on unseen data. This minimization process is done through optimization algorithms but to minimize the \textit{Loss Function} it must have certain properties.	
 
 \subsubsection{Loss Function properties}
 \label{LF:Properties}
@@ -70,15 +75,16 @@ where X is the feasible region, f is the objective function and $v(P) = f_{*}$ i
 So we want to find any optimal solution: $x_{*} \in X  \textnormal{ such that } f(x_{*}) = f_{*}$ but this can be impossible for many reasons. For the \textit{Weierstrass} theorem to ensure that our function has an optimal solution we need that $X \subseteq \mathbb{R}^{n}$ is compact and $f$ is continuous (or lower semi-continuous) and differentiable. 
 
 \begin{itemize}
-	\item \textbf{Continuity}: \textit{Loss Function} is a two variables function, $\widehat{y}$ and $y$. A function $f$ having two variables is Lipschitz continuous on its domain if $\exists L>0$ such that 
+	\item \textbf{Continuity}: A function $f$ is Lipschitz continuous on its domain if $\exists L>0$ 
 	\begin{equation}
-	\parallel f(x_{1},y_{1}) - f(x_{2}, y_{2}) \parallel \leq L(\parallel x_{1}-x_{2}\parallel +  \parallel y_{1}-y_{2}\parallel) \quad \forall (x_{1},y_{1}),(x_{2},y_{2}) \in \textnormal{domain} f,  
+	|f(x)-f(y)| \leq L\parallel x-y\parallel \quad \forall x,y \in \textnormal{domain} f,  
 	\end{equation} 
 	neural networks are a series of function composition: 
 	\begin{equation}
 	h(x) = \phi_{k}(b_{k} + \sum_{j}w_{kj} \phi_{j}(b_{j} + \sum_{i}w_{ji}x))
 	\end{equation}
-	where $x$ is the input and $\phi_{i}$ is an activation function. Since the activation functions used in the network are Lipschitz functions and the composition of a $k_{1}$-Lipschitz function, $f_{1}$, with a $k_{2}$-Lipschitz function, $f_{2}$, is a $k_{1}k_{2}$-Lipschitz function, the \textit{Loss Function} is a Lipschitz function. Moreover, as shown in \cite{lipschitzContinuity}, using $L(f)$ as a constant of some function $f$ we can compute an upper bound on the Lipschitz constant for the entire feed-forward neural network. 
+	where $x$ is the input and $\phi_{i}$ is an activation function. MSE is a composition of the Euclidean norm and the quadratic function, to ensure it's Lipschitz continuity we have to restrict its domain to a bounded one. As mentioned in section \ref{activationFunction} each layer can use a \textit{sigmoid} bounded between (0,1) or \textit{tanH} bounded between (-1,+1) as activation function. Since every output layer is bounded the MSE is a continuous function.
+	
 	\item  \textbf{Differentiability}:  we are going to use \textit{sigmoid} (section \ref{sigmoid}) and \textit{hyperbolic tangent} (section \ref{tanH}) as activation functions. These function are continuous and twice differentiable with bounded Lipschitz continuous derivative. So \textit{Mean Squared Error} is a differentiable function since the network is a composition of continuously differentiable functions.
 	\item \textbf{Convexity}: all the functions used as activated function ($sigmoid$ and $tanH$) are not convex functions. Since our $MSE$ \textit{Loss Function} is obtained combining these not convex functions $MSE$ is not convex.
 \end{itemize}
