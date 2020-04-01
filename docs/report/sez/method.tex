@@ -79,32 +79,35 @@ Limited-memory Quasi-Newton methods are useful for solving large unconstrained o
 \begin{equation}
 m_{k}(p)=L_{k}(p)+ \frac{1}{2}(p-k)^T\nabla^2 f(k)(p-k).
 \end{equation}
-where $L_{k}(p)$ is the first order model and the remaining is the second order term. Then we minimize the function using the information given by the model $m_{k}$.
+where $L_{k}(p)$ is the first order model and the remaining is the second order term. Then we minimize the function using the information given by the model $m_{k}$ and the direction compute as 
+\begin{equation}
+d_{k} \leftarrow -[\nabla^2f(x_{k})]^{-1}\nabla f(x_{k}).
+\end{equation}
 
-Theoretically  the Hessian matrix $\nabla^2 f(k)$ need to be recomputed at every iteration. Instead in the Quasi-Netwon method the Hessian is substitute by an approximation $B_{k} \textrm{ (or } H_{k})$ to reduce the cost. Moreover in the BFGS we update $B_{k}$ using the curvature measured at previously step to avoid using $O(n^2)$ storage. The information about the approximated Hessian is stored inside vectors of length $n$. 
+Theoretically  the Hessian matrix $\nabla^2 f(k)$ needs to be recomputed at every iteration. Instead in the Quasi-Netwon method the Hessian is substitute by an approximation $ H_{k}$ to reduce the cost. 
 
-The main idea of the L-BFGS algorithm is to use curvature information from the $m$ recent iterations to construct the Hessian approximation, earlier iterations parameters are discarded in the interest of saving storage. 
+The main idea of L-BFGS is to use the curvature information from the $m$ previously step to construct $B_{k}$, the inverse of the Hessian $H_{k}^{-1}$, to avoid using $O(n^2)$ storage. The information about $B_{k}$ is stored inside vectors of length $n$. Earlier iterations parameters are discarded in the interest of saving storage.
 
 \subsubsection{Limited memory BFGS}
 \label{L-BFGS}
-In the Broyden–Fletcher–Goldfarb–Shanno algorithm (BFGS) each step use the information given by the gradient $\nabla f_{k}$ and the approximated Hessian $H_{k}\textrm{ (or }B_{k})$ to minimize  a function updating its parameters $x_{k}$. Each step has the form: 
+In the Broyden–Fletcher–Goldfarb–Shanno algorithm (BFGS) each step use the information given by the gradient $\nabla f_{k}$ and the approximated inverse of the Hessian $B_{k}$ to minimize  a function updating its parameters $x_{k}$. Each step has the form: 
 \begin{equation}
-x_{k+1} = x_{k} - \alpha_{k}H_{k}\nabla f_{k}
+x_{k+1} = x_{k} - \alpha_{k}B_{k}\nabla f_{k}
 \end{equation} 
 where $\alpha_{k}$ is the step length.
 
 In L-BFGS method to handle the complexity of storing an approximation of the Hessian, we save a certain number of vector $m$ composed of 
 \begin{align}
-s_{k}=x_{k+1}-x_{k}, & \qquad
+s_{k}=x_{k+1}-x_{k}=\alpha_{k}d_{k}, & \qquad
 y_{k}=\nabla f_{k+1} - \nabla f_{k}.
 \end{align}
-We can now approximate the product $H_{k}\nabla f_{k}$ by doing multiple products and vector summation using the $m$ vectors $\{s_{i},y_{i}\}$. At step $k$ after we compute the new iterate and the oldest vector $\{s_{m},y_{m}\}$ is replaced with the new one.
+We can now approximate the product $B_{k}\nabla f_{k}$ by doing multiple products and vector summation using the $m$ vectors $\{s_{i},y_{i}\}$. At step $k$ after we compute the new iterate and the oldest vector $\{s_{m},y_{m}\}$ is replaced with the new one.
 
-We first choose some initial Hessian approximation $H^0_{k}$ that is allowed to vary from iteration to iteration and then we find $H_{k}$ with
+We first choose some initial Hessian approximation $B^0_{k}$ that is allowed to vary from iteration to iteration and then we find $B_{k}$ with
 
 \begin{equation} 
 \begin{aligned}
-&H_{k}=(V^T_{k-1}\cdots V^T_{k-m})H^0_{k}(V_{k-m}\cdots V_{k-1})\\           
+&B_{k}=(V^T_{k-1}\cdots V^T_{k-m})B^0_{k}(V_{k-m}\cdots V_{k-1})\\           
 &+\rho_{k-m}(V^T_{k-1}\cdots V^T_{k-m+1})s_{k-m}s^T_{k-m}(V_{k-m+1}\cdots V_{k-1})\\
 &+\rho_{k-m+1}(V^T_{k-1}\cdots V^T_{k-m+2})s_{k-m+1}s^T_{k-m+1}(V_{k-m+2}\cdots V_{k-1})\\
 &+ \cdots \\
@@ -119,7 +122,7 @@ V_{k} = I - \rho_{k} y_{k}s^T_{k},
 \end{align}
 formulas taken from \cite{numerical}.
 
-Now we can derive an algorithm to compute the product $H_{k}\nabla f_{k}$
+Now we can derive an algorithm to compute the product $B_{k}\nabla f_{k}$
 
 \begin{algorithm}[H]
 	\caption{L-BFGS two loop recursion}
@@ -131,21 +134,36 @@ Now we can derive an algorithm to compute the product $H_{k}\nabla f_{k}$
         \State $ \alpha_{i} \gets \rho_{i}s^T_{i}q$;
         \State $q \gets q - \alpha_{i}y_{i}$; 
       \EndFor
- 	  \State $r \gets H^0_{k}q$;
+ 	  \State $r \gets B^0_{k}q$;
  	  \For{$i=k-m,k-m+1,\cdots, k-1$}
  	  \State $\beta \gets \rho_{i}y^T_{i}r$; 
  	  \State $r \gets r + s_{i}(\alpha_{i}-\beta)$
  	  \EndFor
-	  \State \textbf{stop} with result $H_{k}\nabla f_{k}=r$
+	  \State \textbf{stop} with result $B_{k}\nabla f_{k}=r$
 	\end{algorithmic}
 \end{algorithm}
 
 
-A method for choosing $H^0_{k}$ that has proved effective in practice is to set $H^0_{k}=\gamma_{k}I$  where 
+A method for choosing $B^0_{k}$ that has proved effective in practice is to set $B^0_{k}=\gamma_{k}I$  where 
 \begin{equation}
 \gamma_{k}= \frac{s^T_{k-1}y_{k-1}}{y^T_{k-1}y_{k-1}}
 \end{equation}
-$\gamma_{k}$ is the scaling factor that attempts to estimate the size of the true Hessian matrix along the most recent search direction \cite{numerical}. This choice helps to ensure that the search direction $p_{k}$ is well scaled, and as result the step length $\alpha_{k}=1$ is accepted in most iterations. To keep update stable of BFGS algorithm, it is important that line search be based on the Wolfe conditions
+$\gamma_{k}$ is the scaling factor that attempts to estimate the size of the true Hessian matrix along the most recent search direction \cite{numerical}. This choice helps to ensure that the search direction $p_{k}$ is well scaled. \texttt{, and as result the step length $\alpha_{k}=1$ is accepted in most iterations. To keep update stable of BFGS algorithm, it is important that line search be based on the Wolfe conditions}.
+
+To keep update stable of the approximated inverse of the Hessian $B_{k}$ we impose a condition (the first one is already satisfied) based on the knowledge gained during the latest step. The new model must respects old information 
+\begin{equation}
+\nabla m_{k+1}(x_{k})=\nabla f(x_{k}),
+\end{equation}
+that is ensured if the \textit{secant equation}
+\begin{equation}
+B_{k+1}y_{k}=s_{k}
+\end{equation}
+is satisfied. This is possible if $s_{k}$ and $y_{k}$ satisfy the \textit{curvature condition} 
+\begin{equation}
+s_{k}^T y_{k}>0.
+\end{equation}
+The \textit{curvature condition} is satisfied when $f$ is strongly convex but for nonconvex functions we need to restrict the step $\alpha_{k}$ used in the line search procedure to guarantee the satisfiability of it.
+Moreover the \textit{curvature condition} is satisfied in the line search if we impose Wolfe conditions
 \begin{equation}
 f(x_k + \alpha_kp_k ) \leq f (x_k ) + c_1 \alpha_k \nabla f_k^T p_k,
 \end{equation}
@@ -159,7 +177,7 @@ f(x_k + \alpha_kp_k ) \leq f (x_k ) + c_1 \alpha_k \nabla f_k^T p_k,
 \begin{equation}
 |\nabla f(x_k + \alpha_{k} p_k )^T p_k| \leq c_2 |\nabla f_k^T p_k| ,
 \end{equation}
-with 0<$c_1$<$c_2$<1.
+in it with 0<$c_1$<$c_2$<1.
 
 \subsubsection{Algorithm}
 Limited-memory variants  of  the  quasi-Newton  approach use  Hessian  approximations  that  can  be stored compactly by using just few vectors of length \textit{n}. These methods are fairly robust, inexpensive, and easy to implement, but they do not converge rapidly.
@@ -174,8 +192,8 @@ Limited-memory variants  of  the  quasi-Newton  approach use  Hessian  approxima
 		\Procedure{LBFGS}{}
 		\State Compute $k \gets 0$;
 		\Repeat
-		\State Choose \textbf{$H^0_k$};
-		\State Compute $p_k \gets H_k\nabla \textit{f}_k$;
+		\State Choose \textbf{$B^0_k$};
+		\State Compute $p_k \gets B_k\nabla \textit{f}_k$;
 		\State Compute $x_{k+1} \gets x_{k}+ \alpha_{k}p_{k}$ where $\alpha_{k}$ is chosen to satisfy the Wolfe condition;
 		\If {k>m}
 		\State Discard the vector pair \{$s_{k-m},y_{k-m}$\} from storage;
