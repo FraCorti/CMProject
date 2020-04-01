@@ -80,7 +80,7 @@ So we want to find any optimal solution: $x_{*} \in X  \textnormal{ such that } 
 	|f(x)-f(y)| \leq L\parallel x-y\parallel \quad \forall x,y \in S,  
 	\end{equation} 
 	more formally a function is  \textit{Locally Lipschitz Continuous} at $x$ if $\exists \varepsilon >0 \textnormal{ s.t } S \in \beta(x,\varepsilon) $
-	and it is \textit{Global Lipschitz Continuous} if $f$ is \textit{Locally Lipschitz Continuous} on all of the space S, in our case $R^n$.
+	and it is \textit{Global Lipschitz Continuous} if $f$ is \textit{Locally Lipschitz Continuous} on all the space S, in our case $R^n$.
 	Since neural networks are a series of function composition: 
 	\begin{equation}
 	h(x) = \phi_{k}(b_{k} + \sum_{j}w_{kj} \phi_{j}(b_{j} + \sum_{i}w_{ji}x))

@@ -150,7 +150,7 @@ A method for choosing $B^0_{k}$ that has proved effective in practice is to set 
 \end{equation}
 $\gamma_{k}$ is the scaling factor that attempts to estimate the size of the true Hessian matrix along the most recent search direction \cite{numerical}. This choice helps to ensure that the search direction $p_{k}$ is well scaled. \texttt{, and as result the step length $\alpha_{k}=1$ is accepted in most iterations. To keep update stable of BFGS algorithm, it is important that line search be based on the Wolfe conditions}.
 
-To keep update stable of the approximated inverse of the Hessian $B_{k}$ we impose a condition (the first one is already satisfied) based on the knowledge gained during the latest step. The new model must respects old information 
+To keep the update stable using the approximated inverse of the Hessian $B_{k}$ we impose a condition (the first one is already satisfied) based on the knowledge gained during the latest step. The new model must respects old information 
 \begin{equation}
 \nabla m_{k+1}(x_{k})=\nabla f(x_{k}),
 \end{equation}
@@ -177,7 +177,7 @@ f(x_k + \alpha_kp_k ) \leq f (x_k ) + c_1 \alpha_k \nabla f_k^T p_k,
 \begin{equation}
 |\nabla f(x_k + \alpha_{k} p_k )^T p_k| \leq c_2 |\nabla f_k^T p_k| ,
 \end{equation}
-in it with 0<$c_1$<$c_2$<1.
+with 0<$c_1$<$c_2$<1.
 
 \subsubsection{Algorithm}
 Limited-memory variants  of  the  quasi-Newton  approach use  Hessian  approximations  that  can  be stored compactly by using just few vectors of length \textit{n}. These methods are fairly robust, inexpensive, and easy to implement, but they do not converge rapidly.
