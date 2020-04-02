@@ -239,10 +239,10 @@ x^{i+1} \in \textnormal{ argmin}\{Q_{x^i}(y):y\in \tau^i\},
 \end{equation}
 my model can be trust inside a small ball $\tau^i$ created around the point where I am right now.
 
-But, as shown in \cite{numerical} section 6.1 (in particular "Properties of the BFGS method"),  $B_{k+1}$ will be positive definite whenever $H_{k}$ is positive definite. We need to respect the \textit{secant equation} sez. \ref{secant-equation} so the updating formula of $B_{k+1}$ is well defined and therefore $H_{k+1}$ is positive definite. This behaviour 
+But, as shown in \cite{numerical} section 6.1 (subsection "Properties of the BFGS method"),  $B_{k+1}$ will be positive definite whenever $H_{k}$ is positive definite. We need to respect the \textit{secant equation} sez. \ref{secant-equation} so the updating formula of $B_{k+1}$ is well defined and therefore $H_{k+1}$ is positive definite. This behaviour 
 is ensured whenever the initial approximation $B_{0}$ is positive definite and the \textit{secant equation} is satisfied.
 
-In this case the convergence rate of the iterates is linear. This rate is based on the size of $m$ introduced in section \ref{L-BFGS}. The more $m$ increases the more the convergence is quadratic as in the Newton method (quadratic convergence), on the contrary a decreasing of $m$ brings to a convergence which is similar to the convergence of the \textit{Gradient method} (linear convergence).
+Convergence rate of the iterates is linear, this rate is based on the size of $m$ introduced in section \ref{L-BFGS}. More $m$ increases more the convergence is quadratic as in the Newton method (quadratic convergence), on the contrary a decreasing of $m$ brings to a convergence which is similar to the convergence of the \textit{Gradient method} (linear convergence).
 
 
 
