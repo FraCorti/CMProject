@@ -86,7 +86,7 @@ d_{k} \leftarrow -[\nabla^2f(x_{k})]^{-1}\nabla f(x_{k}).
 
 Theoretically  the Hessian matrix $\nabla^2 f(k)$ needs to be recomputed at every iteration. Instead in the Quasi-Netwon method the Hessian is substitute by an approximation $ H_{k}$ to reduce the cost. 
 
-The main idea of L-BFGS is to use the curvature information from the $m$ previously step to construct $B_{k}$, the inverse of the Hessian $H_{k}^{-1}$, to avoid using $O(n^2)$ storage. The information about $B_{k}$ is stored inside vectors of length $n$. Earlier iterations parameters are discarded in the interest of saving storage.
+The main idea of L-BFGS is to use the curvature information from the $m$ previously step to construct $B_{k}$, the inverse of the Hessian ($H_{k}^{-1}$), to avoid using $O(n^2)$ storage. The information about $B_{k}$ is stored inside vectors of length $n$. Earlier iterations parameters are discarded in the interest of saving storage.
 
 \subsubsection{Limited memory BFGS}
 \label{L-BFGS}
@@ -149,7 +149,7 @@ A method for choosing $B^0_{k}$ that has proved effective in practice is to set 
 \gamma_{k}= \frac{s^T_{k-1}y_{k-1}}{y^T_{k-1}y_{k-1}}
 \end{equation}
 
-$\gamma_{k}$ is the scaling factor that attempts to estimate the size of the true Hessian matrix along the most recent search direction \cite{numerical}. This choice helps to ensure that the search direction $p_{k}$ is well scaled. \texttt{Most line search as result the step length $\alpha_{k}=1$ is accepted in most iterations. To keep update stable of BFGS algorithm, it is important that line search be based on the Wolfe conditions}.
+$\gamma_{k}$ is the scaling factor that attempts to estimate the size of the true Hessian matrix along the most recent search direction \cite{numerical}. This choice helps to ensure that the search direction $p_{k}$ is well scaled.
 
 To keep the update stable using the approximated inverse of the Hessian $B_{k}$ we impose a condition (the first one is already satisfied) based on the knowledge gained during the latest step. The new model must respects old information 
 \begin{equation}
@@ -181,7 +181,7 @@ f(x_k + \alpha_kp_k ) \leq f (x_k ) + c_1 \alpha_k \nabla f_k^T p_k,
 \end{equation}
 with 0<$c_1$<$c_2$<1. 
 
-\texttt{As shown in \cite{numerical}, we need to ensure that among all th symmetric matrix satisfying the secant equation, $H_{k+1}$ is the closest to the current matrix $H_{k}$. This \textit{condition of closeness} to $H_{k}$ is resolved by solving the problem
+As shown in \cite{numerical}, we need to ensure that among all th symmetric matrix satisfying the secant equation, $H_{k+1}$ is the closest to the current matrix $H_{k}$. This \textit{condition of closeness} to $H_{k}$ is resolved by solving the problem
 \begin{equation}
 H_{k+1} = \min_{H} \{\parallel H - H_{k} \parallel 
 \end{equation}
@@ -189,7 +189,7 @@ with
 \begin{equation}
 H = H^T, \quad H_{y_{k}}= s_{k}
 \end{equation}
-for appropriate $\parallel \cdot \parallel$ the formula to compute $B_{k+1}$ is found.}
+for appropriate $\parallel \cdot \parallel$ the formula to compute $B_{k+1}$ is found.
 
 
 \subsubsection{Algorithm}
@@ -239,7 +239,7 @@ x^{i+1} \in \textnormal{ argmin}\{Q_{x^i}(y):y\in \tau^i\},
 \end{equation}
 my model can be trust inside a small ball $\tau^i$ created around the point where I am right now.
 
-But, as shown in \cite{numerical} section "Properties of the BFGS method",  $B_{k+1}$ will be positive definite whenever $H_{k}$ is positive definite. We need to respect the \textit{secant equation} sez. \ref{secant-equation} so the updating formula of $B_{k+1}$ is well defined and therefore $H_{k+1}$ is positive definite. This behaviour 
+But, as shown in \cite{numerical} section 6.1 (in particular "Properties of the BFGS method"),  $B_{k+1}$ will be positive definite whenever $H_{k}$ is positive definite. We need to respect the \textit{secant equation} sez. \ref{secant-equation} so the updating formula of $B_{k+1}$ is well defined and therefore $H_{k+1}$ is positive definite. This behaviour 
 is ensured whenever the initial approximation $B_{0}$ is positive definite and the \textit{secant equation} is satisfied.
 
 In this case the convergence rate of the iterates is linear. This rate is based on the size of $m$ introduced in section \ref{L-BFGS}. The more $m$ increases the more the convergence is quadratic as in the Newton method (quadratic convergence), on the contrary a decreasing of $m$ brings to a convergence which is similar to the convergence of the \textit{Gradient method} (linear convergence).
