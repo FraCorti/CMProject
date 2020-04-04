@@ -245,16 +245,39 @@ is ensured whenever the initial approximation $B_{0}$ is positive definite and t
 Convergence rate of the iterates is linear, this rate is based on the size of $m$ introduced in section \ref{L-BFGS}. More $m$ increases more the convergence is quadratic as in the Newton method (quadratic convergence), on the contrary a decreasing of $m$ brings to a convergence which is similar to the convergence of the \textit{Gradient method} (linear convergence).
 
 
-
-
-
-
-
-%\texttt{ Is the algorithm(if it is iterative) guaranteed to converge? Is it going to be stable and return a good approximation of the solution(if it is direct)?  Are there any relevant convergence results?}
- 
-  %\texttt{Are the hypotheses of theseconvergence results (convexity, compactness, differentiability, etc.) satisfied by your problem? If not, what are the“closest” possible results you have available, and why exactly they arenotapplicable?  Do you expect this to berelevant in practice?}
-
 \subsection{Bundle methods}
+Bundle methods are used mainly with non-differentiable loss function. The main idea of this methods is to use the past sub-gradient as global information. In convex function we know that at each iteration we get a sub-gradient in which the graph of the loss function is always above the sub-gradient in all the space.\\ 
+Before defining the bundle methods, we need to introduce some information about sub-gradient.
+\subsubsection{Sub-gradient}
+The sub-gradient come to help us when we have to minimize some loss function that is not differentiable. 
+The sub-gradient s of $f(x)$ is defined as:
+\begin{equation}
+f(y) \geq f(x) +s(y-x).
+\end{equation}
+If in a point the function is differentiable, the sub-gradient is exactly the gradient of the function in the point.
+In a point in which the function is not differentiable, \textit{s} is an infinity set of point closed and convex.
+If we choose s such that it respect:
+\begin{equation}
+\frac{\partial f}{\partial d}(x)=\sup\{\langle s,d \rangle : s \in \partial f(x)\} 
+\end{equation} 
+we have that d is a descent direction $\iff \langle s,d\rangle <0 \quad \forall s \in \partial f(x)$.
+\\ We defined $s_*$ as the s with the steepest descent direction:
+\begin{equation}
+s_*= argmin\{\parallel s\parallel : s\in \partial f(x) \}
+\end{equation} 
+\subsubsection{Master problem}
+We define as \{$x^i$\} the sequence of iterates that will hopefully converge at some point $x_*$. 
+The bundle of first-order information is:
+\begin{equation}
+\{x^i\}\rightarrow \mathcal{B}=\{(x^i, f^i=f(x^i), g^i \in \partial f(x^i)\}
+\end{equation}
+and the cutting-plane model of $f$ - $(1 +\epsilon)$-order model as:
+\begin{equation}
+f_B(x) = \max{\{f^i+ \langle g^i,x - x^i \rangle:  (x^i,f^i,g^i)\in B\}}
+\end{equation}
+in which $g^i$ is the sub-gradient chosen at $i^th$ iteration.
 
+\subsubsection{Algorithm}
 
+\subsubsection{Algorithm convergence}
 Next, we expect a brief recall of the algorithmic properties that you expect to see in the experiments. Is the algorithm(if it is iterative) guaranteed to converge? Is it going to be stable and return a good approximation of the solution(if it is direct)? What is its complexity? Are there any relevant convergence results? Are the hypotheses of theseconvergence results (convexity, compactness, differentiability, etc.) satisfied by your problem? If not, what are the“closest” possible results you have available, and why exactly they arenotapplicable?  Do you expect this to berelevant in practice?Again, you are advised to send us a version of this section by e-mail as soon as it is done. Again, we do not wantto see code at this point.
