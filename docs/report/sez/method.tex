@@ -181,19 +181,20 @@ f(x_k + \alpha_kp_k ) \leq f (x_k ) + c_1 \alpha_k \nabla f_k^T p_k,
 \end{equation}
 with 0<$c_1$<$c_2$<1. 
 
-As shown in \cite{numerical}, we need to ensure that among all th symmetric matrix satisfying the secant equation, $H_{k+1}$ is the closest to the current matrix $H_{k}$. This \textit{condition of closeness} to $H_{k}$ is resolved by solving the problem
+As shown in \cite{numerical}, we need to ensure that among all the symmetric matrix satisfying the secant equation, $B_{k+1}$ is the closest to the current matrix $
+B_{k}$. This condition of closeness to $B_{k}$ is resolved by solving the problem
 \begin{equation}
-H_{k+1} = \min_{H} \{\parallel H - H_{k} \parallel 
+B_{k+1} = \min_{B} \{\parallel B - B_{k} \parallel\} 
 \end{equation}
 with 
 \begin{equation}
-H = H^T, \quad H_{y_{k}}= s_{k}
+B = B^T, \quad B{y_{k}}= s_{k}
 \end{equation}
 for appropriate $\parallel \cdot \parallel$ the formula to compute $B_{k+1}$ is found.
 
 
 \subsubsection{Algorithm}
-Limited-memory variants  of  the  quasi-Newton  approach use  Hessian  approximations  that  can  be stored compactly by using just few vectors of length \textit{n}. These methods are fairly robust, inexpensive, and easy to implement, but they do not converge rapidly.
+Limited-memory variants  of  the  quasi-Newton  approach use  Hessian  approximations  that  can  be stored compactly by using just few vectors of length \textit{n}. These methods are fairly robust, inexpensive and easy to implement.
 
 \begin{algorithm}[H]
 	\caption{L-BFGS.}
