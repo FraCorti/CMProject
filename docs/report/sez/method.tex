@@ -247,14 +247,25 @@ Convergence rate of the iterates is linear, this rate is based on the size of $m
 
 
 \subsection{Bundle methods}
-Bundle methods are used mainly with non-differentiable loss function. The main idea of this methods is to use the past sub-gradient as global information. In convex function we know that at each iteration we get a sub-gradient in which the graph of the loss function is always above the sub-gradient in all the space.\\ 
-Before defining the bundle methods, we need to introduce some information about sub-gradient.
+Bundle methods are used mainly with non-differentiable loss function. The main idea of these methods is to use the past sub-gradient as global information. In convex function we know that at each iteration we get a sub-gradient in which the graph of the loss function is always above the sub-gradient in all the space.\\ 
+We define as \{$x^i$\} the sequence of iterates that will hopefully converge at some point $x_*$. 
+The bundle of first-order information is:
+\begin{equation}
+\{x^i\}\rightarrow \mathcal{B}=\{(x^i, f^i=f(x^i), g^i \in \partial f(x^i)\}
+\end{equation}
+and the cutting-plane model of $f$ - $(1 +\epsilon)$-order model as:
+\begin{equation}
+f_B(x) = \max{\{f^i+ \langle g^i,x - x^i \rangle:  (x^i,f^i,g^i)\in B\}}
+\end{equation}
+in which $g^i$ is the sub-gradient chosen at $i^th$ iteration.
+Before getting deep in defining the bundle methods, we need to introduce some information about sub-gradient.
 \subsubsection{Sub-gradient}
-The sub-gradient come to help us when we have to minimize some loss function that is not differentiable. 
+The sub-gradient is a generalization of gradients appropriate for convex functions, including those which are not necessarily smooth.
 The sub-gradient s of $f(x)$ is defined as:
 \begin{equation}
 f(y) \geq f(x) +s(y-x).
 \end{equation}
+The set of all sub-gradients at a point is called the sub-differential, and is denoted by $\partial f(x)$. 
 If in a point the function is differentiable, the sub-gradient is exactly the gradient of the function in the point.
 In a point in which the function is not differentiable, \textit{s} is an infinity set of point closed and convex.
 If we choose s such that it respect:
@@ -267,18 +278,34 @@ we have that d is a descent direction $\iff \langle s,d\rangle <0 \quad \forall 
 s_*= argmin\{\parallel s\parallel : s\in \partial f(x) \}
 \end{equation} 
 \subsubsection{Master problem}
-We define as \{$x^i$\} the sequence of iterates that will hopefully converge at some point $x_*$. 
-The bundle of first-order information is:
-\begin{equation}
-\{x^i\}\rightarrow \mathcal{B}=\{(x^i, f^i=f(x^i), g^i \in \partial f(x^i)\}
-\end{equation}
-and the cutting-plane model of $f$ - $(1 +\epsilon)$-order model as:
-\begin{equation}
-f_B(x) = \max{\{f^i+ \langle g^i,x - x^i \rangle:  (x^i,f^i,g^i)\in B\}}
-\end{equation}
-in which $g^i$ is the sub-gradient chosen at $i^th$ iteration.
+
 
 \subsubsection{Algorithm}
+
+\begin{algorithm}[H]
+	\caption{PBM.}
+	\label{alg:PBM}
+	\begin{algorithmic}[4]
+		\Require{Function f, sub-gradients g;}
+		\Require{Best value $\overline{x}$;}
+		\Require{Armijo condition $m_1$;}
+		\Require{Stopping criteria $\epsilon$;}
+		\Procedure{$\overline{x}$ = PBM}{f,g,$\overline{x}, m_1, \epsilon$}
+		\State choose $\mu; B \leftarrow \{(\overline{x},f( \overline{x}),g(\overline{x}) )\}$;
+		\Repeat
+		\State $x_*\leftarrow argmin\{f_B(x) +\mu \parallel x_* - \overline{x}\parallel^2_2/2\}$;
+		\If{$f(x_*)\leq f(\overline{x}) +m_1(f_B(x_*)-f(\overline{x}))$}
+		\State $ x \leftarrow x_* $; possibly decrease $ \mu $;
+		\Else possibly increase $\mu$;
+		\EndIf
+		\State $B \leftarrow B 	\cup (x_*,f(x_+),g(x_*) )$;
+		\Until{\textbf{$\mu\parallel x_* - \overline{x}\parallel_2\leq\epsilon$.}}
+		\EndProcedure 
+	\end{algorithmic}
+\end{algorithm}
+
+In the algorithm we find that $\overline{x} \leftarrow x_*$ if a serious step is made, otherwise $\overline{x}$ unchanged and we made a null step.
+There are multiple methods to choose how to decrease or increase $\mu$, they are taken as heuristic and tuned during the experiments part. The computational cost of each iteration depends from the size of the \textit{B}, when it increase the cost increase it too.
 
 \subsubsection{Algorithm convergence}
 Next, we expect a brief recall of the algorithmic properties that you expect to see in the experiments. Is the algorithm(if it is iterative) guaranteed to converge? Is it going to be stable and return a good approximation of the solution(if it is direct)? What is its complexity? Are there any relevant convergence results? Are the hypotheses of theseconvergence results (convexity, compactness, differentiability, etc.) satisfied by your problem? If not, what are the“closest” possible results you have available, and why exactly they arenotapplicable?  Do you expect this to berelevant in practice?Again, you are advised to send us a version of this section by e-mail as soon as it is done. Again, we do not wantto see code at this point.
