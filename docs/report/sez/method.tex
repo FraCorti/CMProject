@@ -278,8 +278,23 @@ we have that d is a descent direction $\iff \langle s,d\rangle <0 \quad \forall 
 s_*= argmin\{\parallel s\parallel : s\in \partial f(x) \}
 \end{equation} 
 \subsubsection{Master problem}
-
-
+We know that $f_B$ is a polyhedral function, for this reason is composed by a finitely number of linear functions.
+In this way, we can define the master problem as:
+\begin{equation}
+\label{MP}
+min\{f_B(x)\} = min\{v : v \geq f^i + \langle g^i, x-x^i \rangle \qquad (x^i, f^i, g^i) \in B \}
+\end{equation} 
+A method to use efficiently the \ref{MP} equation is the \textit{cutting plane algorithm} in which at every iteration we add the knowledge of the $g^i$ sub-gradient at $B$ if the $v^i$ is greater than $f(x_*)$ otherwise we find the optimal value of $f$.  
+Unfortunately, the master problem as defined in \ref{MP} have some issue when the $x^i$ is very far to $x_*$. Due to this, the cutting plane algorithm does not work very well in practice.
+For this reason, we use a stabilized master problem: 
+\begin{equation}
+\label{SMP}
+min\{f_B(x)\ + \mu \parallel x- \overline{x}\parallel_{2}^2/2 \}
+\end{equation} 
+in which $\overline{x}$ is a particular point called \textit{stability center} and $\mu$ is the \textit{stability parameter}. We introduce a term that is used to take close the new point $x^*_B$ from $\overline{x}$.
+Usually, $\overline{x}$ is choose as the best $x^i$ at the moment and $\mu$ is an hyperparameter.
+We know that at large $\mu$ the parable is extremely sticky and we will do a small movement in the next iteration.
+Instead, when we have a small $\mu$, the parable is too flat and in this case we can have the same result as in the un-stabilized cutting plane method. For this reason, is important to find the right $\mu$ to use.
 \subsubsection{Algorithm}
 
 \begin{algorithm}[H]
