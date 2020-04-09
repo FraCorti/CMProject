@@ -268,12 +268,12 @@ f(y) \geq f(x) +s(y-x).
 The set of all sub-gradients at a point is called the sub-differential, and is denoted by $\partial f(x)$. 
 If in a point the function is differentiable, the sub-gradient is exactly the gradient of the function in the point.
 In a point in which the function is not differentiable, \textit{s} is an infinity set of point closed and convex.
-If we choose s such that it respect:
+If we choose $s$ such that it respects:
 \begin{equation}
 \frac{\partial f}{\partial d}(x)=\sup\{\langle s,d \rangle : s \in \partial f(x)\} 
 \end{equation} 
-we have that d is a descent direction $\iff \langle s,d\rangle <0 \quad \forall s \in \partial f(x)$.
-\\ We defined $s_*$ as the s with the steepest descent direction:
+we have that $d$ is a descent direction $\iff \langle s,d\rangle <0 \quad \forall s \in \partial f(x)$.
+\\ We defined $s_*$ as the $s$ with the steepest descent direction:
 \begin{equation}
 s_*= argmin\{\parallel s\parallel : s\in \partial f(x) \}
 \end{equation} 
@@ -323,4 +323,15 @@ In the algorithm we find that $\overline{x} \leftarrow x_*$ if a serious step is
 There are multiple methods to choose how to decrease or increase $\mu$, they are taken as heuristic and tuned during the experiments part. The computational cost of each iteration depends from the size of the \textit{B}, when it increase the cost increase it too.
 
 \subsubsection{Algorithm convergence}
-Next, we expect a brief recall of the algorithmic properties that you expect to see in the experiments. Is the algorithm(if it is iterative) guaranteed to converge? Is it going to be stable and return a good approximation of the solution(if it is direct)? What is its complexity? Are there any relevant convergence results? Are the hypotheses of theseconvergence results (convexity, compactness, differentiability, etc.) satisfied by your problem? If not, what are the“closest” possible results you have available, and why exactly they arenotapplicable?  Do you expect this to berelevant in practice?Again, you are advised to send us a version of this section by e-mail as soon as it is done. Again, we do not wantto see code at this point.
+The convergence of the \textit{Bundle method} is guarantee under specific assumption as showed in theorem 7.16 in \cite{NonOpt}:
+\begin{enumerate} \label{convergence:assBM}
+	\item The function $f$ is convex;
+	\item The set $X \in R^n$ is convex and closed.
+\end{enumerate}
+
+As demonstrate by Y. Du and A. Ruszczyński in \cite{CBM}, under the assumption that the function $f()$ has a unique minimum point $x^*$ and a constant $\alpha>0$ exists, such that $f(x)-f(x*)\geq \alpha \parallel x-x^*\parallel_{2},\forall x \in R^n with f(x)\leq f(x^1)$ the convergence rate is linear. In this case, we suppose that given the number of iteration $k$, the precision of the solution is approximately $O(1/k)$. Without this assumption, the convergence rate is sublinear. 
+
+The convergence theorem is not applicable on our case, because our loss function is not convex. We think that this would be relevant in general in practice, but due to the \textit{ Lipschitz continuity} of our loss function we think that the method can converge. \\
+We observe that there exist different Bundle method algorithm for non-convex function optimization, as showed in \cite{NCBM} by Dominikus Noll. At the time being, we are not able to implement and further analyze the previously cite paper. 
+
+%Next, we expect a brief recall of the algorithmic properties that you expect to see in the experiments. Is the algorithm(if it is iterative) guaranteed to converge? Is it going to be stable and return a good approximation of the solution(if it is direct)? What is its complexity? Are there any relevant convergence results? Are the hypotheses of theseconvergence results (convexity, compactness, differentiability, etc.) satisfied by your problem? If not, what are the“closest” possible results you have available, and why exactly they arenotapplicable?  Do you expect this to berelevant in practice?Again, you are advised to send us a version of this section by e-mail as soon as it is done. Again, we do not wantto see code at this point.
