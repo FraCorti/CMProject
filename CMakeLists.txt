@@ -2,8 +2,10 @@ cmake_minimum_required(VERSION 3.15)
 project(CMProject VERSION 1.0.0 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
+
 set(CMAKE_CXX_FLAGS_DEBUG "-Wall -Wextra -O0 -fsanitize=thread -fstack-check -fstack-protector-strong -fno-omit-frame-pointer -g -DDEBUG")
-set(CMAKE_CXX_FLAGS_RELEASE "-O3")
+set(CMAKE_CXX_FLAGS_RELEASE "-O3 -ftree-vectorize -fopt-info-vec")
+set(THREADS_PREFER_PTHREAD_FLAG ON)
 
 if(EXISTS ${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
     include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
@@ -49,5 +51,8 @@ add_library(Neuradillo
 )
 
 add_executable(main main.cpp)
-target_link_libraries(main Neuradillo)
+target_link_libraries(main
+        PUBLIC:
+            Neuradillo
+        )
 target_link_libraries(Neuradillo ${CONAN_LIBS})
