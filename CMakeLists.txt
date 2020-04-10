@@ -7,7 +7,8 @@ if(EXISTS ${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 else()
     message(WARNING "The file conanbuildinfo.cmake doesn't exist, you have to run conan install first")
 endif()
-
+set(CMAKE_CXX_FLAGS "-O3")
 set(CMAKE_CXX_STANDARD 17)
 
-add_executable(CMProject main.cpp src/layer.cpp src/layer.h)
+add_executable(CMProject main.cpp src/layer/layer.cpp src/layer/layer.h src/network/network.cpp src/network/network.h src/preprocessing/preprocessing.cpp src/preprocessing/preprocessing.h src/preprocessing/preprocessing.cpp src/preprocessing/preprocessing.h src/activationFunction/activationFunction.h src/activationFunction/tanhFunction.cpp src/activationFunction/tanhFunction.h src/activationFunction/logisticFunction.cpp src/activationFunction/logisticFunction.h src/load/loadDataset.cpp src/load/loadDataset.h src/lossFunction/lossFunction.h src/lossFunction/meanSquaredError.cpp src/lossFunction/meanSquaredError.h src/activationFunction/reluFunction.cpp src/activationFunction/reluFunction.h src/lossFunction/binaryCrossentropy.cpp src/lossFunction/binaryCrossentropy.h src/gridSearch/gridSearch.cpp src/gridSearch/gridSearch.h src/activationFunction/linearFunction.cpp src/activationFunction/linearFunction.h src/crossValidation/crossValidation.cpp src/crossValidation/crossValidation.h src/lossFunction/meanEuclideanError.cpp src/lossFunction/meanEuclideanError.h src/gridSearch/parallelGridSearch.cpp src/gridSearch/parallelGridSearch.h)
+target_link_libraries(CMProject ${CONAN_LIBS})
