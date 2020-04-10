@@ -247,7 +247,7 @@ Convergence rate of the iterates is linear, this rate is based on the size of $m
 
 
 \subsection{Bundle methods}
-Bundle methods are used mainly with non-differentiable loss function. The main idea of these methods is to use the past sub-gradient as global information. In convex function we know that at each iteration we get a sub-gradient \texttt{subgradients?} in which the graph \texttt{epigraph?} of the loss function is always above the sub-gradient \texttt{plural?} in all the space.\\ 
+Bundle methods are used mainly with non-differentiable loss function. The main idea of these methods is to use the past subgradient as global information. In convex function we know that at each iteration we get a subgradient in which the epigraph of the loss function is always above the epigraph subgradient, so epi($L_x$) $ \supseteq $ epi($f$) .\\ 
 We define as \{$x^i$\} the sequence of iterates that will hopefully converge at some point $x_*$. 
 The bundle of first-order information is:
 \begin{equation}
@@ -257,17 +257,17 @@ and the cutting-plane model of $f$ - $(1 +\epsilon)$-order model as:
 \begin{equation}
 f_B(x) = \max{\{f^i+ \langle g^i,x - x^i \rangle:  (x^i,f^i,g^i)\in B\}}
 \end{equation}
-in which $g^i$ is the sub-gradient chosen at $i^th$ iteration.
-Before getting deep in defining the bundle methods, we need to introduce some information about sub-gradient.
-\subsubsection{Sub-gradient}
-The sub-gradient is a generalization of gradients appropriate for convex functions, including those which are not necessarily smooth.
-The sub-gradient s of $f(x)$ is defined as:
+in which $g^i$ is the subgradient chosen at $i^th$ iteration.
+Before getting deep in defining the bundle methods, we need to introduce some information about subgradient.
+\subsubsection{Subgradient}
+The subgradient is a generalization of gradients appropriate for convex functions, including those which are not necessarily smooth.
+The subgradient s of $f(x)$ is defined as:
 \begin{equation}
 f(y) \geq f(x) +s(y-x).
 \end{equation}
-The set of all sub-gradients at a point is called the sub-differential, and is denoted by $\partial f(x)$. 
-If in a point the function is differentiable, the sub-gradient is exactly the gradient of the function in the point.
-In a point in which the function is not differentiable, \textit{s} is an infinity set of point closed and convex.
+The set of all subgradients at a point is called the sub-differential, and is denoted by $\partial f(x)$. 
+If at a point the function is differentiable, the subgradient is exactly the gradient of the function at the point.
+At a point in which the function is not differentiable, \textit{s} is an infinity set of point closed and convex.
 If we choose $s$ such that it respects:
 \begin{equation}
 \frac{\partial f}{\partial d}(x)=\sup\{\langle s,d \rangle : s \in \partial f(x)\} 
@@ -284,7 +284,7 @@ In this way, we can define the master problem as:
 \label{MP}
 min\{f_B(x)\} = min\{v : v \geq f^i + \langle g^i, x-x^i \rangle \qquad (x^i, f^i, g^i) \in B \}
 \end{equation} 
-A method to use efficiently the \ref{MP} equation is the \textit{cutting plane algorithm} in which at every iteration we add the knowledge of the $g^i$ sub-gradient at $B$ if the $v^i$ is greater than $f(x_*)$ otherwise we find the optimal value of $f$.  
+A method to use efficiently the \ref{MP} equation is the \textit{cutting plane algorithm} in which at every iteration we add the knowledge of the $g^i$ sub-gradient at $B$ if the $v^i$ is greater than $f(x^*)$ otherwise we find the optimal value of $f$.  
 Unfortunately, the master problem as defined in \ref{MP} have some issue when the $x^i$ is very far to $x_*$. Due to this, the cutting plane algorithm does not work very well in practice.
 For this reason, we use a stabilized master problem: 
 \begin{equation}
@@ -319,7 +319,7 @@ Instead, when we have a small $\mu$, the parable is too flat and in this case we
 	\end{algorithmic}
 \end{algorithm}
 
-In the algorithm we find that $\overline{x} \leftarrow x_*$ if a serious step is made, otherwise $\overline{x}$ unchanged and we made a null step.
+In the algorithm we find that $\overline{x} \leftarrow x^*$ if a serious step is made, otherwise $\overline{x}$ unchanged and we made a null step.
 There are multiple methods to choose how to decrease or increase $\mu$, they are taken as heuristic and tuned during the experiments part. The computational cost of each iteration depends from the size of the \textit{B}, when it increase the cost increase it too.
 
 \subsubsection{Algorithm convergence}
@@ -329,7 +329,7 @@ The convergence of the \textit{Bundle method} is guarantee under specific assump
 	\item The set $X \in R^n$ is convex and closed.
 \end{enumerate}
 
-As demonstrate by Y. Du and A. Ruszczyński in \cite{CBM}, under the assumption that the function $f()$ has a unique minimum point $x^*$ and a constant $\alpha>0$ exists, such that $f(x)-f(x*)\geq \alpha \parallel x-x^*\parallel_{2},\forall x \in R^n with f(x)\leq f(x^1)$ the convergence rate is linear. In this case, we suppose that given the number of iteration $k$, the precision of the solution is approximately $O(1/k)$. Without this assumption, the convergence rate is sublinear. 
+As demonstrate by Y. Du and A. Ruszczyński in \cite{CBM}, under the assumption that the function $f()$ has a unique minimum point $x^*$ and a constant $\alpha>0$ exists, such that $f(x)-f(x*)\geq \alpha \parallel x-x^*\parallel_{2},\forall x \in R^n \textnormal{ with } f(x)\leq f(x^1)$ the convergence rate is linear. In this case, we suppose that given the number of iteration $k$, the precision of the solution is approximately $O(1/k)$. Without this assumption, the convergence rate is sublinear. 
 
 The convergence theorem is not applicable on our case, because our loss function is not convex. We think that this would be relevant in general in practice, but due to the \textit{ Lipschitz continuity} of our loss function we think that the method can converge. \\
 We observe that there exist different Bundle method algorithm for non-convex function optimization, as showed in \cite{NCBM} by Dominikus Noll. At the time being, we are not able to implement and further analyze the previously cite paper. 
