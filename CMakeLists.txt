@@ -51,8 +51,5 @@ add_library(Neuradillo
 )
 
 add_executable(main main.cpp)
-target_link_libraries(main
-        PUBLIC:
-            Neuradillo
-        )
+target_link_libraries(main Neuradillo)
 target_link_libraries(Neuradillo ${CONAN_LIBS})
