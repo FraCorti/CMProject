@@ -12,8 +12,12 @@
 #include "src/gridSearch/gridSearch.h"
 #include "src/crossValidation/crossValidation.h"
 #include "src/gridSearch/parallelGridSearch.h"
+#include "NDOFiOracle/Bundle.h"
 
 int main() {
+
+  auto NDOFirstTry = NDO_di_unipi_it::Bundle();
+
   //! Data preprocessing.
   Preprocessing cupPreprocessing("../../data/ML-CUP19-TR_formatted.csv");
   arma::mat trainingSet;
