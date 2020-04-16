@@ -243,7 +243,8 @@ my model can be trust inside a small ball $\tau^i$ created around the point wher
 But, as shown in \cite{numerical} section 6.1 (subsection "Properties of the BFGS method"),  $B_{k+1}$ will be positive definite whenever $H_{k}$ is positive definite. We need to respect the \textit{secant equation} sez. \ref{secant-equation} so the updating formula of $B_{k+1}$ is well defined and therefore $H_{k+1}$ is positive definite. This behaviour 
 is ensured whenever the initial approximation $B_{0}$ is positive definite and the \textit{secant equation} is satisfied.
 
-Convergence rate of the iterates is linear, this rate is based on the size of $m$ introduced in section \ref{L-BFGS}. More $m$ increases more the convergence is quadratic as in the Newton method (quadratic convergence), on the contrary a decreasing of $m$ brings to a convergence which is similar to the convergence of the \textit{Gradient method} (linear convergence).
+Global convergence rate of the iterates is linear as shown by Dong C. Liu and Jorge Nocedal in \cite{PaperL-BFQS}. This rate is based on the size of $m$ introduced in section \ref{L-BFGS}. More $m$ increases more the convergence is quadratic as in the Newton method (quadratic convergence), on the contrary a decreasing of $m$ brings to a convergence which is similar to the convergence of the \textit{Gradient method} (linear convergence). \\
+Local convergence rate is quadratic as showed by Jorge Nocedal and Stephen J. Wright. in \cite{numerical} section 6.4 (subsection "Superlinear convergence of the BFGS method").
 
 
 \subsection{Bundle methods}
@@ -329,7 +330,7 @@ The convergence of the \textit{Bundle method} is guarantee under specific assump
 	\item The set $X \in R^n$ is convex and closed.
 \end{enumerate}
 
-As demonstrate by Y. Du and A. Ruszczyński in \cite{CBM}, under the assumption that the function $f()$ has a unique minimum point $x^*$ and a constant $\alpha>0$ exists, such that $f(x)-f(x*)\geq \alpha \parallel x-x^*\parallel_{2},\forall x \in R^n \textnormal{ with } f(x)\leq f(x^1)$ the convergence rate is linear. In this case, we suppose that given the number of iteration $k$, the precision of the solution is approximately $O(1/k)$. Without this assumption, the convergence rate is sublinear. 
+As mentioned in \cite{PaperBM} and demonstrated by Y. Du and A. Ruszczyński in \cite{CBM}, under the assumption that the function $f()$ has a unique minimum point $x^*$ and a constant $\alpha>0$ exists, such that $f(x)-f(x*)\geq \alpha \parallel x-x^*\parallel_{2},\forall x \in R^n \textnormal{ with } f(x)\leq f(x^1)$ the convergence rate is linear. In this case, we suppose that given the number of iteration $k$, the precision of the solution is approximately $O(1/k)$. Without this assumption, the convergence rate is sublinear. 
 
 The convergence theorem is not applicable on our case, because our loss function is not convex. We think that this would be relevant in general in practice, but due to the \textit{ Lipschitz continuity} of our loss function we think that the method can converge. \\
 We observe that there exist different Bundle method algorithm for non-convex function optimization, as showed in \cite{NCBM} by Dominikus Noll. At the time being, we are not able to implement and further analyze the previously cite paper. 
