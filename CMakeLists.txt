@@ -9,12 +9,12 @@ set(CMAKE_CXX_FLAGS_DEBUG "-Wall -Wextra -O0 -fsanitize=thread -fstack-check -fs
 set(CMAKE_CXX_FLAGS_RELEASE "-O3") # To view vectorization -ftree-vectorize -fopt-info-vec
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 
-if(EXISTS ${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
+if (EXISTS ${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
     include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
     conan_basic_setup()
-else()
+else ()
     message(WARNING "The file conanbuildinfo.cmake doesn't exist, you have to run conan install first")
-endif()
+endif ()
 
 add_library(Neuradillo
         STATIC
@@ -50,7 +50,10 @@ add_library(Neuradillo
         src/lossFunction/meanEuclideanError.h
         src/gridSearch/parallelGridSearch.cpp
         src/gridSearch/parallelGridSearch.h
-)
+        src/optimizer/optimizer.h
+        src/optimizer/gradientDescent.cpp
+        src/optimizer/gradientDescent.h
+        )
 
 add_executable(main main.cpp)
 target_link_libraries(Neuradillo ${CONAN_LIBS})

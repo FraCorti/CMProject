@@ -6,6 +6,7 @@
 #include "../preprocessing/preprocessing.h"
 #include "../lossFunction/meanSquaredError.h"
 #include "../lossFunction/meanEuclideanError.h"
+#include "../optimizer/gradientDescent.h"
 
 void Network::Add(Layer &layer) {
   net.push_back(layer);
@@ -192,20 +193,24 @@ void Network::error(const arma::mat &&trainLabelsBatch,
  *  @param partialDerivativeOutput Partial derivative of the output layer 
  * */
 void Network::backward(const arma::mat &&partialDerivativeOutput) {
+  optimizer->OptimizeBackward(this, std::move(partialDerivativeOutput));
+/*
   auto currentLayer = net.rbegin();
-  currentLayer->OutputLayerGradient(std::move(partialDerivativeOutput));
+  currentLayer->OutputLayerGradient(std::move(partialDerivativeOutput));   //TODO: move to optimizer(currentLayer,)
   arma::mat currentGradientWeight;
   currentLayer->GetSummationWeight(std::move(currentGradientWeight));
   currentLayer++;
   // Iterate from the precedent Layer of the tail to the head
   for (; currentLayer != net.rend(); currentLayer++) {
     currentLayer->Gradient(std::move(currentGradientWeight));
-    currentLayer->GetSummationWeight(std::move(currentGradientWeight));
+    currentLayer->RetroPropagationError(std::move(currentGradientWeight));
   }
+  */
 }
 
 /***/
 void Network::updateWeight(double learningRate, double weightDecay, double momentum) {
+
   for (Layer &currentLayer : net) {
     currentLayer.AdjustWeight(learningRate, weightDecay, momentum);
   }
@@ -278,4 +283,19 @@ void Network::Clear() {
   for (Layer &currentLayer : net) {
     currentLayer.Clear();
   }
+}
+/**
+ * Get reverse iterator of the vector of layer net
+ */
+
+std::vector<Layer> &Network::getNet() {
+  return net;
+}
+void Network::SetLossOptimizer(const std::string optimizer_) {
+  if (optimizer_ == "gradientDescent") {
+    optimizer_ = new GradientDescent();
+  } else {
+    optimizer_ = new GradientDescent();
+  }
+
 }

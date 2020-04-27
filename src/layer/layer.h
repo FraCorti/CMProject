@@ -20,8 +20,6 @@ class Layer {
   arma::mat deltaWeight;
   //! locally-instored delta bias object
   arma::mat deltaBias;
- public:
-  const arma::mat &GetDeltaBias() const;
  private:
   //! gradiente del layer
   arma::mat gradient;
@@ -32,6 +30,7 @@ class Layer {
   //! ActivationFunction utilizzata nel layer
   ActivationFunction *activationFunction = nullptr;
  public:
+  const arma::mat &GetDeltaBias() const;
   /**
    * Create the Linear layer object using the specified number of units.
    *
@@ -81,7 +80,7 @@ class Layer {
    */
   void OutputLayerGradient(const arma::mat &&partialDerivativeOutput);
   void Gradient(const arma::mat &&summationGradientWeight);
-  void GetSummationWeight(arma::mat &&gradientWeight, const double nesterovMomentum = 0.0);
+  void RetroPropagationError(arma::mat &&gradientWeight, const double nesterovMomentum = 0.0);
   void SaveOutputParameter(const arma::mat &input);
   void SaveInputParameter(const arma::mat &input);
   void AdjustWeight(const double learningRate, const double weightDecay, const double momentum);

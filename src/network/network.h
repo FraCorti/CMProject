@@ -9,15 +9,14 @@
 #include "../layer/layer.h"
 #include "../preprocessing/preprocessing.h"
 #include "../lossFunction/lossFunction.h"
+#include "../optimizer/optimizer.h"
 
 class Network {
  private:
   std::vector<Layer> net;
   //! Loss function to be optimized in the network
   LossFunction *lossFunction;
- public:
-  void SetLossFunction(const std::string loss_function);
- private:
+  Optimizer *optimizer;
   void train(const arma::mat &&trainingData,
              const arma::mat &&trainLabels,
              arma::mat &&epochError,
@@ -36,6 +35,8 @@ class Network {
   void inference(arma::mat &&, arma::mat &&);
 
  public:
+  void SetLossFunction(const std::string loss_function);
+  void SetLossOptimizer(const std::string optimizer_);
   void Add(Layer &layer);
   void Init(const double upperBound, const double lowerBound);
   double Train(arma::mat validationSet, arma::mat validationLabelSet, arma::mat trainingSet,
@@ -54,6 +55,8 @@ class Network {
                  arma::mat &&currentBatchError);
   // TODO: Salvataggio e load (xml? https://www.boost.org/doc/libs/1_71_0/libs/serialization/doc/index.html);
   void Clear();
+  std::vector<Layer> &getNet();
+
 };
 
 #endif //MLPROJECT_SRC_NETWORK_H_

@@ -126,7 +126,7 @@ void Layer::AdjustWeight(const double learningRate, const double weightDecay, co
 /**
  * Return a raw vector contains all the summed weight multiplied by the layer gradient
  */
-void Layer::GetSummationWeight(arma::mat &&gradientWeight, const double nesterovMomentum) {
+void Layer::RetroPropagationError(arma::mat &&gradientWeight, const double nesterovMomentum) {
   gradientWeight = (weight + nesterovMomentum * deltaWeight).t() * gradient;
 }
 
