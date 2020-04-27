@@ -9,7 +9,8 @@
 #include "../layer/layer.h"
 #include "../preprocessing/preprocessing.h"
 #include "../lossFunction/lossFunction.h"
-#include "../optimizer/optimizer.h"
+
+class Optimizer;
 
 class Network {
  private:
@@ -36,7 +37,7 @@ class Network {
 
  public:
   void SetLossFunction(const std::string loss_function);
-  void SetLossOptimizer(const std::string optimizer_);
+  void SetOptimizer(const std::string optimizer_);
   void Add(Layer &layer);
   void Init(const double upperBound, const double lowerBound);
   double Train(arma::mat validationSet, arma::mat validationLabelSet, arma::mat trainingSet,
@@ -59,6 +60,11 @@ class Network {
 
 };
 
+class Optimizer {
+ public:
+  virtual ~Optimizer() = default;
+  virtual void OptimizeBackward(Network *currNet, const arma::mat &&partialDerivativeOutput) = 0;
+};
+
 #endif //MLPROJECT_SRC_NETWORK_H_
 
-//Togliere preprocessor e passare direttamente le matrici?

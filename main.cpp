@@ -106,6 +106,7 @@ int main() {
   //! ML CUP network, training and testing
   Network cupNetwork;
   cupNetwork.SetLossFunction("meanSquaredError");
+  cupNetwork.SetOptimizer("gradientDescent");
   Layer firstLayer(trainingSet.n_cols - labelCol, 75, "tanhFunction");
   Layer lastLayer(75, 2, "linearFunction");
   cupNetwork.Add(firstLayer);

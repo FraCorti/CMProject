@@ -1,11 +1,12 @@
 //
 // Created by gs1010 on 27/04/20.
 //
-
+/*
 #ifndef MLPROJECT_SRC_OPTIMIZER_OPTIMIZER_H_
 #define MLPROJECT_SRC_OPTIMIZER_OPTIMIZER_H_
+#include "armadillo"
 
-#include "../network/network.h"
+class Network;
 class Optimizer {
  public:
   virtual ~Optimizer() = default;
@@ -13,3 +14,4 @@ class Optimizer {
 };
 
 #endif //MLPROJECT_SRC_OPTIMIZER_OPTIMIZER_H_
+*/

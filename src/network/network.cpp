@@ -291,11 +291,11 @@ void Network::Clear() {
 std::vector<Layer> &Network::getNet() {
   return net;
 }
-void Network::SetLossOptimizer(const std::string optimizer_) {
+void Network::SetOptimizer(const std::string optimizer_) {
   if (optimizer_ == "gradientDescent") {
-    optimizer_ = new GradientDescent();
+    optimizer = new GradientDescent();
   } else {
-    optimizer_ = new GradientDescent();
+    optimizer = new GradientDescent();
   }
 
 }

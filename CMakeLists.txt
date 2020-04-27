@@ -53,9 +53,10 @@ add_library(Neuradillo
         src/optimizer/optimizer.h
         src/optimizer/gradientDescent.cpp
         src/optimizer/gradientDescent.h
-        )
+        src/optimizer/LBFGS.cpp src/optimizer/LBFGS.h)
 
 add_executable(main main.cpp)
-target_link_libraries(Neuradillo ${CONAN_LIBS})
-target_link_libraries(Neuradillo NDOFiOracle)
+target_link_libraries(Neuradillo
+        ${CONAN_LIBS}
+        NDOFiOracle)
 target_link_libraries(main Neuradillo)

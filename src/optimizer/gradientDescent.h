@@ -2,10 +2,9 @@
 // Created by gs1010 on 27/04/20.
 //
 
-#ifndef CMPROJECT_SRC_OPTIMIZER_GRADIENTDESCENT_H_
-#define CMPROJECT_SRC_OPTIMIZER_GRADIENTDESCENT_H_
-
-#include "optimizer.h"
+#ifndef MLPROJECT_SRC_OPTIMIZER_GRADIENTDESCENT_H_
+#define MLPROJECT_SRC_OPTIMIZER_GRADIENTDESCENT_H_
+#include "../network/network.h"
 class GradientDescent : public Optimizer {
  public:
   ~GradientDescent() override = default;
@@ -13,4 +12,4 @@ class GradientDescent : public Optimizer {
 
 };
 
-#endif //CMPROJECT_SRC_OPTIMIZER_GRADIENTDESCENT_H_
+#endif //MLPROJECT_SRC_OPTIMIZER_GRADIENTDESCENT_H_
