@@ -188,7 +188,7 @@ void Network::error(const arma::mat &&trainLabelsBatch,
 }
 
 /** Iterate over the network from last layer to first. The gradient of all the layer is computed and
- * stored, then the error is "retropagated" throgh the layer using GetSummationWeight().
+ * stored, then the error is "retropagated" throgh the layer using RetroPropagationError().
  *
  *  @param partialDerivativeOutput Partial derivative of the output layer 
  * */
@@ -284,13 +284,17 @@ void Network::Clear() {
     currentLayer.Clear();
   }
 }
-/**
- * Get reverse iterator of the vector of layer net
- */
 
-std::vector<Layer> &Network::getNet() {
+/** Return the aliases of the std::vector that contains the layers. This method is needed in
+ *  the Optimize class (OptimizeBackward method)
+ */
+std::vector<Layer> &Network::GetNet() {
   return net;
 }
+
+/** Set the optimizer of the Neural network
+ *
+ */
 void Network::SetOptimizer(const std::string optimizer_) {
   if (optimizer_ == "gradientDescent") {
     optimizer = new GradientDescent();

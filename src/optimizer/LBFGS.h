@@ -5,7 +5,8 @@
 #ifndef MLPROJECT_SRC_OPTIMIZER_LBFGS_H_
 #define MLPROJECT_SRC_OPTIMIZER_LBFGS_H_
 
-#include "../network/network.h"
+#include "optimizer.h"
+
 class LBFGS : public Optimizer {
  private:
   std::vector<int> pastCurvature; //TODO: oggetto (o struct?) di size k per memorizzare le scorse iterate

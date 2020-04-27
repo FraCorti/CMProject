@@ -2,16 +2,6 @@
 #include "armadillo"
 #include "src/preprocessing/preprocessing.h"
 #include "src/network/network.h"
-#include "src/activationFunction/tanhFunction.h"
-#include "src/activationFunction/logisticFunction.h"
-#include "src/lossFunction/meanSquaredError.h"
-#include "src/lossFunction/binaryCrossentropy.h"
-#include "src/activationFunction/reluFunction.h"
-#include "src/load/loadDataset.h"
-#include "src/activationFunction/linearFunction.h"
-#include "src/gridSearch/gridSearch.h"
-#include "src/crossValidation/crossValidation.h"
-#include "src/gridSearch/parallelGridSearch.h"
 #include "NDOFiOracle/Bundle.h"
 
 int main() {
@@ -143,7 +133,5 @@ int main() {
                        std::move(error),
                        nDelta);
   */
-
-
   return 0;
 }

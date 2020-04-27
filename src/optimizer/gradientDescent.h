@@ -4,7 +4,9 @@
 
 #ifndef MLPROJECT_SRC_OPTIMIZER_GRADIENTDESCENT_H_
 #define MLPROJECT_SRC_OPTIMIZER_GRADIENTDESCENT_H_
-#include "../network/network.h"
+
+#include "optimizer.h"
+
 class GradientDescent : public Optimizer {
  public:
   ~GradientDescent() override = default;

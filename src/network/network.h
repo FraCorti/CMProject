@@ -54,17 +54,9 @@ class Network {
   void errorTest(const arma::mat &&trainLabelsBatch,
                  arma::mat &&outputActivateBatch,
                  arma::mat &&currentBatchError);
-  // TODO: Salvataggio e load (xml? https://www.boost.org/doc/libs/1_71_0/libs/serialization/doc/index.html);
   void Clear();
-  std::vector<Layer> &getNet();
-
+  std::vector<Layer> &GetNet();
 };
-
-class Optimizer {
- public:
-  virtual ~Optimizer() = default;
-  virtual void OptimizeBackward(Network *currNet, const arma::mat &&partialDerivativeOutput) = 0;
-};
-
+// TODO: Salvataggio e load (xml? https://www.boost.org/doc/libs/1_71_0/libs/serialization/doc/index.html);
 #endif //MLPROJECT_SRC_NETWORK_H_
 
