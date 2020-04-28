@@ -21,6 +21,8 @@ class Layer {
   //! locally-instored delta bias object
   arma::mat deltaBias;
  private:
+  //! gradiente dei Weight del layer
+  arma::mat gradientWeight;
   //! gradiente del layer
   arma::mat gradient;
   //! parametri di input del layer
@@ -29,6 +31,9 @@ class Layer {
   arma::mat outputParameter;
   //! ActivationFunction utilizzata nel layer
   ActivationFunction *activationFunction = nullptr;
+  //! Direction of update of the weight
+  arma::mat direction;
+
  public:
   const arma::mat &GetDeltaBias() const;
   /**
@@ -80,7 +85,7 @@ class Layer {
    */
   void OutputLayerGradient(const arma::mat &&partialDerivativeOutput);
   void Gradient(const arma::mat &&summationGradientWeight);
-  void RetroPropagationError(arma::mat &&gradientWeight, const double nesterovMomentum = 0.0);
+  void RetroPropagationError(arma::mat &&retroPropagatedError, const double nesterovMomentum = 0.0);
   void SaveOutputParameter(const arma::mat &input);
   void SaveInputParameter(const arma::mat &input);
   void AdjustWeight(const double learningRate, const double weightDecay, const double momentum);
@@ -88,12 +93,13 @@ class Layer {
   [[nodiscard]] const arma::mat &GetWeight() const;
   [[nodiscard]] const arma::mat &GetBias() const;
   [[nodiscard]] const arma::mat &GetDelta() const;
-  [[nodiscard]] const arma::mat &GetGradient() const;
+  [[nodiscard]] const arma::mat &GetGradientWeight() const;
   [[nodiscard]] const arma::mat &GetInputParameter() const;
   [[nodiscard]] const arma::mat &GetOutputParameter() const;
   [[nodiscard]] int GetInSize() const;
   [[nodiscard]] int GetOutSize() const;
   void Init(const double upperBound, const double lowerBound);
+  void SetDirection(const arma::mat &&optimizerComputedDirection);
 };
 
 #endif //MLPROJECT_SRC_LAYER_H_

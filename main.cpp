@@ -5,7 +5,6 @@
 #include "NDOFiOracle/Bundle.h"
 
 int main() {
-
   auto NDOFirstTry = NDO_di_unipi_it::Bundle();
 
   //! Data preprocessing.
@@ -96,7 +95,7 @@ int main() {
   //! ML CUP network, training and testing
   Network cupNetwork;
   cupNetwork.SetLossFunction("meanSquaredError");
-  cupNetwork.SetOptimizer("gradientDescent");
+  cupNetwork.SetOptimizer("gradientDescent");//LBFGS
   Layer firstLayer(trainingSet.n_cols - labelCol, 75, "tanhFunction");
   Layer lastLayer(75, 2, "linearFunction");
   cupNetwork.Add(firstLayer);
@@ -107,10 +106,10 @@ int main() {
                    trainingSet,
                    trainingLabels.n_cols,
                    15000,
-                   trainingSet.n_rows,
+                   trainingLabels.n_rows,
                    0.005,
-                   0.00001,
-                   0.6);
+                   0,
+                   0.0);
 
   arma::mat MEE;
   cupNetwork.Test(std::move(validationData), std::move(validationLabels), std::move(MEE));

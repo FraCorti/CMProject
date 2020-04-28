@@ -16,8 +16,8 @@ const arma::mat &Layer::GetBias() const {
 const arma::mat &Layer::GetDelta() const {
   return deltaWeight;
 }
-const arma::mat &Layer::GetGradient() const {
-  return gradient;
+const arma::mat &Layer::GetGradientWeight() const {
+  return gradientWeight;
 }
 const arma::mat &Layer::GetInputParameter() const {
   return inputParameter;
@@ -67,9 +67,6 @@ void Layer::Forward(const arma::mat &&input, arma::mat &&output, const double ne
   output.each_col() += (bias + nesterovMomentum * deltaBias);
 
 }
-void Layer::Backward(const arma::mat &&input, arma::mat &&gy, arma::mat &&g) {
-
-}
 
 /** Compute the gradient of the output layer
  *
@@ -79,6 +76,8 @@ void Layer::OutputLayerGradient(const arma::mat &&partialDerivativeOutput) {
   arma::mat firstDerivativeActivation;
   activationFunction->Derive(std::move(outputParameter), std::move(firstDerivativeActivation));
   gradient = partialDerivativeOutput % firstDerivativeActivation;
+  // Using gradient to avoid redundant computation
+  gradientWeight = gradient * inputParameter.t();
 }
 int Layer::GetInSize() const {
   return inSize;
@@ -91,8 +90,8 @@ int Layer::GetOutSize() const {
 //! Ricorda che se vuoi avere run ripetibili, devi usare arma_rng::set_seed(value) al posto di arma::arma_rng::set_seed_random()
 /***/
 void Layer::Init(const double upperBound, const double lowerBound) {
-  //arma::arma_rng::set_seed(9);
-  arma::arma_rng::set_seed_random();
+  arma::arma_rng::set_seed(350);
+  //arma::arma_rng::set_seed_random();
   weight = lowerBound + arma::randu<arma::mat>(outSize, inSize) * (upperBound - lowerBound);
   bias = lowerBound + arma::randu<arma::mat>(outSize, 1) * (upperBound - lowerBound);
 
@@ -112,22 +111,25 @@ void Layer::Gradient(const arma::mat &&summationGradientWeight) {
   arma::mat firstDerivativeActivation;
   activationFunction->Derive(std::move(outputParameter), std::move(firstDerivativeActivation));
   gradient = summationGradientWeight % firstDerivativeActivation;
+  // Using gradient to avoid redundant computation
+  gradientWeight = gradient * inputParameter.t();
+
 }
 
 /***/
 void Layer::AdjustWeight(const double learningRate, const double weightDecay, const double momentum) {
-  weight = weight + momentum * deltaWeight - learningRate * gradient * inputParameter.t()
+  weight = weight + momentum * deltaWeight - learningRate * direction
       - 2 * weightDecay * weight;
-  bias = bias + momentum * deltaBias - learningRate * arma::mean(gradient, 1) - 2 * weightDecay * bias;
-  deltaWeight = momentum * deltaWeight - learningRate * gradient * inputParameter.t();
+  bias = bias + momentum * deltaBias - learningRate * arma::mean(gradient, 1);
+  deltaWeight = momentum * deltaWeight - learningRate * direction;
   deltaBias = momentum * deltaBias - learningRate * arma::mean(gradient, 1);
 }
 
 /**
  * Return a raw vector contains all the summed weight multiplied by the layer gradient
  */
-void Layer::RetroPropagationError(arma::mat &&gradientWeight, const double nesterovMomentum) {
-  gradientWeight = (weight + nesterovMomentum * deltaWeight).t() * gradient;
+void Layer::RetroPropagationError(arma::mat &&retroPropagatedError, const double nesterovMomentum) {
+  retroPropagatedError = (weight + nesterovMomentum * deltaWeight).t() * gradient;
 }
 
 /**
@@ -138,7 +140,15 @@ void Layer::Clear() {
   bias = arma::zeros(bias.n_rows, bias.n_cols);
   deltaWeight = arma::zeros(deltaWeight.n_rows, deltaWeight.n_cols);
   deltaBias = arma::zeros(deltaBias.n_rows, deltaBias.n_cols);
+  gradientWeight = arma::zeros(gradientWeight.n_rows, gradientWeight.n_cols);
   gradient = arma::zeros(gradient.n_rows, gradient.n_cols);
   inputParameter = arma::zeros(inputParameter.n_rows, inputParameter.n_cols);
   outputParameter = arma::zeros(outputParameter.n_rows, outputParameter.n_cols);
+}
+/***
+ *
+ * @param optimizerComputedDirection
+ */
+void Layer::SetDirection(const arma::mat &&optimizerComputedDirection) {
+  direction = optimizerComputedDirection;
 }

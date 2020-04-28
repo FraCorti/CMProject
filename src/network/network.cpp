@@ -7,6 +7,7 @@
 #include "../lossFunction/meanSquaredError.h"
 #include "../lossFunction/meanEuclideanError.h"
 #include "../optimizer/gradientDescent.h"
+#include "../optimizer/LBFGS.h"
 
 void Network::Add(Layer &layer) {
   net.push_back(layer);
@@ -296,8 +297,11 @@ std::vector<Layer> &Network::GetNet() {
  *
  */
 void Network::SetOptimizer(const std::string optimizer_) {
-  if (optimizer_ == "gradientDescent") {
+  if (optimizer_
+      == "gradientDescent") { //TODO: mettere funzione che fa diverntare tutti i caratteri piccoli (.down()??)
     optimizer = new GradientDescent();
+  } else if (optimizer_ == "LBFGS") {
+    optimizer = new LBFGS();
   } else {
     optimizer = new GradientDescent();
   }
