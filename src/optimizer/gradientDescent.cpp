@@ -25,3 +25,19 @@ void GradientDescent::OptimizeBackward(Network *currNet, const arma::mat &&parti
     currentLayer->RetroPropagationError(std::move(currentGradientWeight));
   }
 }
+/***
+ *
+ * @param network
+ * @param learningRate
+ * @param weightDecay
+ * @param momentum
+ */
+void GradientDescent::OptimizeUpdateWeight(Network *network,
+                                           const double learningRate,
+                                           const double weightDecay,
+                                           const double momentum) {
+  std::vector<Layer> &net = network->GetNet();
+  for (Layer &currentLayer : net) {
+    currentLayer.AdjustWeight(learningRate, weightDecay, momentum);
+  }
+}

@@ -16,13 +16,16 @@ class LBFGS : public Optimizer {
   //! The pop operation is done on the tail of the queue.
   std::deque<std::pair<arma::mat, arma::mat>>
       pastCurvature; //TODO: oggetto (o struct?) di size k per memorizzare le scorse iterate
-  int storageSize;
+  unsigned long storageSize;
   double lineSearch(Network *currNet);
   void computeLayersDirections(std::vector<Layer> &net);
   inline void searchDirection(arma::mat &&approxInvHessian, arma::mat &&q, arma::mat &&currentLayerDirection);
  public:
   ~LBFGS() override = default;
+  LBFGS();
   void OptimizeBackward(Network *currNet, const arma::mat &&partialDerivativeOutput) override;
+  void OptimizeUpdateWeight(Network *network, const double learningRate,
+                            const double weightDecay, const double momentum) override;
 
 };
 

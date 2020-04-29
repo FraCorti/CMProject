@@ -11,6 +11,10 @@ class Optimizer {
  public:
   virtual ~Optimizer() = default;
   virtual void OptimizeBackward(Network *network, const arma::mat &&partialDerivativeOutput) = 0;
+  virtual void OptimizeUpdateWeight(Network *network,
+                                    const double learningRate,
+                                    const double weightDecay,
+                                    const double momentum) = 0;
 };
 
 #endif //MLPROJECT_SRC_OPTIMIZER_OPTIMIZER_H_

@@ -136,7 +136,8 @@ void Network::train(const arma::mat &&trainingData,
     start = end + 1;
     end = i < batchNumber ? batchSize * (i + 1) - 1 : trainingData.n_rows - 1;
 
-    updateWeight(learningRate, weightDecay, momentum);
+    optimizer->OptimizeUpdateWeight(this, learningRate, weightDecay, momentum);
+    //updateWeight(learningRate, weightDecay, momentum);
   }
   epochError = epochError / batchNumber;
 }
@@ -215,6 +216,7 @@ void Network::updateWeight(double learningRate, double weightDecay, double momen
   for (Layer &currentLayer : net) {
     currentLayer.AdjustWeight(learningRate, weightDecay, momentum);
   }
+
 }
 
 void Network::Test(const arma::mat &&testData, const arma::mat &&testLabels, arma::mat &&currentBatchError) {

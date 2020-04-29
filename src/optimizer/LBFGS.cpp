@@ -5,11 +5,11 @@
 #include "LBFGS.h"
 /***
  *
- * @param currNet
+ * @param currNetwork
  * @param partialDerivativeOutput
  */
-void LBFGS::OptimizeBackward(Network *currNet, const arma::mat &&partialDerivativeOutput) {
-  std::vector<Layer> &net = currNet->GetNet();
+void LBFGS::OptimizeBackward(Network *currNetwork, const arma::mat &&partialDerivativeOutput) {
+  std::vector<Layer> &net = currNetwork->GetNet();
   auto currentLayer = net.rbegin();
   currentLayer->OutputLayerGradient(std::move(partialDerivativeOutput));
   arma::mat currentGradientWeight;
@@ -17,7 +17,14 @@ void LBFGS::OptimizeBackward(Network *currNet, const arma::mat &&partialDerivati
   currentLayer++;
   // Iterate from the precedent Layer of the tail to the head
   for (; currentLayer != net.rend(); currentLayer++) {
+    //! Add "old" gradient (\nabla f_{k-1})
+    arma::mat oldGradient = currentLayer->GetGradientWeight();
     currentLayer->Gradient(std::move(currentGradientWeight));
+    //! Save previous y_{k-1}= \nabla f_{k} - \nabla f_{k-1}
+    if (pastCurvature.size()) {
+      pastCurvature.begin()->second = currentLayer->GetGradientWeight() - oldGradient;
+    }
+
     currentLayer->RetroPropagationError(std::move(currentGradientWeight));
   }
   computeLayersDirections(net);
@@ -89,3 +96,23 @@ void LBFGS::searchDirection(arma::mat &&approxInvHessian, arma::mat &&q, arma::m
     currentRho++;
   }
 }
+/***
+ *
+ * @param currNetwork
+ */
+void LBFGS::OptimizeUpdateWeight(Network *currNetwork, const double learningRate,
+                                 const double weightDecay, const double momentum) {
+  std::vector<Layer> &net = currNetwork->GetNet();
+
+  for (Layer &currentLayer : net) {
+    arma::mat oldWeight = currentLayer.GetWeight();
+    currentLayer.AdjustWeight(learningRate, weightDecay, momentum);
+    if (pastCurvature.size() == storageSize) {
+      pastCurvature.pop_back();
+    }
+    //! Save s_{k}= w_{k+1} - w_{k}
+    pastCurvature.push_front(std::make_pair(currentLayer.GetGradientWeight() - oldWeight, arma::mat(0)));
+  }
+
+}
+LBFGS::LBFGS() : storageSize(5) {}
