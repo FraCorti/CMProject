@@ -4,9 +4,11 @@
 
 #include "LBFGS.h"
 /***
+ * Iterate over the network from last layer to first. The gradient of all the layer is computed and
+ * stored, then the error is "retropagated" throgh the layer using RetroPropagationError().
  *
- * @param currNetwork
- * @param partialDerivativeOutput
+ * @param currNetwork Current network considered
+ * @param partialDerivativeOutput Partial derivative of the output layer
  */
 void LBFGS::OptimizeBackward(Network *currNetwork, const arma::mat &&partialDerivativeOutput) {
   std::vector<Layer> &net = currNetwork->GetNet();
@@ -15,19 +17,26 @@ void LBFGS::OptimizeBackward(Network *currNetwork, const arma::mat &&partialDeri
   arma::mat currentGradientWeight;
   currentLayer->RetroPropagationError(std::move(currentGradientWeight));
   currentLayer++;
+  size_t indexLayer = 0;
   // Iterate from the precedent Layer of the tail to the head
   for (; currentLayer != net.rend(); currentLayer++) {
+
     //! Add "old" gradient (\nabla f_{k-1})
     arma::mat oldGradient = currentLayer->GetGradientWeight();
     currentLayer->Gradient(std::move(currentGradientWeight));
+
     //! Save previous y_{k-1}= \nabla f_{k} - \nabla f_{k-1}
-    if (pastCurvature.size()) {
-      pastCurvature.begin()->second = currentLayer->GetGradientWeight() - oldGradient;
+    if (pastCurvatureLayer.size()) {
+      pastCurvatureLayer[indexLayer].begin()->second = currentLayer->GetGradientWeight() - oldGradient;
+      pastCurvatureLayer[indexLayer].begin()->second.reshape(oldGradient.n_elem, 1);
     }
 
     currentLayer->RetroPropagationError(std::move(currentGradientWeight));
+    indexLayer++;
   }
-  computeLayersDirections(net);
+  for (indexLayer = 0; indexLayer < net.size(); indexLayer++) {
+    computeLayersDirections(net, indexLayer);
+  }
 }
 /***
  *
@@ -37,26 +46,39 @@ void LBFGS::OptimizeBackward(Network *currNetwork, const arma::mat &&partialDeri
 double LBFGS::lineSearch(Network *currNet) {
   return 0;
 }
+
 /***
  * Following Algorithm 7.4 in chapter 7 of Numerical Optimization Jorge Nocedal Stephen J. Wright
- * @param net
+ * @param net Current network to be considered
  */
-void LBFGS::computeLayersDirections(std::vector<Layer> &net) {
+void LBFGS::computeLayersDirections(std::vector<Layer> &net, const size_t indexLayer) {
   for (Layer &currentLayer : net) {
     const arma::uword sizeGradient = currentLayer.GetGradientWeight().n_elem;
     //Compute initial hessian
     //! H_{k}^{0} = \gamma_{k}*I
     //! where \gamma_{k} = \frac{s^T_{k-1}y_{k-1}}{y^T_{k-1}y_{k-1}}
-    arma::mat approxInvHessian = arma::eye(sizeGradient, sizeGradient);
-    if (pastCurvature.size()) {
-      arma::mat gamma = (pastCurvature.front().first.t() * pastCurvature.front().second)
-          / (pastCurvature.front().second.t() * pastCurvature.front().second);
+    arma::mat approxInvHessian(sizeGradient, 1, arma::fill::ones);
+    //! Skip first gamma computation
+    if (pastCurvatureLayer[indexLayer].size()) {
+      arma::mat
+          gamma = (pastCurvatureLayer[indexLayer].front().first.t() * pastCurvatureLayer[indexLayer].front().second)
+          / (pastCurvatureLayer[indexLayer].front().second.t() * pastCurvatureLayer[indexLayer].front().second);
       approxInvHessian = gamma * approxInvHessian;
     }
     arma::mat q = currentLayer.GetGradientWeight();
+
+    //! reshape weight matrix to column vector
+    q.reshape(q.n_elem, 1);
+
     arma::mat currentLayerDirection;
-    searchDirection(std::move(approxInvHessian), std::move(q), std::move(currentLayerDirection));
+    searchDirection(std::move(approxInvHessian), std::move(q), std::move(currentLayerDirection), indexLayer);
+
+    //! reshape direction column vector to original matrix form
+    currentLayerDirection.reshape(currentLayer.GetOutSize(), currentLayer.GetInSize());
     currentLayer.SetDirection(std::move(currentLayerDirection));
+
+    //! reshape weight column vector to original matrix form
+    q.reshape(currentLayer.GetOutSize(), currentLayer.GetInSize());
   }
 
 }
@@ -66,16 +88,17 @@ void LBFGS::computeLayersDirections(std::vector<Layer> &net) {
  * @param q
  * @param r
  */
-void LBFGS::searchDirection(arma::mat &&approxInvHessian, arma::mat &&q, arma::mat &&r) {
+void LBFGS::searchDirection(arma::mat &&approxInvHessian, arma::mat &&q, arma::mat &&r, const size_t indexLayer) {
   //! Saving alpha and rho results to avoid redundant computation
   std::vector<arma::mat> alpha;
-  alpha.reserve(pastCurvature.size());
+  alpha.reserve(pastCurvatureLayer.size());
   std::vector<arma::mat> rho;
-  rho.reserve(pastCurvature.size());
+  rho.reserve(pastCurvatureLayer.size());
   auto currentReverseRho = rho.rbegin();
   auto currentReverseAlpha = alpha.rbegin();
-  //! Iterate from head to tail ( from the earliest curvature information to the latest)
-  for (std::pair<arma::mat, arma::mat> &currentPastCurvature : pastCurvature) {
+
+  //! Iterate from head to tail  of the current[indexLayer] layer( from the earliest curvature information to the latest)
+  for (std::pair<arma::mat, arma::mat> &currentPastCurvature : pastCurvatureLayer[indexLayer]) {
     //! \rho= \frac{1}{y_{k}^{T}*s_{k}}
     *currentReverseRho = 1 / (currentPastCurvature.second.t() * currentPastCurvature.first);
     *currentReverseAlpha = *currentReverseRho * currentPastCurvature.first.t() * q;
@@ -88,7 +111,8 @@ void LBFGS::searchDirection(arma::mat &&approxInvHessian, arma::mat &&q, arma::m
   auto currentRho = rho.begin();
   auto currentAlpha = alpha.begin();
   //! Iterate from tail to head ( from the latest curvature information to the earliest)
-  for (auto currentPastCurvature = pastCurvature.rbegin(); currentPastCurvature != pastCurvature.rend();
+  for (auto currentPastCurvature = pastCurvatureLayer[indexLayer].rbegin();
+       currentPastCurvature != pastCurvatureLayer[indexLayer].rend();
        ++currentPastCurvature) {
     beta = *currentRho * currentPastCurvature->second.t() * r;
     r = r + currentPastCurvature->first * (*currentAlpha - beta);
@@ -97,22 +121,26 @@ void LBFGS::searchDirection(arma::mat &&approxInvHessian, arma::mat &&q, arma::m
   }
 }
 /***
- *
+ *|
  * @param currNetwork
  */
 void LBFGS::OptimizeUpdateWeight(Network *currNetwork, const double learningRate,
                                  const double weightDecay, const double momentum) {
   std::vector<Layer> &net = currNetwork->GetNet();
-
+  size_t indexLayer = 0;
   for (Layer &currentLayer : net) {
     arma::mat oldWeight = currentLayer.GetWeight();
     currentLayer.AdjustWeight(learningRate, weightDecay, momentum);
-    if (pastCurvature.size() == storageSize) {
-      pastCurvature.pop_back();
+    if (pastCurvatureLayer.size() == storageSize) {
+      pastCurvatureLayer.pop_back();
     }
     //! Save s_{k}= w_{k+1} - w_{k}
-    pastCurvature.push_front(std::make_pair(currentLayer.GetGradientWeight() - oldWeight, arma::mat(0)));
+    pastCurvatureLayer[indexLayer].push_front(std::make_pair(currentLayer.GetGradientWeight() - oldWeight,
+                                                             arma::mat(0)));
+    pastCurvatureLayer[indexLayer].front().first.reshape(oldWeight.n_elem, 1);
+    indexLayer++;
   }
-
 }
-LBFGS::LBFGS() : storageSize(5) {}
+LBFGS::LBFGS(const int nLayer)
+    : storageSize(5),
+      pastCurvatureLayer(nLayer, std::deque<std::pair<arma::mat, arma::mat>>(5, std::pair<arma::mat, arma::mat>())) {}

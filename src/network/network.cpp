@@ -303,7 +303,7 @@ void Network::SetOptimizer(const std::string optimizer_) {
       == "gradientDescent") { //TODO: mettere funzione che fa diverntare tutti i caratteri piccoli (.down()??)
     optimizer = new GradientDescent();
   } else if (optimizer_ == "LBFGS") {
-    optimizer = new LBFGS();
+    optimizer = new LBFGS(net.size());
   } else {
     optimizer = new GradientDescent();
   }

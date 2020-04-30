@@ -7,7 +7,6 @@
 int main() {
   auto NDOFirstTry = NDO_di_unipi_it::Bundle();
 
-  //! Data preprocessing.
   Preprocessing cupPreprocessing("../../data/ML-CUP19-TR_formatted.csv");
   arma::mat trainingSet;
   arma::mat validationSet;
