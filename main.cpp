@@ -7,13 +7,13 @@
 int main() {
   auto NDOFirstTry = NDO_di_unipi_it::Bundle();
 
-  Preprocessing cupPreprocessing("../../data/ML-CUP19-TR_formatted.csv");
+  Preprocessing cupPreprocessing("../../data/monk/monks1_train_formatted.csv");
   arma::mat trainingSet;
   arma::mat validationSet;
   arma::mat testSet;
 
   cupPreprocessing.GetSplit(60, 20, 20, std::move(trainingSet), std::move(validationSet), std::move(testSet));
-  int labelCol = 2;
+  int labelCol = 1;
 
 
   // Split the data from the training set.
@@ -94,19 +94,20 @@ int main() {
   //! ML CUP network, training and testing
   Network cupNetwork;
   cupNetwork.SetLossFunction("meanSquaredError");
-  cupNetwork.SetOptimizer("LBFGS");//gradientDescent
-  Layer firstLayer(trainingSet.n_cols - labelCol, 75, "tanhFunction");
-  Layer lastLayer(75, 2, "linearFunction");
+
+  Layer firstLayer(trainingSet.n_cols - labelCol, 4, "tanhFunction");
+  Layer lastLayer(4, 1, "logisticFunction");
   cupNetwork.Add(firstLayer);
   cupNetwork.Add(lastLayer);
-  cupNetwork.Init(0.7, -0.7);
+  cupNetwork.SetOptimizer("LBFGS");//gradientDescent
+  cupNetwork.Init(1e-4, -1e-4);
   cupNetwork.Train(validationData,
                    validationLabels,
                    trainingSet,
                    trainingLabels.n_cols,
                    15000,
                    trainingLabels.n_rows,
-                   0.005,
+                   0.1,
                    0,
                    0.0);
 

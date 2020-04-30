@@ -19,7 +19,7 @@ class LBFGS : public Optimizer {
 
   unsigned long storageSize;
   double lineSearch(Network *currNet);
-  void computeLayersDirections(std::vector<Layer> &net, const size_t indexLayer);
+  void computeLayersDirections(std::vector<Layer> &net);
   inline void searchDirection(arma::mat &&approxInvHessian,
                               arma::mat &&q,
                               arma::mat &&currentLayerDirection,
