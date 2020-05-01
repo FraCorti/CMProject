@@ -62,7 +62,7 @@ add_library(Neuradillo
         src/optimizer/gradientDescent.cpp
         src/optimizer/gradientDescent.h
         src/optimizer/LBFGS.cpp src/optimizer/LBFGS.h
-        )
+        src/exception/exception.cpp src/exception/exception.h)
 target_link_libraries(Neuradillo
         ${CONAN_LIBS}
         NDOFiOracle

@@ -25,7 +25,7 @@ void LBFGS::OptimizeBackward(Network *currNetwork, const arma::mat &&partialDeri
   if (pastCurvatureLayer[indexLayer].size()) {
     pastCurvatureLayer[indexLayer].begin()->second = currentLayer->GetGradientWeight() - oldGradient;
     pastCurvatureLayer[indexLayer].begin()->second.reshape(oldGradient.n_elem, 1);
-
+    secantEquationCondition(indexLayer);
   }
   indexLayer--;
   currentLayer->RetroPropagationError(std::move(currentGradientWeight));
@@ -55,6 +55,7 @@ void LBFGS::OptimizeBackward(Network *currNetwork, const arma::mat &&partialDeri
  * @return
  */
 double LBFGS::lineSearch(Network *currNet) {
+
   return 0;
 }
 
@@ -158,4 +159,14 @@ void LBFGS::OptimizeUpdateWeight(Network *currNetwork, const double learningRate
 }
 LBFGS::LBFGS(const int nLayer) // TODO: capire come settare lo storage size
     : storageSize(1600), pastCurvatureLayer(nLayer) {
+}
+/***
+ * Check if secant equation (s_{k}^T y_{k}>0) is satisfied.
+ * @param indexLayer index of the current layer in the "pastCurvatureLayer" vector
+ */
+void LBFGS::secantEquationCondition(const size_t indexLayer) {
+  if (arma::dot(pastCurvatureLayer[indexLayer].begin()->first.t(), pastCurvatureLayer[indexLayer].begin()->second)
+      <= 0) {
+    throw Exception("Unsatisfied secant equation \n");
+  }
 }

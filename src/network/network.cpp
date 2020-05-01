@@ -3,9 +3,6 @@
 //
 
 #include "network.h"
-#include "../preprocessing/preprocessing.h"
-#include "../lossFunction/meanSquaredError.h"
-#include "../lossFunction/meanEuclideanError.h"
 #include "../optimizer/gradientDescent.h"
 #include "../optimizer/LBFGS.h"
 
@@ -71,13 +68,19 @@ double Network::Train(arma::mat validationSet, arma::mat validationLabelSet, arm
                                        false);
 
     arma::mat epochError = arma::zeros(1);
-    train(std::move(trainingData),
-          std::move(trainLabels),
-          std::move(epochError),
-          batchSize,
-          learningRate,
-          weightDecay,
-          momentum);
+    try {
+      train(std::move(trainingData),
+            std::move(trainLabels),
+            std::move(epochError),
+            batchSize,
+            learningRate,
+            weightDecay,
+            momentum);
+    }
+    catch (Exception &e) {
+      std::cout << e.what() << std::endl;
+      stopCondition = true;
+    }
 
     // add of the stop condition on validation set error
     previousError = currentError;

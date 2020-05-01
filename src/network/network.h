@@ -9,6 +9,9 @@
 #include "../layer/layer.h"
 #include "../preprocessing/preprocessing.h"
 #include "../lossFunction/lossFunction.h"
+#include "../lossFunction/meanSquaredError.h"
+#include "../lossFunction/meanEuclideanError.h"
+#include "../exception/exception.h"
 
 class Optimizer;
 

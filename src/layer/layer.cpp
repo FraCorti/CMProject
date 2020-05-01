@@ -118,16 +118,9 @@ void Layer::Gradient(const arma::mat &&summationGradientWeight) {
 
 /***/
 void Layer::AdjustWeight(const double learningRate, const double weightDecay, const double momentum) {
-  /*weight.print("weight pre");
-  direction.print("direction");
-   */
   weight = weight + momentum * deltaWeight - learningRate * direction
       - 2 * weightDecay * weight;
-  /*weight.print("weight post");
-  bias.print("bias pre");
-   */
   bias = bias + momentum * deltaBias - learningRate * arma::mean(gradient, 1);
-  //bias.print("bias post");
 
   deltaWeight = momentum * deltaWeight - learningRate * direction;
   deltaBias = momentum * deltaBias - learningRate * arma::mean(gradient, 1);

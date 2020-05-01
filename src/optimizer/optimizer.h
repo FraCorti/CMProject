@@ -15,6 +15,7 @@ class Optimizer {
                                     const double learningRate,
                                     const double weightDecay,
                                     const double momentum) = 0;
+
 };
 
 #endif //MLPROJECT_SRC_OPTIMIZER_OPTIMIZER_H_

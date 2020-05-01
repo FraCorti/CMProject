@@ -24,6 +24,7 @@ class LBFGS : public Optimizer {
                               arma::mat &&q,
                               arma::mat &&currentLayerDirection,
                               const size_t indexLayer);
+  void secantEquationCondition(const size_t indexLayer);
  public:
   ~LBFGS() override = default;
   LBFGS(const int nLayer);
