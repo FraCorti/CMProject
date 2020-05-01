@@ -54,8 +54,15 @@ void LBFGS::OptimizeBackward(Network *currNetwork, const arma::mat &&partialDeri
  * @param currNet
  * @return
  */
-double LBFGS::lineSearch(Network *currNet) {
+double LBFGS::lineSearch(Network *currNet, const double weightDecay, const double momentum) {
 
+  double alpha_0 = 0;
+  double alpha_max = 1;
+  double currentAlpha = alpha_max;
+  int maxStep = 100;
+  for (int i = 0; i < maxStep; i++) {
+    currNet->LineSearchEvaluate(currentAlpha, weightDecay, momentum);
+  }
   return 0;
 }
 
@@ -140,6 +147,7 @@ void LBFGS::searchDirection(arma::mat &&approxInvHessian, arma::mat &&q, arma::m
  */
 void LBFGS::OptimizeUpdateWeight(Network *currNetwork, const double learningRate,
                                  const double weightDecay, const double momentum) {
+  lineSearch(currNetwork, weightDecay, momentum);
   std::vector<Layer> &net = currNetwork->GetNet();
   size_t indexLayer = 0;
   for (Layer &currentLayer : net) {

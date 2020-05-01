@@ -64,6 +64,20 @@ class Layer {
    * @param output Resulting output activation.
    */
   void Forward(const arma::mat &&input, arma::mat &&output, const double nesterovMomentum = 0.0);
+
+  /**
+ * Line Search feed forward pass of a neural network, evaluating the function
+ * f(x) by propagating the activity forward through f.
+ *
+ * @param input Input data used for evaluating the specified function.
+ * @param output Resulting output activation.
+ */
+  void LineSearchForward(const arma::mat &&input,
+                         arma::mat &&output,
+                         const double stepSize,
+                         const double weightDecay,
+                         const double nesterovMomentum = 0.0);
+
   /**
   * Ordinary feed backward pass of a neural network, calculating the function
   * f(x) by propagating x backwards trough f. Using the results from the feed

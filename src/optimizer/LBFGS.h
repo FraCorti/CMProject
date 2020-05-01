@@ -15,10 +15,11 @@ class LBFGS : public Optimizer {
   //! The most recently curvature information are pushed in the front on the queue.
   //! The pop operation is done on the tail of the queue.
   std::vector<std::deque<std::pair<arma::mat, arma::mat>>>
-      pastCurvatureLayer; //TODO: oggetto (o struct?) di size k per memorizzare le scorse iterate
+      pastCurvatureLayer;
 
   unsigned long storageSize;
-  double lineSearch(Network *currNet);
+  double lineSearch(Network *currNet,
+                    const double weightDecay, const double momentum);
   void computeLayersDirections(std::vector<Layer> &net);
   inline void searchDirection(arma::mat &&approxInvHessian,
                               arma::mat &&q,

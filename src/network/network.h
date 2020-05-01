@@ -21,6 +21,10 @@ class Network {
   //! Loss function to be optimized in the network
   LossFunction *lossFunction;
   Optimizer *optimizer;
+  //! Saving input data for line search
+  arma::mat *input;
+  arma::mat *inputLabel;
+
   void train(const arma::mat &&trainingData,
              const arma::mat &&trainLabels,
              arma::mat &&epochError,
@@ -59,6 +63,7 @@ class Network {
                  arma::mat &&currentBatchError);
   void Clear();
   std::vector<Layer> &GetNet();
+  double LineSearchEvaluate(const double stepSize, const double weightDecay, const double momentum);
 };
 // TODO: Salvataggio e load (xml? https://www.boost.org/doc/libs/1_71_0/libs/serialization/doc/index.html);
 #endif //MLPROJECT_SRC_NETWORK_H_

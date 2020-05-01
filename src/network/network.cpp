@@ -139,6 +139,9 @@ void Network::train(const arma::mat &&trainingData,
     start = end + 1;
     end = i < batchNumber ? batchSize * (i + 1) - 1 : trainingData.n_rows - 1;
 
+    //! Saving input data for line search
+    input = &inputBatch;
+    inputLabel = &labelBatch;
     optimizer->OptimizeUpdateWeight(this, learningRate, weightDecay, momentum);
     //updateWeight(learningRate, weightDecay, momentum);
   }
@@ -241,7 +244,6 @@ void Network::inference(arma::mat &&inputData, arma::mat &&outputData) {
     currentLayer.Activate(outputData, std::move(activateWeight));
   }
   outputData = activateWeight;
-
 }
 /***/
 void Network::TestWithThreshold(const arma::mat &&testData, const arma::mat &&testLabels, double threshold) {
@@ -278,8 +280,7 @@ void Network::SetLossFunction(const std::string loss_function) {
 void Network::errorTest(const arma::mat &&trainLabelsBatch,
                         arma::mat &&outputActivateBatch,
                         arma::mat &&currentBatchError) {
-  MeanEuclideanError error;
-  error.Error(std::move(trainLabelsBatch), std::move(outputActivateBatch), std::move(currentBatchError));
+  lossFunction->Error(std::move(trainLabelsBatch), std::move(outputActivateBatch), std::move(currentBatchError));
 }
 
 /**
@@ -311,4 +312,26 @@ void Network::SetOptimizer(const std::string optimizer_) {
     optimizer = new GradientDescent();
   }
 
+}
+/***
+ * Computing error of the network emulating the update of the weights
+ * @param learningRate
+ * @param weightDecay
+ * @param momentum
+ */
+double Network::LineSearchEvaluate(const double stepSize, const double weightDecay, const double momentum) {
+  arma::mat activateWeight = input->t();
+  arma::mat outputData;
+  arma::mat currentBatchError;
+
+  for (Layer &currentLayer : net) {
+    currentLayer.LineSearchForward(std::move(activateWeight), std::move(outputData), stepSize, weightDecay, momentum);
+
+    currentLayer.Activate(outputData, std::move(activateWeight));
+  }
+  outputData = activateWeight;
+
+  errorTest(std::move(*inputLabel), std::move(outputData), std::move(currentBatchError));
+  currentBatchError.print("currentBatchError");
+  return arma::as_scalar(currentBatchError);
 }

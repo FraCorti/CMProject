@@ -153,3 +153,22 @@ void Layer::Clear() {
 void Layer::SetDirection(const arma::mat &&optimizerComputedDirection) {
   direction = optimizerComputedDirection;
 }
+/***
+ * Compute line search forward emulating the update of the weights
+ * @param input
+ * @param output
+ * @param stepSize
+ * @param weightDecay
+ * @param nesterovMomentum
+ */
+void Layer::LineSearchForward(const arma::mat &&input,
+                              arma::mat &&output,
+                              const double stepSize,
+                              const double weightDecay,
+                              const double nesterovMomentum) {
+
+  output = (weight + nesterovMomentum * deltaWeight - stepSize * direction
+      - 2 * weightDecay * weight + nesterovMomentum * deltaWeight) * input;
+  output.each_col() +=
+      (bias + nesterovMomentum * deltaBias - stepSize * arma::mean(gradient, 1) + nesterovMomentum * deltaBias);
+}
