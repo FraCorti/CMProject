@@ -12,7 +12,8 @@ int main() {
   arma::mat validationSet;
   arma::mat testSet;
 
-  cupPreprocessing.GetSplit(60, 20, 20, std::move(trainingSet), std::move(validationSet), std::move(testSet));
+  cupPreprocessing.GetSplit(100, 0, 0, std::move(trainingSet), std::move(validationSet), std::move(testSet));
+  testSet.load("../../data/monk/monks1_test_formatted.csv");
   int labelCol = 1;
 
 
@@ -99,20 +100,20 @@ int main() {
   Layer lastLayer(4, 1, "logisticFunction");
   cupNetwork.Add(firstLayer);
   cupNetwork.Add(lastLayer);
-  cupNetwork.SetOptimizer("LBFGS");//gradientDescent
+  cupNetwork.SetOptimizer("LBFGS");//LBFGS gradientDescent
   cupNetwork.Init(1e-4, -1e-4);
-  cupNetwork.Train(validationData,
-                   validationLabels,
+  cupNetwork.Train(testData,
+                   testLabels,
                    trainingSet,
                    trainingLabels.n_cols,
-                   15000,
+                   4000,
                    trainingLabels.n_rows,
-                   0.1,
+                   0.35,
                    0,
                    0.0);
 
   arma::mat MEE;
-  cupNetwork.Test(std::move(validationData), std::move(validationLabels), std::move(MEE));
+  cupNetwork.TestWithThreshold(std::move(testData), std::move(testLabels), 0.5);
   MEE.print("errore finale");
 
   //! Cross validation implementation

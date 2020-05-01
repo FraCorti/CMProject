@@ -18,19 +18,16 @@ void LBFGS::OptimizeBackward(Network *currNetwork, const arma::mat &&partialDeri
   arma::mat oldGradient = currentLayer->GetGradientWeight();
 
   currentLayer->OutputLayerGradient(std::move(partialDerivativeOutput));
-  size_t indexLayer = 0;
+  size_t indexLayer = net.size() - 1;
   arma::mat currentGradientWeight;
 
   //! Save previous y_{k-1}= \nabla f_{k} - \nabla f_{k-1}
   if (pastCurvatureLayer[indexLayer].size()) {
     pastCurvatureLayer[indexLayer].begin()->second = currentLayer->GetGradientWeight() - oldGradient;
     pastCurvatureLayer[indexLayer].begin()->second.reshape(oldGradient.n_elem, 1);
-    pastCurvatureLayer[indexLayer].begin()->first.print("pastCurvatureLayer s");
-    pastCurvatureLayer[indexLayer].begin()->second.print("pastCurvatureLayer y");
-    std::cout << indexLayer << std::endl;
 
   }
-  indexLayer++;
+  indexLayer--;
   currentLayer->RetroPropagationError(std::move(currentGradientWeight));
   currentLayer++;
   // Iterate from the precedent Layer of the tail to the head
@@ -44,13 +41,10 @@ void LBFGS::OptimizeBackward(Network *currNetwork, const arma::mat &&partialDeri
     if (pastCurvatureLayer[indexLayer].size()) {
       pastCurvatureLayer[indexLayer].begin()->second = currentLayer->GetGradientWeight() - oldGradient;
       pastCurvatureLayer[indexLayer].begin()->second.reshape(oldGradient.n_elem, 1);
-      pastCurvatureLayer[indexLayer].begin()->first.print("pastCurvatureLayer s");
-      pastCurvatureLayer[indexLayer].begin()->second.print("pastCurvatureLayer y");
-      std::cout << indexLayer << std::endl;
     }
 
     currentLayer->RetroPropagationError(std::move(currentGradientWeight));
-    indexLayer++;
+    indexLayer--;
   }
 
   computeLayersDirections(net);
@@ -92,8 +86,6 @@ void LBFGS::computeLayersDirections(std::vector<Layer> &net) {
     searchDirection(std::move(approxInvHessian), std::move(q), std::move(currentLayerDirection), indexLayer);
     //! reshape direction column vector to original matrix form
     currentLayerDirection.reshape(currentLayer.GetOutSize(), currentLayer.GetInSize());
-    currentLayerDirection.print("currentLayerDirection");
-    std::cout << indexLayer << std::endl;
     currentLayer.SetDirection(std::move(currentLayerDirection));
 
     //! reshape weight column vector to original matrix form
@@ -103,10 +95,11 @@ void LBFGS::computeLayersDirections(std::vector<Layer> &net) {
 
 }
 /***
- *
+ * Compute the direction as H_{k}\nabla f_{k} and save the result of it inside r. Algorithm 7.4 of "Numerical optimization" J. Nocedal
  * @param approxInvHessian
- * @param q
- * @param r
+ * @param q the gradient of the current layer, is modified following the Algorithm 7.4
+ * @param r descent direction of the function, is passed to avoid copy
+ * @param indexLayer index of the current layer in the "pastCurvatureLayer" vector
  */
 void LBFGS::searchDirection(arma::mat &&approxInvHessian, arma::mat &&q, arma::mat &&r, const size_t indexLayer) {
   //! Saving alpha and rho results to avoid redundant computation
@@ -140,7 +133,8 @@ void LBFGS::searchDirection(arma::mat &&approxInvHessian, arma::mat &&q, arma::m
   }
 }
 /***
- *|
+ * Update the weight of the network and add the pair {s_{k} , 0 } for all the layer.
+ * The second parameter of the pair y_{k} is added when we compute the next gradient
  * @param currNetwork
  */
 void LBFGS::OptimizeUpdateWeight(Network *currNetwork, const double learningRate,
@@ -156,12 +150,12 @@ void LBFGS::OptimizeUpdateWeight(Network *currNetwork, const double learningRate
 
     //! Save s_{k}= w_{k+1} - w_{k}
     pastCurvatureLayer[indexLayer].push_front(std::pair<arma::mat, arma::mat>(
-        currentLayer.GetGradientWeight() - oldWeight, arma::mat(0, 0, arma::fill::zeros)));
+        currentLayer.GetWeight() - oldWeight, arma::mat(0, 0, arma::fill::zeros)));
 
     pastCurvatureLayer[indexLayer].front().first.reshape(oldWeight.n_elem, 1);
     indexLayer++;
   }
 }
-LBFGS::LBFGS(const int nLayer)
-    : storageSize(5), pastCurvatureLayer(nLayer) {
+LBFGS::LBFGS(const int nLayer) // TODO: capire come settare lo storage size
+    : storageSize(1600), pastCurvatureLayer(nLayer) {
 }

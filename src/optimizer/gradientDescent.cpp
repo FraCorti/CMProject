@@ -26,7 +26,7 @@ void GradientDescent::OptimizeBackward(Network *currNet, const arma::mat &&parti
   }
 }
 /***
- *
+ * Update the weight of the network
  * @param network
  * @param learningRate
  * @param weightDecay

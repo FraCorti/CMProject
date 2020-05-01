@@ -51,7 +51,7 @@ double Network::Train(arma::mat validationSet, arma::mat validationLabelSet, arm
   arma::mat currentError = arma::zeros(1, 1);
   arma::mat deltaError;
   arma::mat previousError;
-  double thresholdStopCondition = 0.000000001;
+  double thresholdStopCondition = 0.00000000000000001;
   bool stopCondition = false;
   double nDelta = 0.0;
   for (int currentEpoch = 1; currentEpoch <= epoch && !stopCondition; currentEpoch++) {
@@ -85,7 +85,7 @@ double Network::Train(arma::mat validationSet, arma::mat validationLabelSet, arm
     Test(std::move(validationSet), std::move(validationLabelSet), std::move(currentError));
 
     arma::mat errortemp = arma::join_rows(epochError, currentError);
-    errortemp.raw_print("");
+    errortemp.print("");
     deltaError = previousError - currentError;
     if (deltaError.at(0, 0) < 0) {
       nDelta++;
