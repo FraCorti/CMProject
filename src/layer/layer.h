@@ -114,6 +114,8 @@ class Layer {
   [[nodiscard]] int GetOutSize() const;
   void Init(const double upperBound, const double lowerBound);
   void SetDirection(const arma::mat &&optimizerComputedDirection);
+
+  const arma::mat &GetDirection() const;
 };
 
 #endif //MLPROJECT_SRC_LAYER_H_

@@ -15,7 +15,6 @@ double LogisticFunction::Compute(const double x) {
 }
 void LogisticFunction::Compute(const arma::mat &input, arma::mat &&output) {
   output = 1.0 / (1.0 + arma::exp(-input));
-  //output.print("Logistic output");
 }
 void LogisticFunction::Derive(const arma::mat &&input, arma::mat &&output) {
   //input.print("input");

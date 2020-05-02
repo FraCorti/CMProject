@@ -28,6 +28,9 @@ const arma::mat &Layer::GetOutputParameter() const {
 const arma::mat &Layer::GetDeltaBias() const {
   return deltaBias;
 }
+const arma::mat &Layer::GetDirection() const {
+  return direction;
+}
 
 Layer::Layer(const int inSize, const int outSize, const std::string activationFunctionString)
     : inSize(inSize),
@@ -171,4 +174,5 @@ void Layer::LineSearchForward(const arma::mat &&input,
       - 2 * weightDecay * weight + nesterovMomentum * deltaWeight) * input;
   output.each_col() +=
       (bias + nesterovMomentum * deltaBias - stepSize * arma::mean(gradient, 1) + nesterovMomentum * deltaBias);
+
 }

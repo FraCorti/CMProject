@@ -4,6 +4,7 @@
 #include "src/network/network.h"
 #include "NDOFiOracle/Bundle.h"
 
+#include <chrono>
 int main() {
   auto NDOFirstTry = NDO_di_unipi_it::Bundle();
 
@@ -100,13 +101,16 @@ int main() {
   Layer lastLayer(4, 1, "logisticFunction");
   cupNetwork.Add(firstLayer);
   cupNetwork.Add(lastLayer);
-  cupNetwork.SetOptimizer("LBFGS");//LBFGS gradientDescent
+  cupNetwork.SetOptimizer("gradientDescent");//LBFGS gradientDescent
+
+
   cupNetwork.Init(1e-4, -1e-4);
+
   cupNetwork.Train(testData,
                    testLabels,
                    trainingSet,
                    trainingLabels.n_cols,
-                   4000,
+                   800,
                    trainingLabels.n_rows,
                    0.35,
                    0,

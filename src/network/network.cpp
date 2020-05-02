@@ -314,24 +314,39 @@ void Network::SetOptimizer(const std::string optimizer_) {
 
 }
 /***
- * Computing error of the network emulating the update of the weights
+ *
  * @param learningRate
  * @param weightDecay
  * @param momentum
  */
 double Network::LineSearchEvaluate(const double stepSize, const double weightDecay, const double momentum) {
   arma::mat activateWeight = input->t();
-  arma::mat outputData;
+  arma::mat outputActivateBatch;
   arma::mat currentBatchError;
+  arma::mat partialDerivativeOutput;
 
-  for (Layer &currentLayer : net) {
-    currentLayer.LineSearchForward(std::move(activateWeight), std::move(outputData), stepSize, weightDecay, momentum);
+  updateWeight(stepSize, weightDecay, momentum);
 
-    currentLayer.Activate(outputData, std::move(activateWeight));
+  forward(std::move(*input), std::move(outputActivateBatch));
+
+  error(std::move(*inputLabel),
+        std::move(outputActivateBatch),
+        std::move(partialDerivativeOutput),
+        std::move(currentBatchError),
+        weightDecay);
+
+  auto currentLayer = net.rbegin();
+  currentLayer->OutputLayerGradient(std::move(currentBatchError));
+  //currentLayer->SetDirection(std::move(currentLayer->GetGradientWeight()));
+  arma::mat currentGradientWeight;
+  currentLayer->RetroPropagationError(std::move(currentGradientWeight));
+  currentLayer++;
+  // Iterate from the precedent Layer of the tail to the head
+  for (; currentLayer != net.rend(); currentLayer++) {
+    currentLayer->Gradient(std::move(currentGradientWeight));
+    //currentLayer->SetDirection(std::move(currentLayer->GetGradientWeight()));
+    currentLayer->RetroPropagationError(std::move(currentGradientWeight));
   }
-  outputData = activateWeight;
 
-  errorTest(std::move(*inputLabel), std::move(outputData), std::move(currentBatchError));
-  currentBatchError.print("currentBatchError");
   return arma::as_scalar(currentBatchError);
 }

@@ -54,14 +54,68 @@ void LBFGS::OptimizeBackward(Network *currNetwork, const arma::mat &&partialDeri
  * @param currNet
  * @return
  */
-double LBFGS::lineSearch(Network *currNet, const double weightDecay, const double momentum) {
+double LBFGS::lineSearch(Network *currNetwork, const double weightDecay, const double momentum) {
 
   double alpha_0 = 0;
   double alpha_max = 1;
   double currentAlpha = alpha_max;
   int maxStep = 100;
+
+  std::vector<Layer> &net = currNetwork->GetNet();
+  double initialSearchDirectionDotGradient = 0;
+  // Sum of the \nabla f(w_{k}) * p_{k} where k is the current iteration
+  for (auto &currentLayer : net) {
+    initialSearchDirectionDotGradient += arma::dot(currentLayer.GetGradientWeight(), currentLayer.GetDirection());
+  }
+
+  // Check descent direction
+  if (initialSearchDirectionDotGradient > 0.0) {
+    std::cout << "L-BFGS line search direction is not a descent direction "
+              << "(terminating)!" << std::endl;
+    return false;
+  }
+  // Deep copy of the current network
+  Network lineSearchNetworkAlpha0(*currNetwork);
+
+  double phi0 = lineSearchNetworkAlpha0.LineSearchEvaluate(0, weightDecay, momentum);
+  double c1 = 0.0001;
+  double c2 = 0.9;
+
+  double phiPreviousAlpha = std::numeric_limits<double>::max();
   for (int i = 0; i < maxStep; i++) {
-    currNet->LineSearchEvaluate(currentAlpha, weightDecay, momentum);
+    Network lineSearchNetworkAlphaI(*currNetwork);
+
+    double phiCurrentAlpha = lineSearchNetworkAlphaI.LineSearchEvaluate(currentAlpha, weightDecay, momentum);
+    if ((phiCurrentAlpha > phi0 + c1 * currentAlpha * initialSearchDirectionDotGradient)
+        || (phiCurrentAlpha >= phiPreviousAlpha && i)) {
+      //TODO: Function zoom
+      break;
+    }
+
+    double currentSearchDirectionDotGradient = 0;
+
+    for (auto &currentLayer : lineSearchNetworkAlphaI.GetNet()) {
+      // We can use currentLayer.GetDirection because in LineSearchEvaluate we don't update the direction
+      currentSearchDirectionDotGradient += arma::dot(currentLayer.GetGradientWeight(), currentLayer.GetDirection());
+    }
+
+    //
+    if (std::abs(currentSearchDirectionDotGradient) <= c2 * initialSearchDirectionDotGradient) {
+      //TODO: Function zoom
+      break;
+    }
+
+    if (currentSearchDirectionDotGradient >= 0) {
+      //TODO: Function zoom
+      break;
+    }
+
+    // Update the current alpha with a value between currentAlpha and alpha_max
+    std::uniform_real_distribution<double> unif(currentAlpha, alpha_max);
+    // Set the seed to have repeatable executions
+    std::default_random_engine re(350);
+    //std::default_random_engine re();
+    currentAlpha = unif(re);
   }
   return 0;
 }
