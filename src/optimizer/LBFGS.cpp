@@ -81,6 +81,7 @@ double LBFGS::lineSearch(Network *currNetwork, const double weightDecay, const d
   double c1 = 0.0001;
   double c2 = 0.9;
 
+  double previousAlpha = 0;
   double phiPreviousAlpha = std::numeric_limits<double>::max();
   for (int i = 0; i < maxStep; i++) {
     Network lineSearchNetworkAlphaI(*currNetwork);
@@ -88,8 +89,13 @@ double LBFGS::lineSearch(Network *currNetwork, const double weightDecay, const d
     double phiCurrentAlpha = lineSearchNetworkAlphaI.LineSearchEvaluate(currentAlpha, weightDecay, momentum);
     if ((phiCurrentAlpha > phi0 + c1 * currentAlpha * initialSearchDirectionDotGradient)
         || (phiCurrentAlpha >= phiPreviousAlpha && i)) {
-      //TODO: Function zoom
-      break;
+      return zoom(currNetwork,
+                  weightDecay,
+                  momentum,
+                  previousAlpha,
+                  currentAlpha,
+                  phi0,
+                  initialSearchDirectionDotGradient);
     }
 
     double currentSearchDirectionDotGradient = 0;
@@ -101,13 +107,17 @@ double LBFGS::lineSearch(Network *currNetwork, const double weightDecay, const d
 
     //
     if (std::abs(currentSearchDirectionDotGradient) <= c2 * initialSearchDirectionDotGradient) {
-      //TODO: Function zoom
-      break;
+      return currentAlpha;
     }
 
     if (currentSearchDirectionDotGradient >= 0) {
-      //TODO: Function zoom
-      break;
+      return zoom(currNetwork,
+                  weightDecay,
+                  momentum,
+                  currentAlpha,
+                  previousAlpha,
+                  phi0,
+                  initialSearchDirectionDotGradient);
     }
 
     // Update the current alpha with a value between currentAlpha and alpha_max
@@ -115,7 +125,60 @@ double LBFGS::lineSearch(Network *currNetwork, const double weightDecay, const d
     // Set the seed to have repeatable executions
     std::default_random_engine re(350);
     //std::default_random_engine re();
+    previousAlpha = currentAlpha;
     currentAlpha = unif(re);
+  }
+  return 0;
+}
+
+/***
+ *
+ * @return
+ */
+double LBFGS::zoom(Network *currNetwork,
+                   const double weightDecay,
+                   const double momentum,
+                   double alphaLow,
+                   double alphaHi,
+                   const double phi0,
+                   const double initialSearchDirectionDotGradient) {
+  int i = 0;
+  while (true) { //TODO: fix condizioni while
+    // TODO: Interpolate
+    double alphaJ = (alphaHi + alphaLow) / 2;
+    std::cout << " alphaJ " << alphaJ << std::endl;
+    const double c1 = 0.0001;
+    const double c2 = 0.9;
+
+    Network lineSearchNetworkAlphaJ(*currNetwork);
+
+    double phiCurrentAlphaJ = lineSearchNetworkAlphaJ.LineSearchEvaluate(alphaJ, weightDecay, momentum);
+
+    Network lineSearchNetworkAlphaLow(*currNetwork);
+
+    double phiCurrentAlphaLow = lineSearchNetworkAlphaLow.LineSearchEvaluate(alphaLow, weightDecay, momentum);
+
+    if (phiCurrentAlphaJ > phi0 + c1 * alphaJ * initialSearchDirectionDotGradient
+        || phiCurrentAlphaJ >= phiCurrentAlphaLow) {
+      alphaHi = alphaJ;
+    } else {
+      double currentSearchDirectionDotGradient = 0;
+
+      for (auto &currentLayer : lineSearchNetworkAlphaJ.GetNet()) {
+        // We can use currentLayer.GetDirection because in LineSearchEvaluate we don't update the direction
+        currentSearchDirectionDotGradient += arma::dot(currentLayer.GetGradientWeight(), currentLayer.GetDirection());
+      }
+
+      if (std::abs(currentSearchDirectionDotGradient) <= c2 * initialSearchDirectionDotGradient) {
+        return alphaJ;
+      }
+
+      if (currentSearchDirectionDotGradient * (alphaHi - alphaLow) >= 0) {
+        alphaHi = alphaLow;
+      }
+      alphaLow = alphaJ;
+    }
+    i++;
   }
   return 0;
 }
@@ -201,12 +264,13 @@ void LBFGS::searchDirection(arma::mat &&approxInvHessian, arma::mat &&q, arma::m
  */
 void LBFGS::OptimizeUpdateWeight(Network *currNetwork, const double learningRate,
                                  const double weightDecay, const double momentum) {
-  lineSearch(currNetwork, weightDecay, momentum);
+  double stepSize = lineSearch(currNetwork, weightDecay, momentum);
+  std::cout << " stepSize " << stepSize << std::endl;
   std::vector<Layer> &net = currNetwork->GetNet();
   size_t indexLayer = 0;
   for (Layer &currentLayer : net) {
     arma::mat oldWeight = currentLayer.GetWeight();
-    currentLayer.AdjustWeight(learningRate, weightDecay, momentum);
+    currentLayer.AdjustWeight(stepSize, weightDecay, momentum);
     if (pastCurvatureLayer.size() == storageSize) {
       pastCurvatureLayer.pop_back();
     }

@@ -101,7 +101,7 @@ int main() {
   Layer lastLayer(4, 1, "logisticFunction");
   cupNetwork.Add(firstLayer);
   cupNetwork.Add(lastLayer);
-  cupNetwork.SetOptimizer("gradientDescent");//LBFGS gradientDescent
+  cupNetwork.SetOptimizer("LBFGS");//LBFGS gradientDescent
 
 
   cupNetwork.Init(1e-4, -1e-4);
@@ -110,11 +110,11 @@ int main() {
                    testLabels,
                    trainingSet,
                    trainingLabels.n_cols,
-                   800,
+                   600,
                    trainingLabels.n_rows,
-                   0.35,
-                   0,
-                   0.0);
+                   0.9,
+                   0.001,
+                   0.7);
 
   arma::mat MEE;
   cupNetwork.TestWithThreshold(std::move(testData), std::move(testLabels), 0.5);

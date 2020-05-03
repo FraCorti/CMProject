@@ -121,11 +121,11 @@ void Layer::Gradient(const arma::mat &&summationGradientWeight) {
 
 /***/
 void Layer::AdjustWeight(const double learningRate, const double weightDecay, const double momentum) {
-  weight = weight + momentum * deltaWeight - learningRate * direction
+  weight = weight + momentum * deltaWeight + learningRate * direction
       - 2 * weightDecay * weight;
   bias = bias + momentum * deltaBias - learningRate * arma::mean(gradient, 1);
 
-  deltaWeight = momentum * deltaWeight - learningRate * direction;
+  deltaWeight = momentum * deltaWeight + learningRate * direction;
   deltaBias = momentum * deltaBias - learningRate * arma::mean(gradient, 1);
 }
 
@@ -154,7 +154,7 @@ void Layer::Clear() {
  * @param optimizerComputedDirection
  */
 void Layer::SetDirection(const arma::mat &&optimizerComputedDirection) {
-  direction = optimizerComputedDirection;
+  direction = -1 * optimizerComputedDirection;
 }
 /***
  * Compute line search forward emulating the update of the weights
@@ -170,7 +170,7 @@ void Layer::LineSearchForward(const arma::mat &&input,
                               const double weightDecay,
                               const double nesterovMomentum) {
 
-  output = (weight + nesterovMomentum * deltaWeight - stepSize * direction
+  output = (weight + nesterovMomentum * deltaWeight + stepSize * direction
       - 2 * weightDecay * weight + nesterovMomentum * deltaWeight) * input;
   output.each_col() +=
       (bias + nesterovMomentum * deltaBias - stepSize * arma::mean(gradient, 1) + nesterovMomentum * deltaBias);
