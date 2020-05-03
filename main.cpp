@@ -104,7 +104,7 @@ int main() {
   cupNetwork.SetOptimizer("LBFGS");//LBFGS gradientDescent
 
 
-  cupNetwork.Init(1e-4, -1e-4);
+  cupNetwork.Init(1, -1);
 
   cupNetwork.Train(testData,
                    testLabels,
@@ -113,12 +113,10 @@ int main() {
                    600,
                    trainingLabels.n_rows,
                    0.9,
-                   0.001,
-                   0.7);
+                   0.0,
+                   0.0);
 
-  arma::mat MEE;
   cupNetwork.TestWithThreshold(std::move(testData), std::move(testLabels), 0.5);
-  MEE.print("errore finale");
 
   //! Cross validation implementation
   /*

@@ -41,6 +41,7 @@ void LBFGS::OptimizeBackward(Network *currNetwork, const arma::mat &&partialDeri
     if (pastCurvatureLayer[indexLayer].size()) {
       pastCurvatureLayer[indexLayer].begin()->second = currentLayer->GetGradientWeight() - oldGradient;
       pastCurvatureLayer[indexLayer].begin()->second.reshape(oldGradient.n_elem, 1);
+      secantEquationCondition(indexLayer);
     }
 
     currentLayer->RetroPropagationError(std::move(currentGradientWeight));
@@ -58,8 +59,15 @@ double LBFGS::lineSearch(Network *currNetwork, const double weightDecay, const d
 
   double alpha_0 = 0;
   double alpha_max = 1;
-  double currentAlpha = alpha_max;
-  int maxStep = 100;
+
+  // Update the current alpha with a value between currentAlpha and alpha_max
+  std::uniform_real_distribution<double> unif(alpha_0, alpha_max);
+  // Set the seed to have repeatable executions
+  std::default_random_engine re(350);
+  //std::default_random_engine re();
+
+  double currentAlpha = unif(re);
+  int maxStep = 10000;
 
   std::vector<Layer> &net = currNetwork->GetNet();
   double initialSearchDirectionDotGradient = 0;
@@ -77,6 +85,7 @@ double LBFGS::lineSearch(Network *currNetwork, const double weightDecay, const d
   // Deep copy of the current network
   Network lineSearchNetworkAlpha0(*currNetwork);
 
+  //! current error of the network
   double phi0 = lineSearchNetworkAlpha0.LineSearchEvaluate(0, weightDecay, momentum);
   double c1 = 0.0001;
   double c2 = 0.9;
@@ -119,16 +128,10 @@ double LBFGS::lineSearch(Network *currNetwork, const double weightDecay, const d
                   phi0,
                   initialSearchDirectionDotGradient);
     }
-
-    // Update the current alpha with a value between currentAlpha and alpha_max
-    std::uniform_real_distribution<double> unif(currentAlpha, alpha_max);
-    // Set the seed to have repeatable executions
-    std::default_random_engine re(350);
-    //std::default_random_engine re();
     previousAlpha = currentAlpha;
     currentAlpha = unif(re);
   }
-  return 0;
+  return currentAlpha;
 }
 
 /***
@@ -143,10 +146,19 @@ double LBFGS::zoom(Network *currNetwork,
                    const double phi0,
                    const double initialSearchDirectionDotGradient) {
   int i = 0;
-  while (true) { //TODO: fix condizioni while
+  double alphaJ;
+  // Set the seed to have repeatable executions
+  std::default_random_engine re;
+  //std::default_random_engine re();
+
+  while (i < 100) { //TODO: fix condizioni while
     // TODO: Interpolate
-    double alphaJ = (alphaHi + alphaLow) / 2;
-    std::cout << " alphaJ " << alphaJ << std::endl;
+
+    // Update the current alpha with a value between currentAlpha and alpha_max
+    std::uniform_real_distribution<double> unif(alphaLow, alphaHi);
+    alphaJ = unif(re);
+    // (alphaHi + alphaLow) / 2;
+    //std::cout << " alphaJ " << alphaJ << std::endl;
     const double c1 = 0.0001;
     const double c2 = 0.9;
 
@@ -169,7 +181,7 @@ double LBFGS::zoom(Network *currNetwork,
         currentSearchDirectionDotGradient += arma::dot(currentLayer.GetGradientWeight(), currentLayer.GetDirection());
       }
 
-      if (std::abs(currentSearchDirectionDotGradient) <= c2 * initialSearchDirectionDotGradient) {
+      if (std::abs(currentSearchDirectionDotGradient) <= -c2 * initialSearchDirectionDotGradient) {
         return alphaJ;
       }
 
@@ -180,7 +192,7 @@ double LBFGS::zoom(Network *currNetwork,
     }
     i++;
   }
-  return 0;
+  return alphaJ;
 }
 
 /***
@@ -284,7 +296,7 @@ void LBFGS::OptimizeUpdateWeight(Network *currNetwork, const double learningRate
   }
 }
 LBFGS::LBFGS(const int nLayer) // TODO: capire come settare lo storage size
-    : storageSize(1600), pastCurvatureLayer(nLayer) {
+    : storageSize(50), pastCurvatureLayer(nLayer) {
 }
 /***
  * Check if secant equation (s_{k}^T y_{k}>0) is satisfied.
