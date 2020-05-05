@@ -56,6 +56,7 @@ void LBFGS::OptimizeBackward(Network *currNetwork, const arma::mat &&partialDeri
  *  check if the global direction of the update is descent
  *
  * @param currNetwork Current network to be considered
+ * @param initialSearchDirectionDotGradient Summation of all the layers products result
  */
 double LBFGS::checkDescentDirection(Network *currNetwork, double &initialSearchDirectionDotGradient) {
   std::vector<Layer> &net = currNetwork->GetNet();
@@ -78,8 +79,8 @@ double LBFGS::checkDescentDirection(Network *currNetwork, double &initialSearchD
  */
 double LBFGS::lineSearch(Network *currNetwork, const double weightDecay, const double momentum) {
 
-  double alpha_0 = 0;
-  double alpha_max = 1;
+  double alpha_0 = 0.0001;
+  double alpha_max = 1.01;
 
   // Update the current alpha with a value between currentAlpha and alpha_max
   std::uniform_real_distribution<double> unif(alpha_0, alpha_max);
@@ -87,8 +88,8 @@ double LBFGS::lineSearch(Network *currNetwork, const double weightDecay, const d
   //std::default_random_engine re(350);
   std::default_random_engine re;
 
-  double currentAlpha = 0.5;
-  int maxStep = 10000;
+  double currentAlpha = alpha_0;
+  int maxStep = 100;
 
   double initialSearchDirectionDotGradient = 0;
 
@@ -106,12 +107,12 @@ double LBFGS::lineSearch(Network *currNetwork, const double weightDecay, const d
   double c1 = 0.0001;
   double c2 = 0.9;
 
-  double previousAlpha = 0;
+  double previousAlpha = alpha_0;
   double phiPreviousAlpha = std::numeric_limits<double>::max();
   for (int i = 0; i < maxStep; i++) {
-    Network lineSearchNetworkAlphaI(*currNetwork);
 
     //! Compute \phi(\alpha_{i})
+    Network lineSearchNetworkAlphaI(*currNetwork);
     double phiCurrentAlpha = lineSearchNetworkAlphaI.LineSearchEvaluate(currentAlpha, weightDecay, momentum);
 
     if ((phiCurrentAlpha > phi0 + c1 * currentAlpha * initialSearchDirectionDotGradient)
@@ -119,8 +120,8 @@ double LBFGS::lineSearch(Network *currNetwork, const double weightDecay, const d
       return zoom(currNetwork,
                   weightDecay,
                   momentum,
-                  currentAlpha,
                   previousAlpha,
+                  currentAlpha,
                   phi0,
                   initialSearchDirectionDotGradient);
     }
@@ -173,28 +174,37 @@ double LBFGS::zoom(Network *currNetwork,
                    const double phi0,
                    const double initialSearchDirectionDotGradient) {
   int i = 0;
-  double alphaJ = alphaLow;
+  double alphaJ; //  = alphaHi
   const double c1 = 0.0001;
   const double c2 = 0.9;
 
   // Set the seed to have repeatable executions
-  //std::default_random_engine re;
+  std::default_random_engine re;
   //std::default_random_engine re();
 
   while (i < 100) { //TODO: fix condizioni while
 
-    //std::uniform_real_distribution<double> unif(alphaLow, alphaHi);
-    //unif(re);
+    std::uniform_real_distribution<double> unif(alphaLow, alphaHi);
+    alphaJ = unif(re);
     //std::cout << " alphaJ " << alphaJ << std::endl;
 
     //! Compute \phi(\alpha_{j})
     Network lineSearchNetworkAlphaJ(*currNetwork);
     double phiCurrentAlphaJ = lineSearchNetworkAlphaJ.LineSearchEvaluate(alphaJ, weightDecay, momentum);
 
-
     //! Compute \phi(\alpha_{lo})
     Network lineSearchNetworkAlphaLow(*currNetwork);
     double phiCurrentAlphaLow = lineSearchNetworkAlphaLow.LineSearchEvaluate(alphaLow, weightDecay, momentum);
+
+    //! Compute \alpha_{hi}
+    Network lineSearchNetworkAlphaHi(*currNetwork);
+    double phiCurrentAlphaHi = lineSearchNetworkAlphaHi.LineSearchEvaluate(alphaHi, weightDecay, momentum);
+
+    //TODO: fix interpolation
+    //! Update the current alpha with the minimum value of the quadratic
+    //! interpolation between \phi(0) \phi'(0) and \phi(\alpha_{0})
+    //alphaJ = -(initialSearchDirectionDotGradient * alphaJ * alphaJ)
+    //  / 2 * (phiCurrentAlphaHi - phi0 - initialSearchDirectionDotGradient * alphaHi);
 
     if (phiCurrentAlphaJ > phi0 + c1 * alphaJ * initialSearchDirectionDotGradient
         || phiCurrentAlphaJ >= phiCurrentAlphaLow) {
@@ -218,14 +228,6 @@ double LBFGS::zoom(Network *currNetwork,
       alphaLow = alphaJ;
     }
 
-    //! Compute \alpha_{hi}
-    Network lineSearchNetworkAlphaHi(*currNetwork);
-    double phiCurrentAlphaHi = lineSearchNetworkAlphaHi.LineSearchEvaluate(alphaHi, weightDecay, momentum);
-
-    //! Update the current alpha with the minimum value of the quadratic
-    //! interpolation between \phi(0) \phi'(0) and \phi(\alpha_{0})
-    alphaJ = -(initialSearchDirectionDotGradient * std::pow(alphaHi, 2)
-        / 2 * (phiCurrentAlphaHi - phi0 - initialSearchDirectionDotGradient * alphaHi));
     i++;
   }
   return alphaJ;
@@ -318,6 +320,7 @@ void LBFGS::OptimizeUpdateWeight(Network *currNetwork, const double learningRate
   for (Layer &currentLayer : net) {
     arma::mat oldWeight = currentLayer.GetWeight();
     currentLayer.AdjustWeight(stepSize, weightDecay, momentum);
+    std::cout << "Layer gradient: " << arma::norm(currentLayer.GetGradientWeight(), 2) << std::endl;
     if (pastCurvatureLayer.size() == storageSize) {
       pastCurvatureLayer.pop_back();
     }

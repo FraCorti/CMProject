@@ -93,8 +93,8 @@ int Layer::GetOutSize() const {
 //! Ricorda che se vuoi avere run ripetibili, devi usare arma_rng::set_seed(value) al posto di arma::arma_rng::set_seed_random()
 /***/
 void Layer::Init(const double upperBound, const double lowerBound) {
-  arma::arma_rng::set_seed(350);
-  //arma::arma_rng::set_seed_random();
+  //arma::arma_rng::set_seed(350);
+  arma::arma_rng::set_seed_random();
   weight = lowerBound + arma::randu<arma::mat>(outSize, inSize) * (upperBound - lowerBound);
   bias = lowerBound + arma::randu<arma::mat>(outSize, 1) * (upperBound - lowerBound);
 
