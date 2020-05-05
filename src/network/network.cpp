@@ -143,7 +143,6 @@ void Network::train(const arma::mat &&trainingData,
     input = &inputBatch;
     inputLabel = &labelBatch;
     optimizer->OptimizeUpdateWeight(this, learningRate, weightDecay, momentum);
-    //updateWeight(learningRate, weightDecay, momentum);
   }
   epochError = epochError / batchNumber;
 }

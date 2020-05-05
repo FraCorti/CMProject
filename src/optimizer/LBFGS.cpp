@@ -22,7 +22,7 @@ void LBFGS::OptimizeBackward(Network *currNetwork, const arma::mat &&partialDeri
   arma::mat currentGradientWeight;
 
   //! Save previous y_{k-1}= \nabla f_{k} - \nabla f_{k-1}
-  if (pastCurvatureLayer[indexLayer].size()) {
+  if (!pastCurvatureLayer[indexLayer].empty()) {
     pastCurvatureLayer[indexLayer].begin()->second = currentLayer->GetGradientWeight() - oldGradient;
     pastCurvatureLayer[indexLayer].begin()->second.reshape(oldGradient.n_elem, 1);
     secantEquationCondition(indexLayer);
@@ -35,10 +35,11 @@ void LBFGS::OptimizeBackward(Network *currNetwork, const arma::mat &&partialDeri
 
     //! Add "old" gradient (\nabla f_{k-1})
     arma::mat oldGradient = currentLayer->GetGradientWeight();
+    //! Compute "new" gradient (\nabla f_{k})
     currentLayer->Gradient(std::move(currentGradientWeight));
 
     //! Save previous y_{k-1}= \nabla f_{k} - \nabla f_{k-1}
-    if (pastCurvatureLayer[indexLayer].size()) {
+    if (!pastCurvatureLayer[indexLayer].empty()) {
       pastCurvatureLayer[indexLayer].begin()->second = currentLayer->GetGradientWeight() - oldGradient;
       pastCurvatureLayer[indexLayer].begin()->second.reshape(oldGradient.n_elem, 1);
       secantEquationCondition(indexLayer);
@@ -50,6 +51,26 @@ void LBFGS::OptimizeBackward(Network *currNetwork, const arma::mat &&partialDeri
 
   computeLayersDirections(net);
 }
+
+/** Compute dot product between the gradients store inside the layers to
+ *  check if the global direction of the update is descent
+ *
+ * @param currNetwork Current network to be considered
+ */
+double LBFGS::checkDescentDirection(Network *currNetwork, double &initialSearchDirectionDotGradient) {
+  std::vector<Layer> &net = currNetwork->GetNet();
+  // Sum of the \nabla f(w_{k}) * p_{k} where k is the current iteration
+  for (auto &currentLayer : net) {
+    initialSearchDirectionDotGradient += arma::dot(currentLayer.GetGradientWeight(), currentLayer.GetDirection());
+  }
+  // Check descent direction
+  if (initialSearchDirectionDotGradient > 0.0) {
+    std::cout << "L-BFGS line search direction is not a descent direction "
+              << "(terminating)!" << std::endl;
+  }
+  return initialSearchDirectionDotGradient;
+}
+
 /***
  *
  * @param currNet
@@ -63,29 +84,24 @@ double LBFGS::lineSearch(Network *currNetwork, const double weightDecay, const d
   // Update the current alpha with a value between currentAlpha and alpha_max
   std::uniform_real_distribution<double> unif(alpha_0, alpha_max);
   // Set the seed to have repeatable executions
-  std::default_random_engine re(350);
-  //std::default_random_engine re();
+  //std::default_random_engine re(350);
+  std::default_random_engine re;
 
-  double currentAlpha = unif(re);
+  double currentAlpha = 0.5;
   int maxStep = 10000;
 
-  std::vector<Layer> &net = currNetwork->GetNet();
   double initialSearchDirectionDotGradient = 0;
-  // Sum of the \nabla f(w_{k}) * p_{k} where k is the current iteration
-  for (auto &currentLayer : net) {
-    initialSearchDirectionDotGradient += arma::dot(currentLayer.GetGradientWeight(), currentLayer.GetDirection());
-  }
 
-  // Check descent direction
+  //! Check the descent direction of the network and compute \phi'(0)
+  checkDescentDirection(currNetwork, initialSearchDirectionDotGradient);
   if (initialSearchDirectionDotGradient > 0.0) {
-    std::cout << "L-BFGS line search direction is not a descent direction "
-              << "(terminating)!" << std::endl;
     return false;
   }
+
   // Deep copy of the current network
   Network lineSearchNetworkAlpha0(*currNetwork);
 
-  //! current error of the network
+  //! Current error of the network, \phi(0)
   double phi0 = lineSearchNetworkAlpha0.LineSearchEvaluate(0, weightDecay, momentum);
   double c1 = 0.0001;
   double c2 = 0.9;
@@ -95,26 +111,27 @@ double LBFGS::lineSearch(Network *currNetwork, const double weightDecay, const d
   for (int i = 0; i < maxStep; i++) {
     Network lineSearchNetworkAlphaI(*currNetwork);
 
+    //! Compute \phi(\alpha_{i})
     double phiCurrentAlpha = lineSearchNetworkAlphaI.LineSearchEvaluate(currentAlpha, weightDecay, momentum);
+
     if ((phiCurrentAlpha > phi0 + c1 * currentAlpha * initialSearchDirectionDotGradient)
-        || (phiCurrentAlpha >= phiPreviousAlpha && i)) {
+        || (i && phiCurrentAlpha >= phiPreviousAlpha)) {
       return zoom(currNetwork,
                   weightDecay,
                   momentum,
-                  previousAlpha,
                   currentAlpha,
+                  previousAlpha,
                   phi0,
                   initialSearchDirectionDotGradient);
     }
 
+    //! Compute \phi'(\alpha_{i})
     double currentSearchDirectionDotGradient = 0;
-
     for (auto &currentLayer : lineSearchNetworkAlphaI.GetNet()) {
       // We can use currentLayer.GetDirection because in LineSearchEvaluate we don't update the direction
       currentSearchDirectionDotGradient += arma::dot(currentLayer.GetGradientWeight(), currentLayer.GetDirection());
     }
 
-    //
     if (std::abs(currentSearchDirectionDotGradient) <= c2 * initialSearchDirectionDotGradient) {
       return currentAlpha;
     }
@@ -128,15 +145,25 @@ double LBFGS::lineSearch(Network *currNetwork, const double weightDecay, const d
                   phi0,
                   initialSearchDirectionDotGradient);
     }
+    //! Saving \phi(\alpha_{i-1})
+    phiPreviousAlpha = phiCurrentAlpha;
     previousAlpha = currentAlpha;
+    std::uniform_real_distribution<double> unif(currentAlpha, alpha_max);
     currentAlpha = unif(re);
   }
   return currentAlpha;
 }
 
-/***
+/**
  *
- * @return
+ * @param currNetwork
+ * @param weightDecay
+ * @param momentum
+ * @param alphaLow
+ * @param alphaHi
+ * @param phi0 Current \phi(0)
+ * @param initialSearchDirectionDotGradient Current \phi'(0)
+ * @return Step size of the current direction
  */
 double LBFGS::zoom(Network *currNetwork,
                    const double weightDecay,
@@ -146,28 +173,27 @@ double LBFGS::zoom(Network *currNetwork,
                    const double phi0,
                    const double initialSearchDirectionDotGradient) {
   int i = 0;
-  double alphaJ;
+  double alphaJ = alphaLow;
+  const double c1 = 0.0001;
+  const double c2 = 0.9;
+
   // Set the seed to have repeatable executions
-  std::default_random_engine re;
+  //std::default_random_engine re;
   //std::default_random_engine re();
 
   while (i < 100) { //TODO: fix condizioni while
-    // TODO: Interpolate
 
-    // Update the current alpha with a value between currentAlpha and alpha_max
-    std::uniform_real_distribution<double> unif(alphaLow, alphaHi);
-    alphaJ = unif(re);
-    // (alphaHi + alphaLow) / 2;
+    //std::uniform_real_distribution<double> unif(alphaLow, alphaHi);
+    //unif(re);
     //std::cout << " alphaJ " << alphaJ << std::endl;
-    const double c1 = 0.0001;
-    const double c2 = 0.9;
 
+    //! Compute \phi(\alpha_{j})
     Network lineSearchNetworkAlphaJ(*currNetwork);
-
     double phiCurrentAlphaJ = lineSearchNetworkAlphaJ.LineSearchEvaluate(alphaJ, weightDecay, momentum);
 
-    Network lineSearchNetworkAlphaLow(*currNetwork);
 
+    //! Compute \phi(\alpha_{lo})
+    Network lineSearchNetworkAlphaLow(*currNetwork);
     double phiCurrentAlphaLow = lineSearchNetworkAlphaLow.LineSearchEvaluate(alphaLow, weightDecay, momentum);
 
     if (phiCurrentAlphaJ > phi0 + c1 * alphaJ * initialSearchDirectionDotGradient
@@ -176,6 +202,7 @@ double LBFGS::zoom(Network *currNetwork,
     } else {
       double currentSearchDirectionDotGradient = 0;
 
+      //! Compute \phi'(\alpha_{j}) and store in currentSearchDirectionDotGradient
       for (auto &currentLayer : lineSearchNetworkAlphaJ.GetNet()) {
         // We can use currentLayer.GetDirection because in LineSearchEvaluate we don't update the direction
         currentSearchDirectionDotGradient += arma::dot(currentLayer.GetGradientWeight(), currentLayer.GetDirection());
@@ -190,6 +217,15 @@ double LBFGS::zoom(Network *currNetwork,
       }
       alphaLow = alphaJ;
     }
+
+    //! Compute \alpha_{hi}
+    Network lineSearchNetworkAlphaHi(*currNetwork);
+    double phiCurrentAlphaHi = lineSearchNetworkAlphaHi.LineSearchEvaluate(alphaHi, weightDecay, momentum);
+
+    //! Update the current alpha with the minimum value of the quadratic
+    //! interpolation between \phi(0) \phi'(0) and \phi(\alpha_{0})
+    alphaJ = -(initialSearchDirectionDotGradient * std::pow(alphaHi, 2)
+        / 2 * (phiCurrentAlphaHi - phi0 - initialSearchDirectionDotGradient * alphaHi));
     i++;
   }
   return alphaJ;
@@ -208,7 +244,7 @@ void LBFGS::computeLayersDirections(std::vector<Layer> &net) {
     //! where \gamma_{k} = \frac{s^T_{k-1}y_{k-1}}{y^T_{k-1}y_{k-1}}
     arma::mat approxInvHessian(sizeGradient, 1, arma::fill::ones);
     //! Skip first gamma computation
-    if (pastCurvatureLayer[indexLayer].size()) {
+    if (!pastCurvatureLayer[indexLayer].empty()) {
       double
           gamma = arma::as_scalar(
           (pastCurvatureLayer[indexLayer].front().first.t() * pastCurvatureLayer[indexLayer].front().second)
@@ -225,8 +261,6 @@ void LBFGS::computeLayersDirections(std::vector<Layer> &net) {
     currentLayerDirection.reshape(currentLayer.GetOutSize(), currentLayer.GetInSize());
     currentLayer.SetDirection(std::move(currentLayerDirection));
 
-    //! reshape weight column vector to original matrix form
-    q.reshape(currentLayer.GetOutSize(), currentLayer.GetInSize());
     indexLayer++;
   }
 
@@ -259,6 +293,7 @@ void LBFGS::searchDirection(arma::mat &&approxInvHessian, arma::mat &&q, arma::m
   arma::mat beta;
   auto currentRho = rho.begin();
   auto currentAlpha = alpha.begin();
+
   //! Iterate from tail to head ( from the latest curvature information to the earliest)
   for (auto currentPastCurvature = pastCurvatureLayer[indexLayer].rbegin();
        currentPastCurvature != pastCurvatureLayer[indexLayer].rend();
@@ -296,8 +331,9 @@ void LBFGS::OptimizeUpdateWeight(Network *currNetwork, const double learningRate
   }
 }
 LBFGS::LBFGS(const int nLayer) // TODO: capire come settare lo storage size
-    : storageSize(50), pastCurvatureLayer(nLayer) {
+    : pastCurvatureLayer(nLayer), storageSize(50) {
 }
+
 /***
  * Check if secant equation (s_{k}^T y_{k}>0) is satisfied.
  * @param indexLayer index of the current layer in the "pastCurvatureLayer" vector

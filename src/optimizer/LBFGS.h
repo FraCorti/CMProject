@@ -34,6 +34,7 @@ class LBFGS : public Optimizer {
                               arma::mat &&currentLayerDirection,
                               const size_t indexLayer);
   void secantEquationCondition(const size_t indexLayer);
+  double checkDescentDirection(Network *currNetwork, double &initialSearchDirectionDotGradient);
  public:
   ~LBFGS() override = default;
   LBFGS(const int nLayer);
