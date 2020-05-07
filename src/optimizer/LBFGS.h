@@ -41,6 +41,13 @@ class LBFGS : public Optimizer {
   double quadraticInterpolation(double alphaLo, double phiAlphaLo, double searchDirectionDotGradientAlphaLo,
                                 double alphaHi,
                                 double phiAlphaHi);
+  double cubicInterpolation(double alphaLo,
+                            double phiAlphaLo,
+                            double searchDirectionDotGradientAlphaLo,
+                            double alphaHi,
+                            double phiAlphaHi,
+                            double searchDirectionDotGradientAlphaHi);
+
  public:
   ~LBFGS() override = default;
   LBFGS(const int nLayer);

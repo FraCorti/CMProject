@@ -84,7 +84,7 @@ double LBFGS::lineSearch(Network *currNetwork, const double weightDecay, const d
   //std::default_random_engine re(350);
   std::default_random_engine re;
 
-  double currentAlpha = 1;
+  double currentAlpha = unif(re);
   int maxStep = 100;
 
   //! Compute \phi'(0) and check the descent direction of the network
@@ -167,8 +167,8 @@ double LBFGS::zoom(Network *currNetwork,
                    const double phi0,
                    const double initialSearchDirectionDotGradient) {
   int i = 0;
-  double alphaJ; //  = alphaHi
-  const double c1 = 0.0001;
+  double alphaJ = 1; //  = alphaHi
+  const double c1 = 0.001;
   const double c2 = 0.9;
 
   // Set the seed to have repeatable executions
@@ -176,10 +176,6 @@ double LBFGS::zoom(Network *currNetwork,
   //std::default_random_engine re();
 
   while (i < 100) { //TODO: fix condizioni while
-
-    std::uniform_real_distribution<double> unif(alphaLow, alphaHi);
-    alphaJ = unif(re);
-    //std::cout << " alphaJ " << alphaJ << std::endl;
 
     //! Compute \phi(\alpha_{j})
     Network lineSearchNetworkAlphaJ(*currNetwork);
@@ -194,16 +190,36 @@ double LBFGS::zoom(Network *currNetwork,
     //! Compute \alpha_{hi}
     Network lineSearchNetworkAlphaHi(*currNetwork);
     double phiCurrentAlphaHi = lineSearchNetworkAlphaHi.LineSearchEvaluate(alphaHi, weightDecay, momentum);
+    double currentSearchDirectionDotGradientAlphaHi = computeDirectionDescent(&lineSearchNetworkAlphaHi);
 
     //quadraticInterpolation
-    alphaJ = quadraticInterpolation(alphaLow,
-                                    phiCurrentAlphaLow,
-                                    currentSearchDirectionDotGradientAlphaLow,
-                                    alphaHi,
-                                    phiCurrentAlphaHi);
+    if (phiCurrentAlphaJ > phi0 + c1 * alphaJ * initialSearchDirectionDotGradient) {
+      alphaJ = quadraticInterpolation(alphaLow,
+                                      phiCurrentAlphaLow,
+                                      currentSearchDirectionDotGradientAlphaLow,
+                                      alphaHi,
+                                      phiCurrentAlphaHi);
+      Network lineSearchNetworkAlphaJ(*currNetwork);
+      phiCurrentAlphaJ = lineSearchNetworkAlphaJ.LineSearchEvaluate(alphaJ, weightDecay, momentum);
+    }
+    if (phiCurrentAlphaJ > phi0 + c1 * alphaJ * initialSearchDirectionDotGradient) {
+      double alphaCubicInter = cubicInterpolation(alphaLow,
+                                                  phiCurrentAlphaLow,
+                                                  currentSearchDirectionDotGradientAlphaLow,
+                                                  alphaHi,
+                                                  phiCurrentAlphaHi,
+                                                  currentSearchDirectionDotGradientAlphaHi);
+      if (alphaCubicInter > 0 && alphaCubicInter <= 1) {
+        alphaJ = alphaCubicInter;
+        Network lineSearchNetworkAlphaJ(*currNetwork);
+        phiCurrentAlphaJ = lineSearchNetworkAlphaJ.LineSearchEvaluate(alphaJ, weightDecay, momentum);
+      }
+    }
     // Bisection interpolation if quadratic goes wrong
-    if (alphaLow == alphaJ || alphaHi == alphaJ) {
+    if (0 == alphaJ) {
       alphaJ = alphaLow + (alphaHi - alphaLow) / 2;
+      Network lineSearchNetworkAlphaJ(*currNetwork);
+      phiCurrentAlphaJ = lineSearchNetworkAlphaJ.LineSearchEvaluate(alphaJ, weightDecay, momentum);
     }
 
     if (phiCurrentAlphaJ > phi0 + c1 * alphaJ * initialSearchDirectionDotGradient
@@ -383,6 +399,21 @@ double LBFGS::quadraticInterpolation(double alphaLo,
 
 
   return -(searchDirectionDotGradientAlphaLo * std::pow(alphaHi, 2))
-      / 2 * (phiAlphaHi - phiAlphaLo - searchDirectionDotGradientAlphaLo * alphaHi);
+      / (2 * (phiAlphaHi - phiAlphaLo - searchDirectionDotGradientAlphaLo * alphaHi));
 
+}
+double LBFGS::cubicInterpolation(double alphaLo,
+                                 double phiAlphaLo,
+                                 double searchDirectionDotGradientAlphaLo,
+                                 double alphaHi,
+                                 double phiAlphaHi,
+                                 double searchDirectionDotGradientAlphaHi) {
+  double d1 = searchDirectionDotGradientAlphaLo + searchDirectionDotGradientAlphaHi - 3 * (
+      phiAlphaLo - phiAlphaHi) / (alphaLo - alphaHi);
+  double d2 = (std::signbit(alphaHi - alphaLo) ? -1 : 1) *
+      std::sqrt(std::pow(d1, 2) - searchDirectionDotGradientAlphaLo * searchDirectionDotGradientAlphaHi);
+
+  return alphaHi
+      - (alphaHi - alphaLo) * ((searchDirectionDotGradientAlphaHi + d2 - d1) / searchDirectionDotGradientAlphaHi
+          - searchDirectionDotGradientAlphaLo + 2 * d2);
 }

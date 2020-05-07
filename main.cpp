@@ -97,8 +97,8 @@ int main() {
   Network cupNetwork;
   cupNetwork.SetLossFunction("meanSquaredError");
 
-  Layer firstLayer(trainingSet.n_cols - labelCol, 4, "tanhFunction");
-  Layer lastLayer(4, 1, "logisticFunction");
+  Layer firstLayer(trainingSet.n_cols - labelCol, 15, "tanhFunction");
+  Layer lastLayer(15, 1, "logisticFunction");
   cupNetwork.Add(firstLayer);
   cupNetwork.Add(lastLayer);
   cupNetwork.SetOptimizer("LBFGS");//LBFGS gradientDescent
@@ -110,7 +110,7 @@ int main() {
                    testLabels,
                    trainingSet,
                    trainingLabels.n_cols,
-                   600,
+                   200,
                    trainingLabels.n_rows,
                    1,
                    0.0,
