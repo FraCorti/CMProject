@@ -18,6 +18,9 @@ class LBFGS : public Optimizer {
       pastCurvatureLayer;
 
   unsigned long storageSize;
+  double lineSearchBacktracking(Network *currNet,
+                                const double weightDecay, const double momentum);
+
   double lineSearch(Network *currNet,
                     const double weightDecay, const double momentum);
 
@@ -35,13 +38,15 @@ class LBFGS : public Optimizer {
                               const size_t indexLayer);
   void secantEquationCondition(const size_t indexLayer);
   inline double computeDirectionDescent(Network *currNetwork);
+  double quadraticInterpolation(double alphaLo, double phiAlphaLo, double searchDirectionDotGradientAlphaLo,
+                                double alphaHi,
+                                double phiAlphaHi);
  public:
   ~LBFGS() override = default;
   LBFGS(const int nLayer);
   void OptimizeBackward(Network *currNet, const arma::mat &&partialDerivativeOutput) override;
   void OptimizeUpdateWeight(Network *network, const double learningRate,
                             const double weightDecay, const double momentum) override;
-
 };
 
 #endif //MLPROJECT_SRC_OPTIMIZER_LBFGS_H_

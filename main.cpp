@@ -112,7 +112,7 @@ int main() {
                    trainingLabels.n_cols,
                    600,
                    trainingLabels.n_rows,
-                   0.9,
+                   1,
                    0.0,
                    0.0);
 

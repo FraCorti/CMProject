@@ -58,14 +58,14 @@ void LBFGS::OptimizeBackward(Network *currNetwork, const arma::mat &&partialDeri
  * @param initialSearchDirectionDotGradient Summation of all the layers dot products result
  */
 double LBFGS::computeDirectionDescent(Network *currNetwork) {
-  double initialSearchDirectionDotGradient = 0;
+  double SearchDirectionDotGradient = 0;
   std::vector<Layer> &net = currNetwork->GetNet();
   // Sum of the \nabla f(w_{k}) * p_{k} where k is the current iteration
   for (auto &currentLayer : net) {
     // We can use currentLayer.GetDirection because in LineSearchEvaluate we don't update the direction
-    initialSearchDirectionDotGradient += arma::dot(currentLayer.GetGradientWeight(), currentLayer.GetDirection());
+    SearchDirectionDotGradient += arma::dot(currentLayer.GetGradientWeight(), currentLayer.GetDirection());
   }
-  return initialSearchDirectionDotGradient;
+  return SearchDirectionDotGradient;
 }
 
 /**
@@ -75,8 +75,8 @@ double LBFGS::computeDirectionDescent(Network *currNetwork) {
  */
 double LBFGS::lineSearch(Network *currNetwork, const double weightDecay, const double momentum) {
 
-  double alpha_0 = 1;
-  double alpha_max = 1.01;
+  double alpha_0 = 0;
+  double alpha_max = 1;
 
   // Update the current alpha with a value between currentAlpha and alpha_max
   std::uniform_real_distribution<double> unif(alpha_0, alpha_max);
@@ -84,7 +84,7 @@ double LBFGS::lineSearch(Network *currNetwork, const double weightDecay, const d
   //std::default_random_engine re(350);
   std::default_random_engine re;
 
-  double currentAlpha = alpha_0;
+  double currentAlpha = 1;
   int maxStep = 100;
 
   //! Compute \phi'(0) and check the descent direction of the network
@@ -188,16 +188,23 @@ double LBFGS::zoom(Network *currNetwork,
     //! Compute \phi(\alpha_{lo})
     Network lineSearchNetworkAlphaLow(*currNetwork);
     double phiCurrentAlphaLow = lineSearchNetworkAlphaLow.LineSearchEvaluate(alphaLow, weightDecay, momentum);
+    double currentSearchDirectionDotGradientAlphaLow = computeDirectionDescent(&lineSearchNetworkAlphaLow);
+
 
     //! Compute \alpha_{hi}
     Network lineSearchNetworkAlphaHi(*currNetwork);
     double phiCurrentAlphaHi = lineSearchNetworkAlphaHi.LineSearchEvaluate(alphaHi, weightDecay, momentum);
 
-    //TODO: fix interpolation
-    //! Update the current alpha with the minimum value of the quadratic
-    //! interpolation between \phi(0) \phi'(0) and \phi(\alpha_{0})
-    //alphaJ = -(initialSearchDirectionDotGradient * alphaJ * alphaJ)
-    //  / 2 * (phiCurrentAlphaHi - phi0 - initialSearchDirectionDotGradient * alphaHi);
+    //quadraticInterpolation
+    alphaJ = quadraticInterpolation(alphaLow,
+                                    phiCurrentAlphaLow,
+                                    currentSearchDirectionDotGradientAlphaLow,
+                                    alphaHi,
+                                    phiCurrentAlphaHi);
+    // Bisection interpolation if quadratic goes wrong
+    if (alphaLow == alphaJ || alphaHi == alphaJ) {
+      alphaJ = alphaLow + (alphaHi - alphaLow) / 2;
+    }
 
     if (phiCurrentAlphaJ > phi0 + c1 * alphaJ * initialSearchDirectionDotGradient
         || phiCurrentAlphaJ >= phiCurrentAlphaLow) {
@@ -335,4 +342,47 @@ void LBFGS::secantEquationCondition(const size_t indexLayer) {
       <= 0) {
     throw Exception("Unsatisfied secant equation \n");
   }
+}
+double LBFGS::lineSearchBacktracking(Network *currNetwork, const double weightDecay, const double momentum) {
+  double alphaT = 1;
+  double rho = 0.54;
+  double c = 0.0001;
+
+  std::vector<Layer> &net = currNetwork->GetNet();
+  double initialSearchDirectionDotGradient = 0;
+  // Sum of the \nabla f(w_{k}) * p_{k} where k is the current iteration
+  for (auto &currentLayer : net) {
+    initialSearchDirectionDotGradient += arma::dot(currentLayer.GetGradientWeight(), currentLayer.GetDirection());
+  }
+
+  Network lineSearchNetworkAlpha0(*currNetwork);
+  double f0 = lineSearchNetworkAlpha0.LineSearchEvaluate(0, weightDecay, momentum);
+
+  Network lineSearchNetworkAlphaT(*currNetwork);
+  double fT = lineSearchNetworkAlphaT.LineSearchEvaluate(alphaT, weightDecay, momentum);
+
+  int i;
+  while (fT <= f0 + c * alphaT * initialSearchDirectionDotGradient && i < 10000) {
+    //std::cout << " alphaT " << alphaT << std::endl;
+    alphaT *= rho;
+
+    Network lineSearchNetworkAlphaT(*currNetwork);
+    fT = lineSearchNetworkAlphaT.LineSearchEvaluate(alphaT, weightDecay, momentum);
+    i++;
+  }
+
+  return alphaT;
+}
+double LBFGS::quadraticInterpolation(double alphaLo,
+                                     double phiAlphaLo,
+                                     double searchDirectionDotGradientAlphaLo,
+                                     double alphaHi,
+                                     double phiAlphaHi) {
+  //! Update the current alpha with the minimum value of the quadratic
+  //! quadraticInterpolation between \phi(0) \phi'(0) and \phi(\alpha_{0})
+
+
+  return -(searchDirectionDotGradientAlphaLo * std::pow(alphaHi, 2))
+      / 2 * (phiAlphaHi - phiAlphaLo - searchDirectionDotGradientAlphaLo * alphaHi);
+
 }
