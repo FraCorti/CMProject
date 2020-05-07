@@ -52,34 +52,30 @@ void LBFGS::OptimizeBackward(Network *currNetwork, const arma::mat &&partialDeri
   computeLayersDirections(net);
 }
 
-/** Compute dot product between the gradients store inside the layers to
- *  check if the global direction of the update is descent
+/** Compute dot product between the gradients store inside the layers \phi'
  *
  * @param currNetwork Current network to be considered
- * @param initialSearchDirectionDotGradient Summation of all the layers products result
+ * @param initialSearchDirectionDotGradient Summation of all the layers dot products result
  */
-double LBFGS::checkDescentDirection(Network *currNetwork, double &initialSearchDirectionDotGradient) {
+double LBFGS::computeDirectionDescent(Network *currNetwork) {
+  double initialSearchDirectionDotGradient = 0;
   std::vector<Layer> &net = currNetwork->GetNet();
   // Sum of the \nabla f(w_{k}) * p_{k} where k is the current iteration
   for (auto &currentLayer : net) {
+    // We can use currentLayer.GetDirection because in LineSearchEvaluate we don't update the direction
     initialSearchDirectionDotGradient += arma::dot(currentLayer.GetGradientWeight(), currentLayer.GetDirection());
-  }
-  // Check descent direction
-  if (initialSearchDirectionDotGradient > 0.0) {
-    std::cout << "L-BFGS line search direction is not a descent direction "
-              << "(terminating)!" << std::endl;
   }
   return initialSearchDirectionDotGradient;
 }
 
-/***
+/**
  *
  * @param currNet
- * @return
+ * @return Step size that satisfies A-W conditions
  */
 double LBFGS::lineSearch(Network *currNetwork, const double weightDecay, const double momentum) {
 
-  double alpha_0 = 0.0001;
+  double alpha_0 = 1;
   double alpha_max = 1.01;
 
   // Update the current alpha with a value between currentAlpha and alpha_max
@@ -91,11 +87,12 @@ double LBFGS::lineSearch(Network *currNetwork, const double weightDecay, const d
   double currentAlpha = alpha_0;
   int maxStep = 100;
 
-  double initialSearchDirectionDotGradient = 0;
-
-  //! Check the descent direction of the network and compute \phi'(0)
-  checkDescentDirection(currNetwork, initialSearchDirectionDotGradient);
+  //! Compute \phi'(0) and check the descent direction of the network
+  double initialSearchDirectionDotGradient = computeDirectionDescent(currNetwork);
+  // Check descent direction
   if (initialSearchDirectionDotGradient > 0.0) {
+    std::cout << "L-BFGS line search direction is not a descent direction "
+              << "(terminating)!" << std::endl;
     return false;
   }
 
@@ -127,11 +124,7 @@ double LBFGS::lineSearch(Network *currNetwork, const double weightDecay, const d
     }
 
     //! Compute \phi'(\alpha_{i})
-    double currentSearchDirectionDotGradient = 0;
-    for (auto &currentLayer : lineSearchNetworkAlphaI.GetNet()) {
-      // We can use currentLayer.GetDirection because in LineSearchEvaluate we don't update the direction
-      currentSearchDirectionDotGradient += arma::dot(currentLayer.GetGradientWeight(), currentLayer.GetDirection());
-    }
+    double currentSearchDirectionDotGradient = computeDirectionDescent(&lineSearchNetworkAlphaI);
 
     if (std::abs(currentSearchDirectionDotGradient) <= c2 * initialSearchDirectionDotGradient) {
       return currentAlpha;
@@ -210,13 +203,9 @@ double LBFGS::zoom(Network *currNetwork,
         || phiCurrentAlphaJ >= phiCurrentAlphaLow) {
       alphaHi = alphaJ;
     } else {
-      double currentSearchDirectionDotGradient = 0;
 
-      //! Compute \phi'(\alpha_{j}) and store in currentSearchDirectionDotGradient
-      for (auto &currentLayer : lineSearchNetworkAlphaJ.GetNet()) {
-        // We can use currentLayer.GetDirection because in LineSearchEvaluate we don't update the direction
-        currentSearchDirectionDotGradient += arma::dot(currentLayer.GetGradientWeight(), currentLayer.GetDirection());
-      }
+      //! Compute \phi'(\alpha_{j})
+      double currentSearchDirectionDotGradient = computeDirectionDescent(&lineSearchNetworkAlphaJ);
 
       if (std::abs(currentSearchDirectionDotGradient) <= -c2 * initialSearchDirectionDotGradient) {
         return alphaJ;

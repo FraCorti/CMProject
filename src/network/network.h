@@ -46,7 +46,7 @@ class Network {
   void SetLossFunction(const std::string loss_function);
   void SetOptimizer(const std::string optimizer_);
   void Add(Layer &layer);
-  void Init(const double upperBound, const double lowerBound);
+  void Init(const double upperBound, const double lowerBound, const int seed = 0);
   double Train(arma::mat validationSet, arma::mat validationLabelSet, arma::mat trainingSet,
                int labelCol,
                int epoch,

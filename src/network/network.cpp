@@ -15,10 +15,12 @@ void Network::Add(Layer &layer) {
  *
  *  @param upperBound The maximum random value generated
  *  @param lowerBound The minimum random value generated
+ *  @param seed The seed set by the user
  * */
-void Network::Init(const double upperBound = 1, const double lowerBound = -1) {
+void Network::Init(const double upperBound = 1, const double lowerBound = -1, const int seed) {
+  //std::cout <<"Seed: "<< seed << std::endl;
   for (Layer &i : net) {
-    i.Init(upperBound, lowerBound);
+    i.Init(upperBound, lowerBound, seed);
   }
 }
 
