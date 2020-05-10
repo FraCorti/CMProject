@@ -115,7 +115,7 @@ set cbtics  norangelimit autofreq
 set rtics axis in scale 1,0.5 nomirror norotate  autojustify
 set rtics  norangelimit autofreq 
 unset ttics
-set title "Convergence speed Monk 3" 
+set title "Convergence speed Monk 2" 
 set title  font ",14" norotate
 set timestamp bottom 
 set timestamp "" 
@@ -173,5 +173,5 @@ GNUTERM = "qt"
 x = 0.0
 GPFUN_f = "f(x) = x"
 # add smooth bezier to the end to have curves more smooth
-plot "LBFGS_5_Monk3_Results_NoReg.txt" w lines title "5 past curvature", "LBFGS_10_Monk3_Results_NoReg.txt" w lines title "10 past curvature","LBFGS_15_Monk3_Results_NoReg.txt" w lines title "15 past curvature"
+plot "../LBFGS/Monk2/LBFGS_15_Monk2_Results_NoReg.txt" w lines title "LBGFS" lt rgb "red" lw 2, "../SGD/Monk2/SGD_0.9_Monk2_Results.txt" w lines title "SGD" lt rgb "blue" lw 2
 #    EOF
