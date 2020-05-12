@@ -202,6 +202,7 @@ double LBFGS::zoom(Network *currNetwork,
       Network lineSearchNetworkAlphaJ(*currNetwork);
       phiCurrentAlphaJ = lineSearchNetworkAlphaJ.LineSearchEvaluate(alphaJ, weightDecay, momentum);
     }
+    //cubicInterpolation
     if (phiCurrentAlphaJ > phi0 + c1 * alphaJ * initialSearchDirectionDotGradient) {
       double alphaCubicInter = cubicInterpolation(alphaLow,
                                                   phiCurrentAlphaLow,

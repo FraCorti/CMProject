@@ -2,20 +2,63 @@
 #include "armadillo"
 #include "src/preprocessing/preprocessing.h"
 #include "src/network/network.h"
-#include "NDOFiOracle/Bundle.h"
-
+#include <gurobi_c++.h>
 #include <chrono>
-int main() {
-  auto NDOFirstTry = NDO_di_unipi_it::Bundle();
+using namespace std;
 
-  Preprocessing cupPreprocessing("../../data/monk/monks1_train_formatted.csv");
+int main() {
+
+  try {
+
+    // Create an environment
+    GRBEnv env = GRBEnv(true);
+    env.set("LogFile", "mip1.log");
+    env.start();
+
+    // Create an empty model
+    GRBModel model = GRBModel(env);
+
+    // Create variables
+    GRBVar x = model.addVar(0.0, 1.0, 0.0, GRB_BINARY, "x");
+    GRBVar y = model.addVar(0.0, 1.0, 0.0, GRB_BINARY, "y");
+    GRBVar z = model.addVar(0.0, 1.0, 0.0, GRB_BINARY, "z");
+
+    // Set objective: maximize x + y + 2 z
+    model.setObjective(x + y + 2 * z, GRB_MAXIMIZE);
+
+    // Add constraint: x + 2 y + 3 z <= 4
+    model.addConstr(x + 2 * y + 3 * z <= 4, "c0");
+
+    // Add constraint: x + y >= 1
+    model.addConstr(x + y >= 1, "c1");
+
+    // Optimize model
+    model.optimize();
+
+    cout << x.get(GRB_StringAttr_VarName) << " "
+         << x.get(GRB_DoubleAttr_X) << endl;
+    cout << y.get(GRB_StringAttr_VarName) << " "
+         << y.get(GRB_DoubleAttr_X) << endl;
+    cout << z.get(GRB_StringAttr_VarName) << " "
+         << z.get(GRB_DoubleAttr_X) << endl;
+
+    cout << "Obj: " << model.get(GRB_DoubleAttr_ObjVal) << endl;
+
+  } catch (GRBException e) {
+    cout << "Error code = " << e.getErrorCode() << endl;
+    cout << e.getMessage() << endl;
+  } catch (...) {
+    cout << "Exception during optimization" << endl;
+  }
+
+  Preprocessing cupPreprocessing("../../data/ML-CUP19-TR_formatted.csv");
   arma::mat trainingSet;
   arma::mat validationSet;
   arma::mat testSet;
 
-  cupPreprocessing.GetSplit(100, 0, 0, std::move(trainingSet), std::move(validationSet), std::move(testSet));
-  testSet.load("../../data/monk/monks1_test_formatted.csv");
-  int labelCol = 1;
+  cupPreprocessing.GetSplit(80, 10, 10, std::move(trainingSet), std::move(validationSet), std::move(testSet));
+  //testSet.load("../../data/monk/monks2_test_formatted.csv");
+  int labelCol = 2;
 
 
   // Split the data from the training set.
@@ -97,8 +140,8 @@ int main() {
   Network cupNetwork;
   cupNetwork.SetLossFunction("meanSquaredError");
 
-  Layer firstLayer(trainingSet.n_cols - labelCol, 15, "tanhFunction");
-  Layer lastLayer(15, 1, "logisticFunction");
+  Layer firstLayer(trainingSet.n_cols - labelCol, 75, "tanhFunction");
+  Layer lastLayer(75, labelCol, "linearFunction"); // logisticFunction linearFunction
   cupNetwork.Add(firstLayer);
   cupNetwork.Add(lastLayer);
   cupNetwork.SetOptimizer("LBFGS");//LBFGS gradientDescent
@@ -106,18 +149,22 @@ int main() {
 
   cupNetwork.Init(1, -1);
 
-  cupNetwork.Train(testData,
-                   testLabels,
+  cupNetwork.Train(validationData,
+                   validationLabels,
                    trainingSet,
                    trainingLabels.n_cols,
                    200,
                    trainingLabels.n_rows,
-                   1,
+                   0.0045,
                    0.0,
                    0.0);
 
-  cupNetwork.TestWithThreshold(std::move(testData), std::move(testLabels), 0.5);
+  arma::mat mat;
 
+  //cupNetwork.TestWithThreshold(std::move(testData), std::move(testLabels), 0.5);
+
+  cupNetwork.Test(std::move(testData), std::move(testLabels), std::move(mat));
+  mat.print("result");
   //! Cross validation implementation
   /*
   CrossValidation cross_validation;

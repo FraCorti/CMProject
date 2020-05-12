@@ -1,10 +1,15 @@
 cmake_minimum_required(VERSION 3.15)
 project(CMProject VERSION 1.0.0 LANGUAGES CXX)
+set(CMAKE_CXX_STANDARD 17)
+
+list(INSERT CMAKE_MODULE_PATH 0 ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
 # find package needed by the project
-find_package(NDOFiOracle REQUIRED)
 find_package(Threads REQUIRED)
 find_package(OpenMP REQUIRED)
+find_package(GUROBI REQUIRED)
+
+include_directories(${GUROBI_INCLUDE_DIRS})
 
 # if not specified force Relase build type
 if (NOT CMAKE_BUILD_TYPE)
@@ -62,12 +67,15 @@ add_library(Neuradillo
         src/optimizer/gradientDescent.cpp
         src/optimizer/gradientDescent.h
         src/optimizer/LBFGS.cpp src/optimizer/LBFGS.h
-        src/exception/exception.cpp src/exception/exception.h)
+        src/exception/exception.cpp src/exception/exception.h src/optimizer/ProximalBundleMethod.cpp src/optimizer/ProximalBundleMethod.h)
 target_link_libraries(Neuradillo
         ${CONAN_LIBS}
         NDOFiOracle
         OpenMP::OpenMP_CXX
         Threads::Threads
+        optimized ${GUROBI_CXX_LIBRARY}
+        debug ${GUROBI_CXX_DEBUG_LIBRARY}
+        ${GUROBI_LIBRARY}
         )
 set_target_properties(Neuradillo PROPERTIES
         CXX_STANDARD 17
