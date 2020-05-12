@@ -7,6 +7,7 @@
 
 #include <deque>
 #include "optimizer.h"
+#include <gurobi_c++.h>
 
 class ProximalBundleMethod : public Optimizer {
   std::vector<std::deque<std::tuple<arma::mat, arma::mat, arma::mat>>>

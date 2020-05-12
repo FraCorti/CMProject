@@ -5,6 +5,7 @@
 #include "network.h"
 #include "../optimizer/gradientDescent.h"
 #include "../optimizer/LBFGS.h"
+#include "../optimizer/ProximalBundleMethod.h"
 
 void Network::Add(Layer &layer) {
   net.push_back(layer);
@@ -309,6 +310,8 @@ void Network::SetOptimizer(const std::string optimizer_) {
     optimizer = new GradientDescent();
   } else if (optimizer_ == "LBFGS") {
     optimizer = new LBFGS(net.size());
+  } else if (optimizer_ == "proximalBundleMethod") {
+    optimizer = new ProximalBundleMethod(net.size());
   } else {
     optimizer = new GradientDescent();
   }
