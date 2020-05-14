@@ -114,6 +114,7 @@ class Layer {
   [[nodiscard]] int GetOutSize() const;
   void Init(const double upperBound, const double lowerBound, const int seed);
   void SetDirection(const arma::mat &&optimizerComputedDirection);
+  void SetWeight(const arma::mat &&newWeight);
 
   const arma::mat &GetDirection() const;
 };

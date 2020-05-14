@@ -77,3 +77,9 @@ void ProximalBundleMethod::OptimizeUpdateWeight(Network *network,
 ProximalBundleMethod::ProximalBundleMethod(const int nLayer) : B(nLayer), storageSize(25) {
 
 }
+void ProximalBundleMethod::vectorize() {
+
+}
+void ProximalBundleMethod::unvectorize() {
+
+}

@@ -13,6 +13,8 @@ class ProximalBundleMethod : public Optimizer {
   std::vector<std::deque<std::tuple<arma::mat, arma::mat, arma::mat>>>
       B;
   size_t storageSize;
+  void vectorize();
+  void unvectorize();
  public:
   ~ProximalBundleMethod() override = default;
   ProximalBundleMethod(const int nLayer);

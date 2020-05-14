@@ -179,3 +179,7 @@ void Layer::LineSearchForward(const arma::mat &&input,
       (bias + nesterovMomentum * deltaBias - stepSize * arma::mean(gradient, 1) + nesterovMomentum * deltaBias);
 
 }
+void Layer::SetWeight(const arma::mat &&newWeight) {
+  weight = newWeight;
+  //TODO: bias update
+}
