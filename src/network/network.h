@@ -24,6 +24,8 @@ class Network {
   //! Saving input data for line search
   arma::mat *input;
   arma::mat *inputLabel;
+  //! Saving error for optimizer
+  arma::mat *batchError;  // TODO: is this needed?
 
   void train(const arma::mat &&trainingData,
              const arma::mat &&trainLabels,
@@ -43,6 +45,7 @@ class Network {
   void inference(arma::mat &&, arma::mat &&);
 
  public:
+  void GetBatchError(arma::mat &&batchError_);
   void SetLossFunction(const std::string loss_function);
   void SetOptimizer(const std::string optimizer_);
   void Add(Layer &layer);

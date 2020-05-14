@@ -3,9 +3,31 @@
 //
 
 #include "ProximalBundleMethod.h"
-void ProximalBundleMethod::OptimizeBackward(Network *currNet, const arma::mat &&partialDerivativeOutput) {
 
-  try {
+ProximalBundleMethod::ProximalBundleMethod(const int nLayer) : B(nLayer), storageSize(25) {
+
+}
+
+void ProximalBundleMethod::OptimizeBackward(Network *currNet, const arma::mat &&partialDerivativeOutput) {
+  arma::Col<double> columnParameters;
+  arma::Col<double> columnGradients;
+
+  //! Store the parameters (weight and bias) in a single column vector
+  vectorizeParameters(currNet, std::move(columnParameters));
+  //columnParameters.print("Column parameters after move");
+
+  computeGradient(currNet, std::move(partialDerivativeOutput));
+  //! Store the gradients (weight and biases) in a single column vector
+  vectorizeGradients(currNet, std::move(columnGradients));
+  //! Store the transpose of the column gradients
+  arma::rowvec subgradient = arma::rowvec(columnGradients.memptr(), columnGradients.n_elem, false);
+
+  arma::mat fc;
+  currNet->GetBatchError(std::move(fc));
+
+  arma::mat f = fc - arma::dot(subgradient, columnParameters);
+
+  /*try {
 
     // Create an environment
     GRBEnv env = GRBEnv(true);
@@ -47,20 +69,7 @@ void ProximalBundleMethod::OptimizeBackward(Network *currNet, const arma::mat &&
   } catch (...) {
     std::cout << "Exception during optimization" << std::endl;
   }
-
-  std::vector<Layer> &net = currNet->GetNet();
-  auto currentLayer = net.rbegin();
-  currentLayer->OutputLayerGradient(std::move(partialDerivativeOutput));
-  arma::mat currentGradientWeight;
-  currentLayer->RetroPropagationError(std::move(currentGradientWeight));
-  currentLayer++;
-  // Iterate from the precedent Layer of the tail to the head
-  for (; currentLayer != net.rend(); currentLayer++) {
-    currentLayer->Gradient(std::move(currentGradientWeight));
-    currentLayer->RetroPropagationError(std::move(currentGradientWeight));
-  }
-
-
+ */
 
   // Risolutore master problem
   // Evaluate with new weight
@@ -68,18 +77,91 @@ void ProximalBundleMethod::OptimizeBackward(Network *currNet, const arma::mat &&
 
 
 }
+
+/** Compute the gradient for all layers and retropagate the error
+ *
+ * @param currNet
+ * @param partialDerivativeOutput
+ */
+void ProximalBundleMethod::computeGradient(Network *currNet, const arma::mat &&partialDerivativeOutput) {
+  std::vector<Layer> &net = currNet->GetNet();
+  auto currentLayer = net.rbegin();
+  currentLayer->OutputLayerGradient(std::move(partialDerivativeOutput));
+  currentLayer->SetDirection(std::move(currentLayer->GetGradientWeight()));
+  arma::mat currentGradientWeight;
+  currentLayer->RetroPropagationError(std::move(currentGradientWeight));
+  currentLayer++;
+  // Iterate from the precedent Layer of the tail to the head
+  for (; currentLayer != net.rend(); currentLayer++) {
+    currentLayer->Gradient(std::move(currentGradientWeight));
+    currentLayer->SetDirection(std::move(currentLayer->GetGradientWeight()));
+    currentLayer->RetroPropagationError(std::move(currentGradientWeight));
+  }
+}
+
 void ProximalBundleMethod::OptimizeUpdateWeight(Network *network,
                                                 const double learningRate,
                                                 const double weightDecay,
                                                 const double momentum) {
 
 }
-ProximalBundleMethod::ProximalBundleMethod(const int nLayer) : B(nLayer), storageSize(25) {
 
+/** Return a column vector with all the weights and biases of the network saved in
+ *
+ * @param columnParameters Saved column vector
+ * @param currNet
+ */
+void ProximalBundleMethod::vectorizeParameters(Network *currNet, arma::Col<double> &&columnParameters) {
+  std::vector<Layer> &net = currNet->GetNet();
+
+  for (Layer &currentLayer : net) {
+    arma::mat weight = currentLayer.GetWeight();
+    //weight.print("Current layer weight");
+    arma::mat bias = currentLayer.GetBias();
+    //bias.print("Current Layer bias");
+
+    //! Concatenate weight and bias
+    arma::Col<double> layersParameters =
+        arma::join_cols(arma::Col(weight.memptr(), weight.n_elem, true),
+                        arma::Col(bias.memptr(), bias.n_elem, true));
+
+    columnParameters = arma::join_cols(columnParameters, layersParameters);
+    //layersParameters.print("Layers parameters");
+  }
+  //columnParameters.print("Column parameters");
 }
-void ProximalBundleMethod::vectorize() {
 
+/** Store the updated weight and bias inside the neural network
+ *
+ * @param currNet
+ * @param updatedParameters Column vector with updated weight and bias
+ */
+void ProximalBundleMethod::unvectorizeParameters(Network *currNet, arma::mat &&updatedParameters) {
+  std::vector<Layer> &net = currNet->GetNet();
+
+  for (Layer &currentLayer : net) {
+
+  }
 }
-void ProximalBundleMethod::unvectorize() {
 
+/** Return a column vector with all the gradient of the weights and biases of the network stored i n
+ *
+ * @param currNet
+ * @param columnGradients Column vector with concatened gradient of the network
+ */
+void ProximalBundleMethod::vectorizeGradients(Network *currNet, arma::Col<double> &&columnGradients) {
+  std::vector<Layer> &net = currNet->GetNet();
+
+  for (Layer &currentLayer : net) {
+    arma::mat gradientWeight = currentLayer.GetGradientWeight();
+    arma::mat gradientBias = currentLayer.GetGradientBias();
+    //! Concatenate weight and gradientBias
+    arma::Col<double> layersParameters =
+        arma::join_cols(arma::Col(gradientWeight.memptr(), gradientWeight.n_elem, true),
+                        arma::Col(gradientBias.memptr(), gradientBias.n_elem, true));
+
+    columnGradients = arma::join_cols(columnGradients, layersParameters);
+    //layersParameters.print("Gradients parameters");
+  }
+  //columnGradients.print("Column gradient parameters");
 }

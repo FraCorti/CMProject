@@ -32,6 +32,10 @@ const arma::mat &Layer::GetDirection() const {
   return direction;
 }
 
+const arma::mat Layer::GetGradientBias() const {
+  return arma::mean(gradient, 1);
+}
+
 Layer::Layer(const int inSize, const int outSize, const std::string activationFunctionString)
     : inSize(inSize),
       outSize(outSize),
@@ -126,6 +130,7 @@ void Layer::Gradient(const arma::mat &&summationGradientWeight) {
 void Layer::AdjustWeight(const double learningRate, const double weightDecay, const double momentum) {
   weight = weight + momentum * deltaWeight + learningRate * direction
       - 2 * weightDecay * weight;
+  arma::mean(gradient, 1).print("Gradient bias");
   bias = bias + momentum * deltaBias - learningRate * arma::mean(gradient, 1);
 
   deltaWeight = momentum * deltaWeight + learningRate * direction;

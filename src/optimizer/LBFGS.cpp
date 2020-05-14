@@ -58,14 +58,14 @@ void LBFGS::OptimizeBackward(Network *currNetwork, const arma::mat &&partialDeri
  * @param initialSearchDirectionDotGradient Summation of all the layers dot products result
  */
 double LBFGS::computeDirectionDescent(Network *currNetwork) {
-  double SearchDirectionDotGradient = 0;
+  double searchDirectionDotGradient = 0;
   std::vector<Layer> &net = currNetwork->GetNet();
-  // Sum of the \nabla f(w_{k}) * p_{k} where k is the current iteration
+  //! Sum of the \nabla f(w_{k}) * p_{k} where k is the current iteration
   for (auto &currentLayer : net) {
     // We can use currentLayer.GetDirection because in LineSearchEvaluate we don't update the direction
-    SearchDirectionDotGradient += arma::dot(currentLayer.GetGradientWeight(), currentLayer.GetDirection());
+    searchDirectionDotGradient += arma::dot(currentLayer.GetGradientWeight(), currentLayer.GetDirection());
   }
-  return SearchDirectionDotGradient;
+  return searchDirectionDotGradient;
 }
 
 /**
@@ -367,7 +367,7 @@ double LBFGS::lineSearchBacktracking(Network *currNetwork, const double weightDe
 
   std::vector<Layer> &net = currNetwork->GetNet();
   double initialSearchDirectionDotGradient = 0;
-  // Sum of the \nabla f(w_{k}) * p_{k} where k is the current iteration
+  //! Sum of the \nabla f(w_{k}) * p_{k} where k is the current iteration
   for (auto &currentLayer : net) {
     initialSearchDirectionDotGradient += arma::dot(currentLayer.GetGradientWeight(), currentLayer.GetDirection());
   }

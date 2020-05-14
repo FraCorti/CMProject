@@ -145,6 +145,8 @@ void Network::train(const arma::mat &&trainingData,
     //! Saving input data for line search
     input = &inputBatch;
     inputLabel = &labelBatch;
+    //! Saving error for optimizer
+    batchError = &currentBatchError;
     optimizer->OptimizeUpdateWeight(this, learningRate, weightDecay, momentum);
   }
   epochError = epochError / batchNumber;
@@ -204,18 +206,6 @@ void Network::error(const arma::mat &&trainLabelsBatch,
  * */
 void Network::backward(const arma::mat &&partialDerivativeOutput) {
   optimizer->OptimizeBackward(this, std::move(partialDerivativeOutput));
-/*
-  auto currentLayer = net.rbegin();
-  currentLayer->OutputLayerGradient(std::move(partialDerivativeOutput));   //TODO: move to optimizer(currentLayer,)
-  arma::mat currentGradientWeight;
-  currentLayer->GetSummationWeight(std::move(currentGradientWeight));
-  currentLayer++;
-  // Iterate from the precedent Layer of the tail to the head
-  for (; currentLayer != net.rend(); currentLayer++) {
-    currentLayer->Gradient(std::move(currentGradientWeight));
-    currentLayer->RetroPropagationError(std::move(currentGradientWeight));
-  }
-  */
 }
 
 /***/
@@ -353,4 +343,11 @@ double Network::LineSearchEvaluate(const double stepSize, const double weightDec
   }
 
   return arma::as_scalar(currentBatchError);
+}
+/** Retrieve the batch error of the network
+ *
+ * @param batchError_ Store the current batch error
+ */
+void Network::GetBatchError(arma::mat &&batchError_) {
+  batchError_ = *batchError;
 }

@@ -108,6 +108,7 @@ class Layer {
   [[nodiscard]] const arma::mat &GetBias() const;
   [[nodiscard]] const arma::mat &GetDelta() const;
   [[nodiscard]] const arma::mat &GetGradientWeight() const;
+  [[nodiscard]] const arma::mat GetGradientBias() const;
   [[nodiscard]] const arma::mat &GetInputParameter() const;
   [[nodiscard]] const arma::mat &GetOutputParameter() const;
   [[nodiscard]] int GetInSize() const;
@@ -115,7 +116,6 @@ class Layer {
   void Init(const double upperBound, const double lowerBound, const int seed);
   void SetDirection(const arma::mat &&optimizerComputedDirection);
   void SetWeight(const arma::mat &&newWeight);
-
   const arma::mat &GetDirection() const;
 };
 
