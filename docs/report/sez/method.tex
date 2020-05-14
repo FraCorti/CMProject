@@ -248,7 +248,7 @@ Local convergence rate is quadratic as showed by Jorge Nocedal and Stephen J. Wr
 
 
 \subsection{Bundle methods}
-Bundle methods are used mainly with non-differentiable loss function. The main idea of these methods is to use the past subgradient as global information. In convex function we know that at each iteration we get a subgradient in which the epigraph of the loss function is always above the epigraph subgradient, so epi($L_x$) $ \supseteq $ epi($f$) .\\ 
+Bundle methods are used mainly with non-differentiable loss function. The main idea of these methods is to use the past subgradients as global information. In convex function we know that at each iteration we get a subgradient in which the epigraph of the loss function is always above the epigraph of the subgradient, so epi($L_x$) $ \supseteq $ epi($f$) .\\ 
 We define as \{$x^i$\} the sequence of iterates that will hopefully converge at some point $x_*$. 
 The bundle of first-order information is:
 \begin{equation}
@@ -258,17 +258,17 @@ and the cutting-plane model of $f$ - $(1 +\epsilon)$-order model as:
 \begin{equation}
 f_B(x) = \max{\{f^i+ \langle g^i,x - x^i \rangle:  (x^i,f^i,g^i)\in B\}}
 \end{equation}
-in which $g^i$ is the subgradient chosen at $i^th$ iteration.
+in which $g^i$ is the subgradient chosen at $i^{th}$ iteration.
 Before getting deep in defining the bundle methods, we need to introduce some information about subgradient.
 \subsubsection{Subgradient}
 The subgradient is a generalization of gradients appropriate for convex functions, including those which are not necessarily smooth.
-The subgradient s of $f(x)$ is defined as:
+The subgradient $s$ of $f(x)$ is defined as:
 \begin{equation}
-f(y) \geq f(x) +s(y-x).
+f(y) \geq f(x) +s(y-x) \quad \forall y \in \mathbb{R}^n.
 \end{equation}
 The set of all subgradients at a point is called the sub-differential, and is denoted by $\partial f(x)$. 
-If at a point the function is differentiable, the subgradient is exactly the gradient of the function at the point.
-At a point in which the function is not differentiable, \textit{s} is an infinity set of point closed and convex.
+If at a point the function is differentiable, the subgradient is exactly the gradient of the function at that point ($\partial f(x)= \{\nabla f(x) \}$).
+In a point in which the function is not differentiable, \textit{s} is an infinity set of point closed and convex.
 If we choose $s$ such that it respects:
 \begin{equation}
 \frac{\partial f}{\partial d}(x)=\sup\{\langle s,d \rangle : s \in \partial f(x)\} 
@@ -276,7 +276,7 @@ If we choose $s$ such that it respects:
 we have that $d$ is a descent direction $\iff \langle s,d\rangle <0 \quad \forall s \in \partial f(x)$.
 \\ We defined $s_*$ as the $s$ with the steepest descent direction:
 \begin{equation}
-s_*= argmin\{\parallel s\parallel : s\in \partial f(x) \}
+s_*= -argmin\{\parallel s\parallel : s\in \partial f(x) \}
 \end{equation} 
 \subsubsection{Master problem}
 We know that $f_B$ is a polyhedral function, for this reason is composed by a finitely number of linear functions.
