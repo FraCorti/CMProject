@@ -10,16 +10,15 @@
 #include <gurobi_c++.h>
 
 class ProximalBundleMethod : public Optimizer {
-  std::vector<std::deque<std::tuple<arma::mat, arma::mat, arma::mat>>>
-      B;
-  size_t storageSize;
+  arma::Col<double> columnParameters;
+  arma::Col<double> columnGradients;
   void vectorizeParameters(Network *currNet, arma::Col<double> &&columnParameters);
   void vectorizeGradients(Network *currNet, arma::Col<double> &&columnGradients);
   void computeGradient(Network *network, const arma::mat &&partialDerivativeOutput);
   void unvectorizeParameters(Network *currNet, arma::Col<double> &&updatedParameters);
  public:
   ~ProximalBundleMethod() override = default;
-  ProximalBundleMethod(const int nLayer);
+  ProximalBundleMethod() = default;
   void OptimizeBackward(Network *currNet, const arma::mat &&partialDerivativeOutput) override;
   void OptimizeUpdateWeight(Network *network, const double learningRate,
                             const double weightDecay, const double momentum) override;

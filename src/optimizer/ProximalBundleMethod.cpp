@@ -4,30 +4,34 @@
 
 #include "ProximalBundleMethod.h"
 
-ProximalBundleMethod::ProximalBundleMethod(const int nLayer) : B(nLayer), storageSize(25) {}
-
+/**
+ *
+ * @param currNet
+ * @param partialDerivativeOutput
+ */
 void ProximalBundleMethod::OptimizeBackward(Network *currNet, const arma::mat &&partialDerivativeOutput) {
-  arma::Col<double> columnParameters;
-  arma::Col<double> columnGradients;
 
-  //! Store the parameters (weight and bias) in a single column vector
+  //! Store the parameters (weight and bias) in a single column vector.
   vectorizeParameters(currNet, std::move(columnParameters));
   //columnParameters.print("Column parameters after move");
-
   computeGradient(currNet, std::move(partialDerivativeOutput));
+
   //! Store the gradients (weight and biases) in a single column vector
   vectorizeGradients(currNet, std::move(columnGradients));
+
   //! Store the transpose of the column gradients
   arma::rowvec subgradients = arma::rowvec(columnGradients.memptr(), columnGradients.n_elem, false);
+
+// LINE search subgradients
 
   arma::mat fc;
   currNet->GetBatchError(std::move(fc));
 
   arma::mat f = fc - arma::dot(subgradients, columnParameters);
 
-  //! FAKE restore to test unvectorize (column parameters will be updated by the bundle)
-  unvectorizeParameters(currNet, std::move(columnParameters));
-  //f.print("f printed");
+  // SET-UP input
+  // CALL Gurobi
+
 
   /*try {
 
@@ -73,11 +77,6 @@ void ProximalBundleMethod::OptimizeBackward(Network *currNet, const arma::mat &&
   }
  */
 
-  // Risolutore master problem
-  // Evaluate with new weight
-  // add weight, function and gradient of x^*
-
-
 }
 
 /** Compute the gradient for all layers and retropagate the error
@@ -101,11 +100,25 @@ void ProximalBundleMethod::computeGradient(Network *currNet, const arma::mat &&p
   }
 }
 
-void ProximalBundleMethod::OptimizeUpdateWeight(Network *network,
+/** Call the unvectorizeParameters() function that store the updated parameters (weights & biases)
+ *  in the Nework. In the end clear the class parameters for next iterate
+ *
+ * @param currNet
+ * @param learningRate
+ * @param weightDecay
+ * @param momentum
+ */
+
+void ProximalBundleMethod::OptimizeUpdateWeight(Network *currNet,
                                                 const double learningRate,
                                                 const double weightDecay,
                                                 const double momentum) {
+  //! FAKE restore to test unvectorize (column parameters will be updated by the bundle)
+  unvectorizeParameters(currNet, std::move(columnParameters));
 
+  //! Empty class parameters column vector for next iterate
+  columnParameters.clear();
+  columnGradients.clear();
 }
 
 /** Return a column vector with all the weights and biases of the network saved in
@@ -118,9 +131,9 @@ void ProximalBundleMethod::vectorizeParameters(Network *currNet, arma::Col<doubl
 
   for (Layer &currentLayer : net) {
     arma::mat weight = currentLayer.GetWeight();
-    weight.print("Current layer weight");
+    //weight.print("Current layer weight");
     arma::mat bias = currentLayer.GetBias();
-    bias.print("Current Layer bias");
+    //bias.print("Current Layer bias");
 
     //! Concatenate weight and bias
     arma::Col<double> layersParameters =
@@ -159,6 +172,10 @@ void ProximalBundleMethod::unvectorizeParameters(Network *currNet, arma::Col<dou
                                              1,
                                              true)));
     index += biasDim;
+  }
+  for (Layer &currentLayer : net) {
+    currentLayer.GetWeight().print("Updated weight");
+    currentLayer.GetBias().print("Updated bias");
   }
 }
 

@@ -303,7 +303,7 @@ void Network::SetOptimizer(const std::string optimizer_) {
   } else if (optimizer_ == "LBFGS") {
     optimizer = new LBFGS(net.size());
   } else if (optimizer_ == "proximalBundleMethod") {
-    optimizer = new ProximalBundleMethod(net.size());
+    optimizer = new ProximalBundleMethod();
   } else {
     optimizer = new GradientDescent();
   }
