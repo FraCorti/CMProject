@@ -26,7 +26,7 @@ void ProximalBundleMethod::OptimizeBackward(Network *currNet, const arma::mat &&
   currNet->GetBatchError(std::move(fc));
 
   arma::mat f = fc - arma::dot(subgradient, columnParameters);
-
+  f.print("f printed");
   /*try {
 
     // Create an environment

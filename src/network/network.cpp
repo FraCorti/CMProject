@@ -137,6 +137,9 @@ void Network::train(const arma::mat &&trainingData,
           weightDecay);
 
     epochError = epochError + currentBatchError;
+
+    //! Saving error for optimizer
+    batchError = &currentBatchError;
     backward(std::move(partialDerivativeOutput));
 
     start = end + 1;
@@ -145,8 +148,7 @@ void Network::train(const arma::mat &&trainingData,
     //! Saving input data for line search
     input = &inputBatch;
     inputLabel = &labelBatch;
-    //! Saving error for optimizer
-    batchError = &currentBatchError;
+
     optimizer->OptimizeUpdateWeight(this, learningRate, weightDecay, momentum);
   }
   epochError = epochError / batchNumber;

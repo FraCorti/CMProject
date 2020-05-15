@@ -25,7 +25,7 @@ class Network {
   arma::mat *input;
   arma::mat *inputLabel;
   //! Saving error for optimizer
-  arma::mat *batchError;  // TODO: is this needed?
+  arma::Mat<double> *batchError;  // TODO: is this needed?
 
   void train(const arma::mat &&trainingData,
              const arma::mat &&trainLabels,
