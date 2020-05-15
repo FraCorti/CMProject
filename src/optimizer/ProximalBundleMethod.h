@@ -12,6 +12,10 @@
 class ProximalBundleMethod : public Optimizer {
   arma::Col<double> columnParameters;
   arma::Col<double> columnGradients;
+  arma::mat subgradients;
+  arma::mat F;
+  arma::mat S;
+
   void vectorizeParameters(Network *currNet, arma::Col<double> &&columnParameters);
   void vectorizeGradients(Network *currNet, arma::Col<double> &&columnGradients);
   void computeGradient(Network *network, const arma::mat &&partialDerivativeOutput);

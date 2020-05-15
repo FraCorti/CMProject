@@ -11,6 +11,8 @@
  */
 void ProximalBundleMethod::OptimizeBackward(Network *currNet, const arma::mat &&partialDerivativeOutput) {
 
+  double gamma = 0.5;
+  double mu = 1;
   //! Store the parameters (weight and bias) in a single column vector.
   vectorizeParameters(currNet, std::move(columnParameters));
   //columnParameters.print("Column parameters after move");
@@ -20,14 +22,47 @@ void ProximalBundleMethod::OptimizeBackward(Network *currNet, const arma::mat &&
   vectorizeGradients(currNet, std::move(columnGradients));
 
   //! Store the transpose of the column gradients
-  arma::rowvec subgradients = arma::rowvec(columnGradients.memptr(), columnGradients.n_elem, false);
+  subgradients = arma::join_cols(subgradients, arma::rowvec(columnGradients.memptr(), columnGradients.n_elem, false));
 
 // LINE search subgradients
 
   arma::mat fc;
   currNet->GetBatchError(std::move(fc));
 
-  arma::mat f = fc - arma::dot(subgradients, columnParameters);
+  //! TODO: Dare un nome ad f
+  F = arma::join_cols(F, fc - arma::dot(columnGradients, columnParameters));
+  // subgrad locality measure
+  S = arma::mat(1, 1, arma::fill::zeros);
+
+  //! Ottimizzatore
+
+  // Create an environment
+  // TODO: Spostare nel costruttore?
+  GRBEnv env = GRBEnv(true);
+  env.set("LogFile", "mip1.log");
+  env.start();
+
+  // Create an empty model
+  GRBModel model = GRBModel(env);
+
+  // Create parameters
+  //! Alpha value can be different, this is caused by approximation in the machine
+  arma::mat alpha =
+      arma::mat(subgradients.n_rows, 1, arma::fill::ones) * arma::as_scalar(fc) - subgradients * columnParameters - F;
+  arma::mat beta = arma::max(arma::abs(alpha), gamma * arma::pow(S, 2));
+  arma::mat constraintCoeff = arma::join_cols(-arma::ones(1, subgradients.n_cols), subgradients).t();
+  arma::mat secondGradeCoeff = mu * arma::eye(columnParameters.n_elem + 1, columnParameters.n_elem + 1);
+  secondGradeCoeff(0, 0) = 0;
+  arma::mat firstGradeCoeff = arma::eye(columnParameters.n_elem + 1, 1);
+
+  for (int i = 0; i < columnParameters.n_elem + 1; i++) {
+    model.addVar(-GRB_INFINITY, GRB_INFINITY, 0.0, GRB_CONTINUOUS, "x_" + std::to_string(i));
+  }
+
+  //GRBQuadExpr obj = x * x + x * y + y * y + y * z + z * z + 2 * x;
+
+
+
 
   // SET-UP input
   // CALL Gurobi
@@ -173,10 +208,12 @@ void ProximalBundleMethod::unvectorizeParameters(Network *currNet, arma::Col<dou
                                              true)));
     index += biasDim;
   }
+  /*
   for (Layer &currentLayer : net) {
     currentLayer.GetWeight().print("Updated weight");
     currentLayer.GetBias().print("Updated bias");
   }
+   */
 }
 
 /** Return a column vector with all the gradient of the weights and biases of the network stored i n
