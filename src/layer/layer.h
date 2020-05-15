@@ -20,7 +20,6 @@ class Layer {
   arma::mat deltaWeight;
   //! locally-instored delta bias object
   arma::mat deltaBias;
- private:
   //! gradiente dei Weight del layer
   arma::mat gradientWeight;
   //! gradiente del layer
@@ -113,9 +112,12 @@ class Layer {
   [[nodiscard]] const arma::mat &GetOutputParameter() const;
   [[nodiscard]] int GetInSize() const;
   [[nodiscard]] int GetOutSize() const;
+  [[nodiscard]] std::pair<int, int> GetWeightDimensions() const;
+  [[nodiscard]] int GetBiasRow() const;
   void Init(const double upperBound, const double lowerBound, const int seed);
   void SetDirection(const arma::mat &&optimizerComputedDirection);
   void SetWeight(const arma::mat &&newWeight);
+  void SetBias(const arma::mat &&newBias);
   const arma::mat &GetDirection() const;
 };
 

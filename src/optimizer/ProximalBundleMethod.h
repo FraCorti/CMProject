@@ -16,7 +16,7 @@ class ProximalBundleMethod : public Optimizer {
   void vectorizeParameters(Network *currNet, arma::Col<double> &&columnParameters);
   void vectorizeGradients(Network *currNet, arma::Col<double> &&columnGradients);
   void computeGradient(Network *network, const arma::mat &&partialDerivativeOutput);
-  void unvectorizeParameters(Network *currNet, arma::mat &&updatedParameters);
+  void unvectorizeParameters(Network *currNet, arma::Col<double> &&updatedParameters);
  public:
   ~ProximalBundleMethod() override = default;
   ProximalBundleMethod(const int nLayer);

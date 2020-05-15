@@ -7,6 +7,7 @@
 #include "../activationFunction/logisticFunction.h"
 #include "../activationFunction/reluFunction.h"
 #include "../activationFunction/tanhFunction.h"
+
 const arma::mat &Layer::GetWeight() const {
   return weight;
 }
@@ -184,7 +185,27 @@ void Layer::LineSearchForward(const arma::mat &&input,
       (bias + nesterovMomentum * deltaBias - stepSize * arma::mean(gradient, 1) + nesterovMomentum * deltaBias);
 
 }
+
 void Layer::SetWeight(const arma::mat &&newWeight) {
   weight = newWeight;
-  //TODO: bias update
+}
+
+void Layer::SetBias(const arma::mat &&newBias) {
+  bias = newBias;
+}
+
+/** Return the dimensions of the weight matrix <n_rows, n_cols>
+ *
+ * @return
+ */
+std::pair<int, int> Layer::GetWeightDimensions() const {
+  return std::pair<int, int>(weight.n_rows, weight.n_cols);
+}
+
+/** Return the dimension of the bias columns vector
+ *
+ * @return
+ */
+int Layer::GetBiasRow() const {
+  return bias.n_rows;
 }

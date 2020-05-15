@@ -4,9 +4,7 @@
 
 #include "ProximalBundleMethod.h"
 
-ProximalBundleMethod::ProximalBundleMethod(const int nLayer) : B(nLayer), storageSize(25) {
-
-}
+ProximalBundleMethod::ProximalBundleMethod(const int nLayer) : B(nLayer), storageSize(25) {}
 
 void ProximalBundleMethod::OptimizeBackward(Network *currNet, const arma::mat &&partialDerivativeOutput) {
   arma::Col<double> columnParameters;
@@ -20,13 +18,17 @@ void ProximalBundleMethod::OptimizeBackward(Network *currNet, const arma::mat &&
   //! Store the gradients (weight and biases) in a single column vector
   vectorizeGradients(currNet, std::move(columnGradients));
   //! Store the transpose of the column gradients
-  arma::rowvec subgradient = arma::rowvec(columnGradients.memptr(), columnGradients.n_elem, false);
+  arma::rowvec subgradients = arma::rowvec(columnGradients.memptr(), columnGradients.n_elem, false);
 
   arma::mat fc;
   currNet->GetBatchError(std::move(fc));
 
-  arma::mat f = fc - arma::dot(subgradient, columnParameters);
-  f.print("f printed");
+  arma::mat f = fc - arma::dot(subgradients, columnParameters);
+
+  //! FAKE restore to test unvectorize (column parameters will be updated by the bundle)
+  unvectorizeParameters(currNet, std::move(columnParameters));
+  //f.print("f printed");
+
   /*try {
 
     // Create an environment
@@ -116,9 +118,9 @@ void ProximalBundleMethod::vectorizeParameters(Network *currNet, arma::Col<doubl
 
   for (Layer &currentLayer : net) {
     arma::mat weight = currentLayer.GetWeight();
-    //weight.print("Current layer weight");
+    weight.print("Current layer weight");
     arma::mat bias = currentLayer.GetBias();
-    //bias.print("Current Layer bias");
+    bias.print("Current Layer bias");
 
     //! Concatenate weight and bias
     arma::Col<double> layersParameters =
@@ -131,23 +133,39 @@ void ProximalBundleMethod::vectorizeParameters(Network *currNet, arma::Col<doubl
   //columnParameters.print("Column parameters");
 }
 
-/** Store the updated weight and bias inside the neural network
+/** Store the updated weights and bias inside the layers of the neural network
  *
  * @param currNet
  * @param updatedParameters Column vector with updated weight and bias
  */
-void ProximalBundleMethod::unvectorizeParameters(Network *currNet, arma::mat &&updatedParameters) {
+void ProximalBundleMethod::unvectorizeParameters(Network *currNet, arma::Col<double> &&updatedParameters) {
   std::vector<Layer> &net = currNet->GetNet();
 
+  int index = 0;
   for (Layer &currentLayer : net) {
 
+    //! Retrieve weight dimensions in pair<n_rows,n_cols> format
+    std::pair<int, int> weightDim = currentLayer.GetWeightDimensions();
+    int biasDim = currentLayer.GetBiasRow();
+
+    currentLayer.SetWeight(std::move(arma::mat(updatedParameters.memptr() + index,
+                                               weightDim.first,
+                                               weightDim.second,
+                                               true)));
+    index += weightDim.first * weightDim.second;
+
+    currentLayer.SetBias(std::move(arma::mat(updatedParameters.memptr() + index,
+                                             biasDim,
+                                             1,
+                                             true)));
+    index += biasDim;
   }
 }
 
 /** Return a column vector with all the gradient of the weights and biases of the network stored i n
  *
  * @param currNet
- * @param columnGradients Column vector with concatened gradient of the network
+ * @param columnGradients Column vector with concatenated gradient of the network
  */
 void ProximalBundleMethod::vectorizeGradients(Network *currNet, arma::Col<double> &&columnGradients) {
   std::vector<Layer> &net = currNet->GetNet();
@@ -155,7 +173,8 @@ void ProximalBundleMethod::vectorizeGradients(Network *currNet, arma::Col<double
   for (Layer &currentLayer : net) {
     arma::mat gradientWeight = currentLayer.GetGradientWeight();
     arma::mat gradientBias = currentLayer.GetGradientBias();
-    //! Concatenate weight and gradientBias
+
+    //! Concatenate weight and bias gradients
     arma::Col<double> layersParameters =
         arma::join_cols(arma::Col(gradientWeight.memptr(), gradientWeight.n_elem, true),
                         arma::Col(gradientBias.memptr(), gradientBias.n_elem, true));
