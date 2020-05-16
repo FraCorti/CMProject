@@ -12,7 +12,7 @@
 void ProximalBundleMethod::OptimizeBackward(Network *currNet, const arma::mat &&partialDerivativeOutput) {
 
   double gamma = 0.5;
-  double mu = 1;
+  double mu = 2;
   //! Store the parameters (weight and bias) in a single column vector.
   vectorizeParameters(currNet, std::move(columnParameters));
   //columnParameters.print("Column parameters after move");
@@ -49,68 +49,115 @@ void ProximalBundleMethod::OptimizeBackward(Network *currNet, const arma::mat &&
   //! Alpha value can be different, this is caused by approximation in the machine
   arma::mat alpha =
       arma::mat(subgradients.n_rows, 1, arma::fill::ones) * arma::as_scalar(fc) - subgradients * columnParameters - F;
+  //h == beta
   arma::mat beta = arma::max(arma::abs(alpha), gamma * arma::pow(S, 2));
-  arma::mat constraintCoeff = arma::join_cols(-arma::ones(1, subgradients.n_cols), subgradients).t();
-  arma::mat secondGradeCoeff = mu * arma::eye(columnParameters.n_elem + 1, columnParameters.n_elem + 1);
-  secondGradeCoeff(0, 0) = 0;
-  arma::mat firstGradeCoeff = arma::eye(columnParameters.n_elem + 1, 1);
+  // constraintCoeff == G
+  arma::mat constraintCoeff = subgradients.t();
+  // TODO: capire perchè +1
+  arma::mat secondGradeCoeff = mu * arma::eye(columnParameters.n_elem, columnParameters.n_elem);
+  //secondGradeCoeff(0, 0) = 0;
+  arma::mat firstGradeCoeff = arma::eye(columnParameters.n_elem, 1);
 
-  for (int i = 0; i < columnParameters.n_elem + 1; i++) {
-    model.addVar(-GRB_INFINITY, GRB_INFINITY, 0.0, GRB_CONTINUOUS, "x_" + std::to_string(i));
+  // Variable declaration
+  GRBVar x[columnParameters.n_elem];
+  for (int i = 0; i < columnParameters.n_elem; i++) {
+    x[i] = model.addVar(0.0, GRB_INFINITY, 0.0, GRB_CONTINUOUS, "x_" + std::to_string(i));
   }
 
-  //GRBQuadExpr obj = x * x + x * y + y * y + y * z + z * z + 2 * x;
+  model.update();
+  // Constraint Declaration
+  constraintCoeff.print("constraintCoeff");
+  for (int i = 0; i < constraintCoeff.n_cols; i++) {
+    GRBLinExpr LHS = 0;
+    for (int j = 0; j < constraintCoeff.n_rows; j++) {
+      LHS += constraintCoeff(j, i) * x[j];
+    }
+    model.addConstr(LHS, GRB_LESS_EQUAL, beta(i));
+  }
 
+  // Set minimization of the model
+  model.set(GRB_IntAttr_ModelSense, 1);
 
+  // Set objective function
+  GRBQuadExpr obj = 0;
+  std::cout << obj << std::endl;
 
+  for (int j = 0; j < columnParameters.n_elem; j++) {
+    obj += 0.5 * x[j] * secondGradeCoeff(j, j) * x[j] + firstGradeCoeff[j] * x[j];
+    std::cout << obj << std::endl;
+  }
+  model.setObjective(obj);
 
-  // SET-UP input
-  // CALL Gurobi
-
-
-  /*try {
-
-    // Create an environment
-    GRBEnv env = GRBEnv(true);
-    env.set("LogFile", "mip1.log");
-    env.start();
-
-    // Create an empty model
-    GRBModel model = GRBModel(env);
-
-    // Create variables
-    GRBVar x = model.addVar(0.0, 1.0, 0.0, GRB_BINARY, "x");
-    GRBVar y = model.addVar(0.0, 1.0, 0.0, GRB_BINARY, "y");
-    GRBVar z = model.addVar(0.0, 1.0, 0.0, GRB_BINARY, "z");
-
-    // Set objective: maximize x + y + 2 z
-    model.setObjective(x + y + 2 * z, GRB_MAXIMIZE);
-
-    // Add constraint: x + 2 y + 3 z <= 4
-    model.addConstr(x + 2 * y + 3 * z <= 4, "c0");
-
-    // Add constraint: x + y >= 1
-    model.addConstr(x + y >= 1, "c1");
-
-    // Optimize model
+  try {
     model.optimize();
-
-    std::cout << x.get(GRB_StringAttr_VarName) << " "
-              << x.get(GRB_DoubleAttr_X) << std::endl;
-    std::cout << y.get(GRB_StringAttr_VarName) << " "
-              << y.get(GRB_DoubleAttr_X) << std::endl;
-    std::cout << z.get(GRB_StringAttr_VarName) << " "
-              << z.get(GRB_DoubleAttr_X) << std::endl;
-
-    std::cout << "Obj: " << model.get(GRB_DoubleAttr_ObjVal) << std::endl;
-
   } catch (GRBException e) {
     std::cout << "Error code = " << e.getErrorCode() << std::endl;
     std::cout << e.getMessage() << std::endl;
   } catch (...) {
     std::cout << "Exception during optimization" << std::endl;
   }
- */
+
+  for (int i = 0; i < columnParameters.n_elem; i++) {
+    std::cout << x[i].get(GRB_StringAttr_VarName) << " "
+              << x[i].get(GRB_DoubleAttr_X) << std::endl;
+    columnParameters(i) = x[i].get(GRB_DoubleAttr_X);
+  }
+
+
+/* This example formulates and solves the following simple QP model:
+
+     minimize    1/2 * x^{T}*P*x+q^{T}*x
+     subject to  G*x <= h
+                  A*x = b
+   It solves it once as a continuous model, and once as an integer model.
+*/
+// SET-UP input
+// CALL Gurobi
+
+
+/*try {
+
+  // Create an environment
+  GRBEnv env = GRBEnv(true);
+  env.set("LogFile", "mip1.log");
+  env.start();
+
+  // Create an empty model
+  GRBModel model = GRBModel(env);
+
+  // Create variables
+  GRBVar x = model.addVar(0.0, 1.0, 0.0, GRB_BINARY, "x");
+  GRBVar y = model.addVar(0.0, 1.0, 0.0, GRB_BINARY, "y");
+  GRBVar z = model.addVar(0.0, 1.0, 0.0, GRB_BINARY, "z");
+
+  // Set objective: maximize x + y + 2 z
+  model.setObjective(x + y + 2 * z, GRB_MAXIMIZE);
+
+  // Add constraint: x + 2 y + 3 z <= 4
+  model.addConstr(x + 2 * y + 3 * z <= 4, "c0");
+
+  // Add constraint: x + y >= 1
+  model.addConstr(x + y >= 1, "c1");
+
+  // Optimize model
+  model.optimize();
+
+  std::cout << x.get(GRB_StringAttr_VarName) << " "
+            << x.get(GRB_DoubleAttr_X) << std::endl;
+  std::cout << y.get(GRB_StringAttr_VarName) << " "
+            << y.get(GRB_DoubleAttr_X) << std::endl;
+  std::cout << z.get(GRB_StringAttr_VarName) << " "
+            << z.get(GRB_DoubleAttr_X) << std::endl;
+
+  std::cout << "Obj: " << model.get(GRB_DoubleAttr_ObjVal) << std::endl;
+
+} catch (GRBException e) {
+  std::cout << "Error code = " << e.getErrorCode() << std::endl;
+  std::cout << e.getMessage() << std::endl;
+} catch (...) {
+  std::cout << "Exception during optimization" << std::endl;
+}
+*/
 
 }
 
@@ -148,7 +195,6 @@ void ProximalBundleMethod::OptimizeUpdateWeight(Network *currNet,
                                                 const double learningRate,
                                                 const double weightDecay,
                                                 const double momentum) {
-  //! FAKE restore to test unvectorize (column parameters will be updated by the bundle)
   unvectorizeParameters(currNet, std::move(columnParameters));
 
   //! Empty class parameters column vector for next iterate

@@ -3,15 +3,20 @@
 #include "src/preprocessing/preprocessing.h"
 #include "src/network/network.h"
 #include <chrono>
+#include <gurobi_c++.h>
 
+using namespace std;
 int main() {
-
+  /*
+  cout.precision(17);
+  cout.setf(ios::fixed);
+*/
   Preprocessing cupPreprocessing("../../data/ML-CUP19-TR_formatted.csv");
   arma::mat trainingSet;
   arma::mat validationSet;
   arma::mat testSet;
 
-  cupPreprocessing.GetSplit(80, 10, 10, std::move(trainingSet), std::move(validationSet), std::move(testSet));
+  cupPreprocessing.GetSplit(10, 10, 10, std::move(trainingSet), std::move(validationSet), std::move(testSet));
   //testSet.load("../../data/monk/monks2_test_formatted.csv");
   int labelCol = 2;
 
@@ -95,8 +100,8 @@ int main() {
   Network cupNetwork;
   cupNetwork.SetLossFunction("meanSquaredError");
 
-  Layer firstLayer(trainingSet.n_cols - labelCol, 5, "tanhFunction");
-  Layer lastLayer(5, labelCol, "linearFunction"); // logisticFunction linearFunction
+  Layer firstLayer(trainingSet.n_cols - labelCol, 4, "tanhFunction");
+  Layer lastLayer(4, labelCol, "linearFunction"); // logisticFunction linearFunction
   cupNetwork.Add(firstLayer);
   cupNetwork.Add(lastLayer);
   cupNetwork.SetOptimizer("proximalBundleMethod");//LBFGS gradientDescent proximalBundleMethod

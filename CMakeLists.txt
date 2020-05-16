@@ -73,7 +73,7 @@ add_library(Neuradillo
         src/optimizer/ProximalBundleMethod.h)
 
 target_include_directories(Neuradillo
-        PRIVATE
+        PUBLIC
         ${GUROBI_INCLUDE_DIRS}
         )
 
