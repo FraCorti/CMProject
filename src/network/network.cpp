@@ -210,7 +210,7 @@ void Network::backward(const arma::mat &&partialDerivativeOutput) {
   optimizer->OptimizeBackward(this, std::move(partialDerivativeOutput));
 }
 
-/***/
+/***/arma::mat currentNetError; // fd
 void Network::updateWeight(double learningRate, double weightDecay, double momentum) {
 
   for (Layer &currentLayer : net) {
@@ -239,6 +239,27 @@ void Network::inference(arma::mat &&inputData, arma::mat &&outputData) {
   }
   outputData = activateWeight;
 }
+
+/** Compute forward and retrieve error of the network
+ *
+ * @param outputError
+ * @param regularization
+ */
+void Network::Evaluate(arma::mat &&outputError, const double regularization) {
+  arma::mat activateWeight = input->t();
+  arma::mat outputActivateBatch;
+  arma::mat currentBatchError;
+  arma::mat partialDerivativeOutput;
+
+  forward(std::move(*input), std::move(outputActivateBatch));
+
+  error(std::move(*inputLabel),
+        std::move(outputActivateBatch),
+        std::move(partialDerivativeOutput),
+        std::move(outputError),
+        regularization);
+}
+
 /***/
 void Network::TestWithThreshold(const arma::mat &&testData, const arma::mat &&testLabels, double threshold) {
   arma::mat outputActivateBatch;

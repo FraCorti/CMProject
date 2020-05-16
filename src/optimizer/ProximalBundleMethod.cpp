@@ -13,8 +13,11 @@ void ProximalBundleMethod::OptimizeBackward(Network *currNet, const arma::mat &&
 
   double gamma = 0.5;
   double mu = 2;
+
   //! Store the parameters (weight and bias) in a single column vector.
-  vectorizeParameters(currNet, std::move(columnParameters));
+  vectorizeParameters(currNet, std::move(columnParameters));  // columnParameters == theta
+  arma::Col<double> c = arma::mat(columnParameters.memptr(), columnParameters.n_elem, true); // c == c
+
   //columnParameters.print("Column parameters after move");
   computeGradient(currNet, std::move(partialDerivativeOutput));
 
@@ -22,11 +25,10 @@ void ProximalBundleMethod::OptimizeBackward(Network *currNet, const arma::mat &&
   vectorizeGradients(currNet, std::move(columnGradients));
 
   //! Store the transpose of the column gradients
-  subgradients = arma::join_cols(subgradients, arma::rowvec(columnGradients.memptr(), columnGradients.n_elem, false));
+  subgradients =
+      arma::join_cols(subgradients, arma::rowvec(columnGradients.memptr(), columnGradients.n_elem, false)); // G
 
-// LINE search subgradients
-
-  arma::mat fc;
+  arma::mat fc;  // fc
   currNet->GetBatchError(std::move(fc));
 
   //! TODO: Dare un nome ad f
@@ -54,13 +56,22 @@ void ProximalBundleMethod::OptimizeBackward(Network *currNet, const arma::mat &&
   // constraintCoeff == G
   arma::mat constraintCoeff = subgradients.t();
   // TODO: capire perchè +1
-  arma::mat secondGradeCoeff = mu * arma::eye(columnParameters.n_elem, columnParameters.n_elem);
-  //secondGradeCoeff(0, 0) = 0;
+  arma::mat secondGradeCoeff = mu * arma::eye(columnParameters.n_elem + 1, columnParameters.n_elem);
+  secondGradeCoeff(0, 0) = 0;
   arma::mat firstGradeCoeff = arma::eye(columnParameters.n_elem, 1);
 
+
+  /* This example formulates and solves the following simple QP model:
+
+     minimize    1/2 * x^{T}*P*x+q^{T}*x
+     subject to  G*x <= h
+                  A*x = b
+   It solves it once as a continuous model, and once as an integer model.
+*/
+
   // Variable declaration
-  GRBVar x[columnParameters.n_elem];
-  for (int i = 0; i < columnParameters.n_elem; i++) {
+  GRBVar x[columnParameters.n_elem + 1];
+  for (int i = 0; i < columnParameters.n_elem + 1; i++) {
     x[i] = model.addVar(0.0, GRB_INFINITY, 0.0, GRB_CONTINUOUS, "x_" + std::to_string(i));
   }
 
@@ -82,7 +93,7 @@ void ProximalBundleMethod::OptimizeBackward(Network *currNet, const arma::mat &&
   GRBQuadExpr obj = 0;
   std::cout << obj << std::endl;
 
-  for (int j = 0; j < columnParameters.n_elem; j++) {
+  for (int j = 0; j < columnParameters.n_elem + 1; j++) {
     obj += 0.5 * x[j] * secondGradeCoeff(j, j) * x[j] + firstGradeCoeff[j] * x[j];
     std::cout << obj << std::endl;
   }
@@ -97,67 +108,60 @@ void ProximalBundleMethod::OptimizeBackward(Network *currNet, const arma::mat &&
     std::cout << "Exception during optimization" << std::endl;
   }
 
-  for (int i = 0; i < columnParameters.n_elem; i++) {
+  arma::Col<double> updatedParameters(columnParameters.n_elem + 1);  // d
+
+  double v = x[0].get(GRB_DoubleAttr_X);   // v
+  for (int i = 1; i < columnParameters.n_elem + 1; i++) {
     std::cout << x[i].get(GRB_StringAttr_VarName) << " "
               << x[i].get(GRB_DoubleAttr_X) << std::endl;
-    columnParameters(i) = x[i].get(GRB_DoubleAttr_X);
+    updatedParameters(i) = x[i].get(GRB_DoubleAttr_X);
   }
 
+  arma::mat currentNetError; // fd
 
-/* This example formulates and solves the following simple QP model:
+  //! Store new weights and retrieve error
+  unvectorizeParameters(currNet, std::move(columnParameters));
+  currNet->Evaluate(std::move(currentNetError), 0);
 
-     minimize    1/2 * x^{T}*P*x+q^{T}*x
-     subject to  G*x <= h
-                  A*x = b
-   It solves it once as a continuous model, and once as an integer model.
-*/
-// SET-UP input
-// CALL Gurobi
+  //! Store current subgradients (weight and biases) in a single column vector
+  arma::Col<double> currentColumnGradients(columnGradients.n_elem);
+  vectorizeGradients(currNet, std::move(currentColumnGradients));  // g
 
+  double a = 0; // a
 
-/*try {
+  //! Store the transpose of the column gradients
+  subgradients =
+      arma::join_cols(subgradients, arma::rowvec(columnGradients.memptr(), columnGradients.n_elem, false)); // G
 
-  // Create an environment
-  GRBEnv env = GRBEnv(true);
-  env.set("LogFile", "mip1.log");
-  env.start();
+  //!
+  F = arma::join_cols(F, currentNetError - arma::dot(columnGradients, columnParameters)); // F
 
-  // Create an empty model
-  GRBModel model = GRBModel(env);
+  //! Line search
+  double s_c;
+  double s_d;
+  double tL = lineSearchL(currNet, v, std::move(c), std::move(updatedParameters));
+  double dNorm = arma::norm(updatedParameters);
 
-  // Create variables
-  GRBVar x = model.addVar(0.0, 1.0, 0.0, GRB_BINARY, "x");
-  GRBVar y = model.addVar(0.0, 1.0, 0.0, GRB_BINARY, "y");
-  GRBVar z = model.addVar(0.0, 1.0, 0.0, GRB_BINARY, "z");
+  if (tL > 0.5) {  //TODO: pass this parameter (accuracy tollerance) in the constructor ?
+    c = c + tL * updatedParameters;
+    columnParameters = c;
+    s_c = tL * dNorm;
+    s_d = 0;
+  } else {
+    double tR = lineSearchR(currNet, v, std::move(c), std::move(updatedParameters), tL);
+    if (tL > 0) {
+      c = c + tL * updatedParameters;
+      columnParameters = c + tR * updatedParameters;
+      s_c = 0;
+      s_d = tR * dNorm;
+    } else {
+      columnParameters = c + tR * updatedParameters;
+      s_c = 0;
+      s_d = tR * dNorm;
+    }
+  }
 
-  // Set objective: maximize x + y + 2 z
-  model.setObjective(x + y + 2 * z, GRB_MAXIMIZE);
-
-  // Add constraint: x + 2 y + 3 z <= 4
-  model.addConstr(x + 2 * y + 3 * z <= 4, "c0");
-
-  // Add constraint: x + y >= 1
-  model.addConstr(x + y >= 1, "c1");
-
-  // Optimize model
-  model.optimize();
-
-  std::cout << x.get(GRB_StringAttr_VarName) << " "
-            << x.get(GRB_DoubleAttr_X) << std::endl;
-  std::cout << y.get(GRB_StringAttr_VarName) << " "
-            << y.get(GRB_DoubleAttr_X) << std::endl;
-  std::cout << z.get(GRB_StringAttr_VarName) << " "
-            << z.get(GRB_DoubleAttr_X) << std::endl;
-
-  std::cout << "Obj: " << model.get(GRB_DoubleAttr_ObjVal) << std::endl;
-
-} catch (GRBException e) {
-  std::cout << "Error code = " << e.getErrorCode() << std::endl;
-  std::cout << e.getMessage() << std::endl;
-} catch (...) {
-  std::cout << "Exception during optimization" << std::endl;
-}
-*/
+  S += s_c;
 
 }
 
@@ -283,4 +287,75 @@ void ProximalBundleMethod::vectorizeGradients(Network *currNet, arma::Col<double
     //layersParameters.print("Gradients parameters");
   }
   //columnGradients.print("Column gradient parameters");
+}
+/**
+ *
+ * @param v First parameter obtained from the Bundle solver
+ * @param c Column parameters of the network (weight and bias)
+ * @param d Updated parameters obtained from the Bundle solver
+ * @return Step parameter to update the weight
+ */
+double ProximalBundleMethod::lineSearchL(Network *currNet,
+                                         double v,
+                                         arma::Col<double> &&c,
+                                         const arma::Col<double> &&d) {
+  double tL = 0;
+  double r = 1;
+  while (r - tL > 0.5) { //TODO: pass this parameter (accuracy tollerance) in the constructor
+    double m = (r + tL) / 2.0;
+
+    arma::mat lNetError; // error returned from updated weight: columnParameters + tL * d
+    unvectorizeParameters(currNet, std::move(c + tL * d));
+    currNet->Evaluate(std::move(lNetError), 0);
+
+    arma::mat netError;
+    unvectorizeParameters(currNet, std::move(c));
+    currNet->Evaluate(std::move(netError), 0);
+
+    //TODO: pass mL in the costructor (0.1)
+    if (arma::as_scalar(lNetError) < arma::as_scalar(netError) + 0.1 * tL * v) {
+      tL = m;
+    } else {
+      r = m;
+    }
+  }
+  return tL;
+}
+
+/** Line search R taken from the paper
+ *
+ * @param v
+ * @param c
+ * @param d
+ * @param tL
+ * @return
+ */
+double ProximalBundleMethod::lineSearchR(Network *currNet,
+                                         double v,
+                                         const arma::Col<double> &&c,
+                                         const arma::Col<double> &&d,
+                                         const double tL) {
+  double tR = tL;
+  double r = 1;
+  while (r - tR > 0.0001) { //TODO: pass this parameter 0.0001 in the constructor
+    double m = (r + tR) / 2.0;
+    arma::mat lNetError; // error returned from updated weight: columnParameters + tL * d
+    unvectorizeParameters(currNet, std::move(c + tL * d));
+    currNet->Evaluate(std::move(lNetError), 0);
+
+    arma::mat rNetError;
+    unvectorizeParameters(currNet, std::move(c + tR * d));
+    currNet->Evaluate(std::move(rNetError), 0);
+
+    arma::Col<double> currentColumnGradient;
+    vectorizeGradients(currNet, std::move(currentColumnGradient));
+    double alpha =
+        std::abs(arma::as_scalar(lNetError) - arma::as_scalar(rNetError) - (tL - tR) * arma::dot(columnGradients, d));
+    if (-alpha + arma::dot(columnGradients, d) >= 0.99 * v) { // TODO: pass 0.99 as parameter
+      tR = m;
+    } else {
+      r = m;
+    }
+  }
+  return tR;
 }

@@ -46,6 +46,7 @@ class Network {
 
  public:
   void GetBatchError(arma::mat &&batchError_);
+  void Evaluate(arma::mat &&outputError, const double regularization);
   void SetLossFunction(const std::string loss_function);
   void SetOptimizer(const std::string optimizer_);
   void Add(Layer &layer);
