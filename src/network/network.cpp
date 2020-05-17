@@ -140,14 +140,14 @@ void Network::train(const arma::mat &&trainingData,
 
     //! Saving error for optimizer
     batchError = &currentBatchError;
-    backward(std::move(partialDerivativeOutput));
-
-    start = end + 1;
-    end = i < batchNumber ? batchSize * (i + 1) - 1 : trainingData.n_rows - 1;
 
     //! Saving input data for line search
     input = &inputBatch;
     inputLabel = &labelBatch;
+    backward(std::move(partialDerivativeOutput));
+
+    start = end + 1;
+    end = i < batchNumber ? batchSize * (i + 1) - 1 : trainingData.n_rows - 1;
 
     optimizer->OptimizeUpdateWeight(this, learningRate, weightDecay, momentum);
   }

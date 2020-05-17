@@ -12,9 +12,14 @@
 class ProximalBundleMethod : public Optimizer {
   arma::Col<double> columnParameters;
   arma::Col<double> columnGradients;
+  arma::Col<double> theta;
   arma::mat subgradients;
+  arma::mat fc;
+  double a;
   arma::mat F;
   arma::mat S;
+  bool singletonInit = true; // singleton for init method
+  void init(Network *currNet, const arma::mat &&partialDerivativeOutput);
   double lineSearchL(Network *currNet, double v, arma::Col<double> &&c, const arma::Col<double> &&d);
   double lineSearchR(Network *currNet,
                      double v,
