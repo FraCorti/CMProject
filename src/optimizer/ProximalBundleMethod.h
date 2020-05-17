@@ -28,6 +28,10 @@ class ProximalBundleMethod : public Optimizer {
                      const arma::Col<double> &&c,
                      const arma::Col<double> &&d,
                      const double stepL);
+  void optimize(arma::Col<double> &&updatedParameters,
+                const arma::mat &&constraintCoeff, const arma::mat &&beta,
+                const arma::mat &&firstGradeCoeff,
+                const arma::mat &&secondGradeCoeff, double &v);
   void vectorizeParameters(Network *currNet, arma::Col<double> &&columnParameters);
   void vectorizeGradients(Network *currNet, arma::Col<double> &&columnGradients);
   void computeGradient(Network *network, const arma::mat &&partialDerivativeOutput);
@@ -40,7 +44,6 @@ class ProximalBundleMethod : public Optimizer {
   void OptimizeBackward(Network *currNet, const arma::mat &&partialDerivativeOutput) override;
   void OptimizeUpdateWeight(Network *network, const double learningRate,
                             const double weightDecay, const double momentum) override;
-
 };
 
 #endif //CMPROJECT_SRC_OPTIMIZER_PROXIMALBUNDLEMETHOD_H_

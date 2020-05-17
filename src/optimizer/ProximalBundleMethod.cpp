@@ -19,16 +19,6 @@ void ProximalBundleMethod::OptimizeBackward(Network *currNet, const arma::mat &&
     init(currNet, std::move(partialDerivativeOutput));
   }
 
-  //! OPTIMIZER
-  // Create an environment
-  // TODO: Spostare nel costruttore?
-  GRBEnv env = GRBEnv(true);
-  env.set("LogFile", "mip1.log");
-  env.start();
-
-  // Create an empty model
-  GRBModel model = GRBModel(env);
-
   //! Alpha value can be different, this is caused by approximation in the machine
   arma::mat alpha;
   arma::mat beta; // h == beta
@@ -40,68 +30,27 @@ void ProximalBundleMethod::OptimizeBackward(Network *currNet, const arma::mat &&
                         std::move(beta),
                         std::move(constraintCoeff),
                         std::move(secondGradeCoeff),
-                        std::move(
-                            firstGradeCoeff));
-
-  /* This example formulates and solves the following simple QP model:
+                        std::move(firstGradeCoeff));
+  /**
+     This example show the following simple QP model which
+     has the same structure (simpler) of the problem formulate by the program and
+     solved by Gurobi:
 
      minimize    1/2 * x^{T}*P*x+q^{T}*x
      subject to  G*x <= h
-                  A*x = b
-   It solves it once as a continuous model, and once as an integer model.
-*/
 
-  // Variable declaration
-  GRBVar x[columnParameters.n_elem + 1];
-  for (int i = 0; i < columnParameters.n_elem + 1; i++) {
-    x[i] = model.addVar(-GRB_INFINITY, GRB_INFINITY, 0.0, GRB_CONTINUOUS, "x_" + std::to_string(i));
-  }
-
-  model.update();
-  // Constraint Declaration
-  for (int i = 0; i < constraintCoeff.n_cols; i++) {
-    GRBLinExpr LHS = 0;
-    for (int j = 0; j < constraintCoeff.n_rows; j++) {
-      LHS += constraintCoeff(j, i) * x[j];
-    }
-    if (!i) {
-      model.addConstr(LHS, GRB_LESS_EQUAL, 0);
-    } else {
-      model.addConstr(LHS, GRB_LESS_EQUAL, beta(i - 1));
-    }
-  }
-
-  // Set minimization of the model
-  model.set(GRB_IntAttr_ModelSense, 1);
-
-  // Set objective function
-  GRBQuadExpr obj = 0;
-  std::cout << obj << std::endl;
-
-  for (int j = 0; j < columnParameters.n_elem + 1; j++) {
-    obj += 0.5 * x[j] * secondGradeCoeff(j, j) * x[j] + firstGradeCoeff[j] * x[j];
-  }
-  std::cout << obj << std::endl;
-  model.setObjective(obj);
-
-  try {
-    model.optimize();
-  } catch (GRBException e) {
-    std::cout << "Error code = " << e.getErrorCode() << std::endl;
-    std::cout << e.getMessage() << std::endl;
-  } catch (...) {
-    std::cout << "Exception during optimization" << std::endl;
-  }
-
+     It solves it once as a continuous model, and once as an integer model.
+  */
+  double v;
   arma::Col<double> updatedParameters(columnParameters.n_elem);  // d
 
-  double v = x[0].get(GRB_DoubleAttr_X);   // v
-  for (int i = 1; i < columnParameters.n_elem + 1; i++) {
-    std::cout << x[i].get(GRB_StringAttr_VarName) << " "
-              << x[i].get(GRB_DoubleAttr_X) << std::endl;
-    updatedParameters(i - 1) = x[i].get(GRB_DoubleAttr_X);
-  }
-
+  //! Call the optimizer
+  optimize(std::move(updatedParameters),
+           std::move(constraintCoeff),
+           std::move(beta),
+           std::move(firstGradeCoeff),
+           std::move(secondGradeCoeff),
+           v);
 
   //! Store new weights and retrieve error
   arma::mat currentNetError; // fd
@@ -197,7 +146,6 @@ void ProximalBundleMethod::OptimizeUpdateWeight(Network *currNet,
                                                 const double weightDecay,
                                                 const double momentum) {
   unvectorizeParameters(currNet, std::move(columnParameters));
-
 }
 
 /** Return a column vector with all the weights and biases of the network saved in
@@ -234,7 +182,6 @@ void ProximalBundleMethod::unvectorizeParameters(Network *currNet, arma::Col<dou
   std::vector<Layer> &net = currNet->GetNet();
 
   int index = 0;
-
   for (Layer &currentLayer : net) {
 
     //! Retrieve weight dimensions in pair<n_rows,n_cols> format
@@ -296,7 +243,7 @@ double ProximalBundleMethod::lineSearchL(Network *currNet,
                                          const arma::Col<double> &&d) {
   double tL = 0;
   double r = 1;
-  while (r - tL > 0.1) { //TODO: pass this parameter (accuracy tollerance) in the constructor
+  while (r - tL > 0.001) { //TODO: pass this parameter (accuracy tollerance) in the constructor
     double m = (r + tL) / 2.0;
 
     arma::mat lNetError; // error returned from updated weight: columnParameters + tL * d
@@ -387,6 +334,10 @@ void ProximalBundleMethod::init(Network *currNet, const arma::mat &&partialDeriv
   //! Set singleton parameter to false
   singletonInit = false;
 }
+
+/** Setup parameters for the solver
+ *
+ */
 void ProximalBundleMethod::setupSolverParameters(arma::mat &&alpha,
                                                  arma::mat &&beta,
                                                  arma::mat &&constraintCoeff,
@@ -405,4 +356,72 @@ void ProximalBundleMethod::setupSolverParameters(arma::mat &&alpha,
   secondGradeCoeff = mu * arma::eye(columnParameters.n_elem + 1, columnParameters.n_elem + 1); // P
   secondGradeCoeff(0, 0) = 0;
   firstGradeCoeff = arma::eye(columnParameters.n_elem + 1, 1); // q
+}
+
+/** Set up the solver and compute the quadratic program
+ *
+ * @param updatedParameters Updated parameters founded by the solver
+ */
+void ProximalBundleMethod::optimize(arma::Col<double> &&updatedParameters,
+                                    const arma::mat &&constraintCoeff,
+                                    const arma::mat &&beta,
+                                    const arma::mat &&firstGradeCoeff,
+                                    const arma::mat &&secondGradeCoeff,
+                                    double &v) {
+  // Create an environment
+  GRBEnv env = GRBEnv(true);
+  env.set("LogFile", "mip1.log");
+  env.start();
+
+  // Create an empty model
+  GRBModel model = GRBModel(env);
+
+  // Variable declaration
+  GRBVar x[columnParameters.n_elem + 1];
+  for (int i = 0; i < columnParameters.n_elem + 1; i++) {
+    x[i] = model.addVar(-GRB_INFINITY, GRB_INFINITY, 0.0, GRB_CONTINUOUS, "w_" + std::to_string(i));
+  }
+
+  model.update();
+  // Constraint Declaration
+  for (int i = 0; i < constraintCoeff.n_cols; i++) {
+    GRBLinExpr LHS = 0;
+    for (int j = 0; j < constraintCoeff.n_rows; j++) {
+      LHS += constraintCoeff(j, i) * x[j];
+    }
+    if (!i) {
+      model.addConstr(LHS, GRB_LESS_EQUAL, 0);
+    } else {
+      model.addConstr(LHS, GRB_LESS_EQUAL, beta(i - 1));
+    }
+  }
+
+  // Set minimization of the model
+  model.set(GRB_IntAttr_ModelSense, 1);
+
+  // Set objective function
+  GRBQuadExpr obj = 0;
+  //std::cout << obj << std::endl;
+
+  for (int j = 0; j < columnParameters.n_elem + 1; j++) {
+    obj += 0.5 * x[j] * secondGradeCoeff(j, j) * x[j] + firstGradeCoeff[j] * x[j];
+  }
+  //std::cout << obj << std::endl;
+  model.setObjective(obj);
+
+  try {
+    model.optimize();
+  } catch (GRBException e) {
+    std::cout << "Error code = " << e.getErrorCode() << std::endl;
+    std::cout << e.getMessage() << std::endl;
+  } catch (...) {
+    std::cout << "Exception during optimization" << std::endl;
+  }
+
+  v = x[0].get(GRB_DoubleAttr_X);   // v
+  for (int i = 1; i < columnParameters.n_elem + 1; i++) {
+    std::cout << x[i].get(GRB_StringAttr_VarName) << " "
+              << x[i].get(GRB_DoubleAttr_X) << std::endl;
+    updatedParameters(i - 1) = x[i].get(GRB_DoubleAttr_X);
+  }
 }

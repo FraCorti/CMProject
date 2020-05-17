@@ -11,13 +11,13 @@ int main() {
   cout.precision(17);
   cout.setf(ios::fixed);
 */
-  Preprocessing cupPreprocessing("../../data/monk/monks2_train_formatted.csv");
+  Preprocessing cupPreprocessing("../../data/monk/monks1_train_formatted.csv");
   arma::mat trainingSet;
   arma::mat validationSet;
   arma::mat testSet;
 
-  cupPreprocessing.GetSplit(80, 10, 10, std::move(trainingSet), std::move(validationSet), std::move(testSet));
-  testSet.load("../../data/monk/monks2_test_formatted.csv");
+  cupPreprocessing.GetSplit(90, 10, 0, std::move(trainingSet), std::move(validationSet), std::move(testSet));
+  testSet.load("../../data/monk/monks1_test_formatted.csv");
   int labelCol = 1;
 
 
@@ -100,20 +100,20 @@ int main() {
   Network cupNetwork;
   cupNetwork.SetLossFunction("meanSquaredError");
 
-  Layer firstLayer(trainingSet.n_cols - labelCol, 25, "tanhFunction");
-  Layer lastLayer(25, labelCol, "logisticFunction"); // logisticFunction linearFunction
+  Layer firstLayer(trainingSet.n_cols - labelCol, 4, "tanhFunction");
+  Layer lastLayer(4, labelCol, "logisticFunction"); // logisticFunction linearFunction
   cupNetwork.Add(firstLayer);
   cupNetwork.Add(lastLayer);
   cupNetwork.SetOptimizer("proximalBundleMethod");//LBFGS gradientDescent proximalBundleMethod
 
 
-  cupNetwork.Init(-5 + 1e-1, -5 - 1e-1);
+  cupNetwork.Init(+1, -1);
 
   cupNetwork.Train(validationData,
                    validationLabels,
                    trainingSet,
                    trainingLabels.n_cols,
-                   600,
+                   20,
                    trainingLabels.n_rows,
                    0.9,
                    0.0001,
