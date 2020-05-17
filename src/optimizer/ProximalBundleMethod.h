@@ -18,6 +18,8 @@ class ProximalBundleMethod : public Optimizer {
   double a;
   arma::mat F;
   arma::mat S;
+  double mu;
+  double gamma;
   bool singletonInit = true; // singleton for init method
   void init(Network *currNet, const arma::mat &&partialDerivativeOutput);
   double lineSearchL(Network *currNet, double v, arma::Col<double> &&c, const arma::Col<double> &&d);
@@ -30,6 +32,8 @@ class ProximalBundleMethod : public Optimizer {
   void vectorizeGradients(Network *currNet, arma::Col<double> &&columnGradients);
   void computeGradient(Network *network, const arma::mat &&partialDerivativeOutput);
   void unvectorizeParameters(Network *currNet, arma::Col<double> &&updatedParameters);
+  void setupSolverParameters(arma::mat &&alpha, arma::mat &&beta, arma::mat &&constraintCoeff,
+                             arma::mat &&secondGradeCoeff, arma::mat &&firstGradeCoeff);
  public:
   ~ProximalBundleMethod() override = default;
   ProximalBundleMethod() = default;

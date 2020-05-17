@@ -11,8 +11,8 @@
  */
 void ProximalBundleMethod::OptimizeBackward(Network *currNet, const arma::mat &&partialDerivativeOutput) {
 
-  double gamma = 0.5;
-  double mu = 2;
+  gamma = 0.5;
+  mu = 1;
 
   //! Set-up bundle method parameters
   if (singletonInit) {
@@ -29,20 +29,19 @@ void ProximalBundleMethod::OptimizeBackward(Network *currNet, const arma::mat &&
   // Create an empty model
   GRBModel model = GRBModel(env);
 
-  //TODO: move in a method
   //! Alpha value can be different, this is caused by approximation in the machine
-  arma::mat alpha =
-      arma::mat(subgradients.n_rows, 1, arma::fill::ones) * arma::as_scalar(fc) - subgradients * columnParameters - F;
-  // h == beta
-  arma::mat beta = arma::max(arma::abs(alpha), gamma * arma::pow(S, 2));
-  arma::mat constraintCoeff = arma::join_cols(-arma::ones(1, subgradients.n_cols), subgradients).t(); // G
-  subgradients.print("subgradients");
-  constraintCoeff.print("constraintCoeff");
-  //arma::mat constraintCoeff = subgradients.t();
-  // TODO: capire perchè +1
-  arma::mat secondGradeCoeff = mu * arma::eye(columnParameters.n_elem + 1, columnParameters.n_elem + 1); // P
-  secondGradeCoeff(0, 0) = 0;
-  arma::mat firstGradeCoeff = arma::eye(columnParameters.n_elem + 1, 1); // q
+  arma::mat alpha;
+  arma::mat beta; // h == beta
+  arma::mat constraintCoeff; // G
+  arma::mat secondGradeCoeff; // P
+  arma::mat firstGradeCoeff; // q
+
+  setupSolverParameters(std::move(alpha),
+                        std::move(beta),
+                        std::move(constraintCoeff),
+                        std::move(secondGradeCoeff),
+                        std::move(
+                            firstGradeCoeff));
 
   /* This example formulates and solves the following simple QP model:
 
@@ -65,7 +64,6 @@ void ProximalBundleMethod::OptimizeBackward(Network *currNet, const arma::mat &&
     for (int j = 0; j < constraintCoeff.n_rows; j++) {
       LHS += constraintCoeff(j, i) * x[j];
     }
-    std::cout << LHS << std::endl;
     if (!i) {
       model.addConstr(LHS, GRB_LESS_EQUAL, 0);
     } else {
@@ -114,8 +112,9 @@ void ProximalBundleMethod::OptimizeBackward(Network *currNet, const arma::mat &&
 
   //! Store current subgradients (weight and biases) in a single column vector
   currentSubgradient.clear();
+  computeGradient(currNet, std::move(partialDerivativeOutput));
   vectorizeGradients(currNet, std::move(currentSubgradient));  // g
-
+  std::cout << "norm currentSubgradient " << (arma::norm(currentSubgradient)) << std::endl;
   //! Store the error of the network
   arma::mat previousParameterError;  // fc
   unvectorizeParameters(currNet, std::move(columnParameters));
@@ -156,6 +155,9 @@ void ProximalBundleMethod::OptimizeBackward(Network *currNet, const arma::mat &&
   S += s_c;
   S = arma::join_cols(S, arma::mat(1, 1, arma::fill::ones) * s_d);
   a = std::max(a + s_c, s_d);
+
+  std::cout << "v: " << v << std::endl;
+
   // TODO: continue
 
 }
@@ -194,7 +196,6 @@ void ProximalBundleMethod::OptimizeUpdateWeight(Network *currNet,
                                                 const double learningRate,
                                                 const double weightDecay,
                                                 const double momentum) {
-  columnParameters.print("columnParameters");
   unvectorizeParameters(currNet, std::move(columnParameters));
 
 }
@@ -385,4 +386,23 @@ void ProximalBundleMethod::init(Network *currNet, const arma::mat &&partialDeriv
 
   //! Set singleton parameter to false
   singletonInit = false;
+}
+void ProximalBundleMethod::setupSolverParameters(arma::mat &&alpha,
+                                                 arma::mat &&beta,
+                                                 arma::mat &&constraintCoeff,
+                                                 arma::mat &&secondGradeCoeff,
+                                                 arma::mat &&firstGradeCoeff) {
+
+
+  //! Alpha value can be different, this is caused by approximation in the machine
+  alpha =
+      arma::mat(subgradients.n_rows, 1, arma::fill::ones) * arma::as_scalar(fc) - subgradients * columnParameters - F;
+  // h == beta
+  beta = arma::max(arma::abs(alpha), gamma * arma::pow(S, 2));
+  constraintCoeff = arma::join_cols(-arma::ones(1, subgradients.n_cols), subgradients).t(); // G
+  //arma::mat constraintCoeff = subgradients.t();
+  // TODO: capire perchè +1
+  secondGradeCoeff = mu * arma::eye(columnParameters.n_elem + 1, columnParameters.n_elem + 1); // P
+  secondGradeCoeff(0, 0) = 0;
+  firstGradeCoeff = arma::eye(columnParameters.n_elem + 1, 1); // q
 }

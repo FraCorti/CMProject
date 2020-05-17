@@ -11,14 +11,14 @@ int main() {
   cout.precision(17);
   cout.setf(ios::fixed);
 */
-  Preprocessing cupPreprocessing("../../data/ML-CUP19-TR_formatted.csv");
+  Preprocessing cupPreprocessing("../../data/monk/monks2_train_formatted.csv");
   arma::mat trainingSet;
   arma::mat validationSet;
   arma::mat testSet;
 
-  cupPreprocessing.GetSplit(10, 10, 10, std::move(trainingSet), std::move(validationSet), std::move(testSet));
-  //testSet.load("../../data/monk/monks2_test_formatted.csv");
-  int labelCol = 2;
+  cupPreprocessing.GetSplit(80, 10, 10, std::move(trainingSet), std::move(validationSet), std::move(testSet));
+  testSet.load("../../data/monk/monks2_test_formatted.csv");
+  int labelCol = 1;
 
 
   // Split the data from the training set.
@@ -100,30 +100,30 @@ int main() {
   Network cupNetwork;
   cupNetwork.SetLossFunction("meanSquaredError");
 
-  Layer firstLayer(trainingSet.n_cols - labelCol, 4, "tanhFunction");
-  Layer lastLayer(4, labelCol, "linearFunction"); // logisticFunction linearFunction
+  Layer firstLayer(trainingSet.n_cols - labelCol, 25, "tanhFunction");
+  Layer lastLayer(25, labelCol, "logisticFunction"); // logisticFunction linearFunction
   cupNetwork.Add(firstLayer);
   cupNetwork.Add(lastLayer);
   cupNetwork.SetOptimizer("proximalBundleMethod");//LBFGS gradientDescent proximalBundleMethod
 
 
-  cupNetwork.Init(1, -1);
+  cupNetwork.Init(-5 + 1e-1, -5 - 1e-1);
 
   cupNetwork.Train(validationData,
                    validationLabels,
                    trainingSet,
                    trainingLabels.n_cols,
-                   200,
+                   600,
                    trainingLabels.n_rows,
-                   0.0045,
-                   0.0,
-                   0.0);
+                   0.9,
+                   0.0001,
+                   0.7);
 
   arma::mat mat;
 
-  //cupNetwork.TestWithThreshold(std::move(testData), std::move(testLabels), 0.5);
+  cupNetwork.TestWithThreshold(std::move(testData), std::move(testLabels), 0.5);
 
-  cupNetwork.Test(std::move(testData), std::move(testLabels), std::move(mat));
+  //cupNetwork.Test(std::move(testData), std::move(testLabels), std::move(mat));
   mat.print("result");
   //! Cross validation implementation
   /*
