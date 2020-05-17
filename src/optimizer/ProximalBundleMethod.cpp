@@ -36,11 +36,13 @@ void ProximalBundleMethod::OptimizeBackward(Network *currNet, const arma::mat &&
   // h == beta
   arma::mat beta = arma::max(arma::abs(alpha), gamma * arma::pow(S, 2));
   arma::mat constraintCoeff = arma::join_cols(-arma::ones(1, subgradients.n_cols), subgradients).t(); // G
+  subgradients.print("subgradients");
+  constraintCoeff.print("constraintCoeff");
+  //arma::mat constraintCoeff = subgradients.t();
   // TODO: capire perchè +1
-  arma::mat secondGradeCoeff = mu * arma::eye(columnParameters.n_elem + 1, columnParameters.n_elem); // P
+  arma::mat secondGradeCoeff = mu * arma::eye(columnParameters.n_elem + 1, columnParameters.n_elem + 1); // P
   secondGradeCoeff(0, 0) = 0;
-  arma::mat firstGradeCoeff = arma::eye(columnParameters.n_elem, 1); // q
-
+  arma::mat firstGradeCoeff = arma::eye(columnParameters.n_elem + 1, 1); // q
 
   /* This example formulates and solves the following simple QP model:
 
@@ -53,18 +55,22 @@ void ProximalBundleMethod::OptimizeBackward(Network *currNet, const arma::mat &&
   // Variable declaration
   GRBVar x[columnParameters.n_elem + 1];
   for (int i = 0; i < columnParameters.n_elem + 1; i++) {
-    x[i] = model.addVar(0.0, GRB_INFINITY, 0.0, GRB_CONTINUOUS, "x_" + std::to_string(i));
+    x[i] = model.addVar(-GRB_INFINITY, GRB_INFINITY, 0.0, GRB_CONTINUOUS, "x_" + std::to_string(i));
   }
 
   model.update();
   // Constraint Declaration
-  constraintCoeff.print("constraintCoeff");
   for (int i = 0; i < constraintCoeff.n_cols; i++) {
     GRBLinExpr LHS = 0;
     for (int j = 0; j < constraintCoeff.n_rows; j++) {
       LHS += constraintCoeff(j, i) * x[j];
     }
-    model.addConstr(LHS, GRB_LESS_EQUAL, beta(i));
+    std::cout << LHS << std::endl;
+    if (!i) {
+      model.addConstr(LHS, GRB_LESS_EQUAL, 0);
+    } else {
+      model.addConstr(LHS, GRB_LESS_EQUAL, beta(i - 1));
+    }
   }
 
   // Set minimization of the model
@@ -76,8 +82,8 @@ void ProximalBundleMethod::OptimizeBackward(Network *currNet, const arma::mat &&
 
   for (int j = 0; j < columnParameters.n_elem + 1; j++) {
     obj += 0.5 * x[j] * secondGradeCoeff(j, j) * x[j] + firstGradeCoeff[j] * x[j];
-    std::cout << obj << std::endl;
   }
+  std::cout << obj << std::endl;
   model.setObjective(obj);
 
   try {
@@ -89,13 +95,13 @@ void ProximalBundleMethod::OptimizeBackward(Network *currNet, const arma::mat &&
     std::cout << "Exception during optimization" << std::endl;
   }
 
-  arma::Col<double> updatedParameters(columnParameters.n_elem + 1);  // d
+  arma::Col<double> updatedParameters(columnParameters.n_elem);  // d
 
   double v = x[0].get(GRB_DoubleAttr_X);   // v
   for (int i = 1; i < columnParameters.n_elem + 1; i++) {
     std::cout << x[i].get(GRB_StringAttr_VarName) << " "
               << x[i].get(GRB_DoubleAttr_X) << std::endl;
-    updatedParameters(i) = x[i].get(GRB_DoubleAttr_X);
+    updatedParameters(i - 1) = x[i].get(GRB_DoubleAttr_X);
   }
 
 
@@ -104,9 +110,11 @@ void ProximalBundleMethod::OptimizeBackward(Network *currNet, const arma::mat &&
   unvectorizeParameters(currNet, std::move(theta));
   currNet->Evaluate(std::move(currentNetError), 0);
 
+  currentNetError.print("currentNetError");
+
   //! Store current subgradients (weight and biases) in a single column vector
-  arma::Col<double> currentColumnSubGradients(columnGradients.n_elem);
-  vectorizeGradients(currNet, std::move(currentColumnSubGradients));  // g
+  currentSubgradient.clear();
+  vectorizeGradients(currNet, std::move(currentSubgradient));  // g
 
   //! Store the error of the network
   arma::mat previousParameterError;  // fc
@@ -115,11 +123,10 @@ void ProximalBundleMethod::OptimizeBackward(Network *currNet, const arma::mat &&
 
   //! Store the transpose of the column gradients
   subgradients =
-      arma::join_cols(subgradients,
-                      arma::rowvec(currentColumnSubGradients.memptr(), currentColumnSubGradients.n_elem, false)); // G
+      arma::join_cols(subgradients, currentSubgradient.t()); // G
 
   //!
-  F = arma::join_cols(F, currentNetError - arma::dot(currentColumnSubGradients, theta)); // F
+  F = arma::join_cols(F, currentNetError - arma::dot(currentSubgradient, theta)); // F
 
   //! Line search
   double s_c;
@@ -128,14 +135,14 @@ void ProximalBundleMethod::OptimizeBackward(Network *currNet, const arma::mat &&
   double dNorm = arma::norm(updatedParameters);
 
   if (tL > 0.5) {  //TODO: pass this parameter (accuracy tollerance) in the constructor ?
-    columnParameters = columnParameters + tL * updatedParameters;
+    columnParameters += tL * updatedParameters;
     theta = columnParameters;
     s_c = tL * dNorm;
     s_d = 0;
   } else {
     double tR = lineSearchR(currNet, v, std::move(columnParameters), std::move(updatedParameters), tL);
     if (tL > 0) {
-      columnParameters = columnParameters + tL * updatedParameters;
+      columnParameters += tL * updatedParameters;
       theta = columnParameters + tR * updatedParameters;
       s_c = 0;
       s_d = (tR - tL) * dNorm;
@@ -147,6 +154,8 @@ void ProximalBundleMethod::OptimizeBackward(Network *currNet, const arma::mat &&
   }
 
   S += s_c;
+  S = arma::join_cols(S, arma::mat(1, 1, arma::fill::ones) * s_d);
+  a = std::max(a + s_c, s_d);
   // TODO: continue
 
 }
@@ -185,11 +194,9 @@ void ProximalBundleMethod::OptimizeUpdateWeight(Network *currNet,
                                                 const double learningRate,
                                                 const double weightDecay,
                                                 const double momentum) {
+  columnParameters.print("columnParameters");
   unvectorizeParameters(currNet, std::move(columnParameters));
 
-  //! Empty class parameters column vector for next iterate
-  columnParameters.clear();
-  columnGradients.clear();
 }
 
 /** Return a column vector with all the weights and biases of the network saved in
@@ -226,6 +233,7 @@ void ProximalBundleMethod::unvectorizeParameters(Network *currNet, arma::Col<dou
   std::vector<Layer> &net = currNet->GetNet();
 
   int index = 0;
+
   for (Layer &currentLayer : net) {
 
     //! Retrieve weight dimensions in pair<n_rows,n_cols> format
@@ -287,7 +295,7 @@ double ProximalBundleMethod::lineSearchL(Network *currNet,
                                          const arma::Col<double> &&d) {
   double tL = 0;
   double r = 1;
-  while (r - tL > 0.5) { //TODO: pass this parameter (accuracy tollerance) in the constructor
+  while (r - tL > 0.1) { //TODO: pass this parameter (accuracy tollerance) in the constructor
     double m = (r + tL) / 2.0;
 
     arma::mat lNetError; // error returned from updated weight: columnParameters + tL * d
@@ -299,7 +307,7 @@ double ProximalBundleMethod::lineSearchL(Network *currNet,
     currNet->Evaluate(std::move(netError), 0);
 
     //TODO: pass mL in the costructor (0.1)
-    if (arma::as_scalar(lNetError) < arma::as_scalar(netError) + 0.1 * tL * v) {
+    if (arma::as_scalar(lNetError) <= arma::as_scalar(netError) + 0.1 * tL * v) {
       tL = m;
     } else {
       r = m;
@@ -336,8 +344,9 @@ double ProximalBundleMethod::lineSearchR(Network *currNet,
     arma::Col<double> currentColumnGradient;
     vectorizeGradients(currNet, std::move(currentColumnGradient));
     double alpha =
-        std::abs(arma::as_scalar(lNetError) - arma::as_scalar(rNetError) - (tL - tR) * arma::dot(columnGradients, d));
-    if (-alpha + arma::dot(columnGradients, d) >= 0.99 * v) { // TODO: pass 0.99 as parameter
+        std::abs(
+            arma::as_scalar(lNetError) - arma::as_scalar(rNetError) - (tL - tR) * arma::dot(currentSubgradient, d));
+    if (-alpha + arma::dot(currentSubgradient, d) >= 0.99 * v) { // TODO: pass 0.99 as parameter
       tR = m;
     } else {
       r = m;
@@ -358,18 +367,18 @@ void ProximalBundleMethod::init(Network *currNet, const arma::mat &&partialDeriv
   computeGradient(currNet, std::move(partialDerivativeOutput));
 
   //! Store the subgradient (weight and biases) in a single column vector
-  vectorizeGradients(currNet, std::move(columnGradients));
+  vectorizeGradients(currNet, std::move(currentSubgradient));
 
   //! Store the transpose of the column subgradients
   subgradients =
-      arma::join_cols(subgradients, arma::rowvec(columnGradients.memptr(), columnGradients.n_elem, false)); // G
+      arma::join_cols(subgradients, arma::rowvec(currentSubgradient.memptr(), currentSubgradient.n_elem, false)); // G
 
   //! Unflat the network weights and retrieve the error with Evaluate()
   unvectorizeParameters(currNet, std::move(columnParameters));
   currNet->Evaluate(std::move(fc), 0); // fc
 
   //! TODO: Dare un nome ad f
-  F = arma::join_cols(F, fc - arma::dot(columnGradients, columnParameters));
+  F = arma::join_cols(F, fc - arma::dot(currentSubgradient, columnParameters));
   // subgrad locality measure
   S = arma::mat(1, 1, arma::fill::zeros);
   a = 0;

@@ -11,7 +11,7 @@
 
 class ProximalBundleMethod : public Optimizer {
   arma::Col<double> columnParameters;
-  arma::Col<double> columnGradients;
+  arma::Col<double> currentSubgradient;
   arma::Col<double> theta;
   arma::mat subgradients;
   arma::mat fc;
