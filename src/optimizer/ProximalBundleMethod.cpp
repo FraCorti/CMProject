@@ -297,8 +297,6 @@ void ProximalBundleMethod::init(Network *currNet, const arma::mat &&partialDeriv
   //! Store the parameters (weight and bias) in a single column vector.
   vectorizeParameters(currNet, std::move(columnParameters));  // columnParameters == c
   theta = arma::mat(columnParameters.memptr(), columnParameters.n_elem, true); // theta
-  //columnParameters.print("Column parameters");
-  //theta.print("Theta");
   //! Compute and store the current subgradient
   computeGradient(currNet, std::move(partialDerivativeOutput));
 
@@ -308,7 +306,6 @@ void ProximalBundleMethod::init(Network *currNet, const arma::mat &&partialDeriv
   //! Store the transpose of the column subgradients
   subgradients =
       arma::join_cols(subgradients, arma::rowvec(currentSubgradient.memptr(), currentSubgradient.n_elem, false)); // G
-  subgradients.print("first subgradient");
   //! Unflat the network weights and retrieve the error with Evaluate()
   currNet->Evaluate(std::move(fc), 0); // fc
 

@@ -32,6 +32,7 @@ class Layer {
   ActivationFunction *activationFunction = nullptr;
   //! Direction of update of the weight
   arma::mat direction;
+  arma::mat regularizationMatrix;
 
  public:
   const arma::mat &GetDeltaBias() const;
@@ -117,6 +118,7 @@ class Layer {
   void Init(const double upperBound, const double lowerBound, const int seed);
   void SetDirection(const arma::mat &&optimizerComputedDirection);
   void SetWeight(const arma::mat &&newWeight);
+  void SetRegularizationMatrix(const arma::mat &&regularizationMatrix_);
   void SetBias(const arma::mat &&newBias);
   const arma::mat &GetDirection() const;
 };

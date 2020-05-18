@@ -6,6 +6,8 @@
 #include "../optimizer/gradientDescent.h"
 #include "../optimizer/LBFGS.h"
 #include "../optimizer/ProximalBundleMethod.h"
+#include "../regularizer/L2.h"
+#include "../regularizer/L1.h"
 
 void Network::Add(Layer &layer) {
   net.push_back(layer);
@@ -188,11 +190,7 @@ void Network::error(const arma::mat &&trainLabelsBatch,
                     double weightDecay) {
   lossFunction->Error(std::move(trainLabelsBatch), std::move(outputActivateBatch), std::move(currentBatchError));
   if (weightDecay > 0) {
-    double weightsSum = 0;
-
-    for (Layer &currentLayer : net) {
-      weightsSum += arma::accu(arma::pow(currentLayer.GetWeight(), 2));
-    }
+    double weightsSum = regularizer->ForError(this);
     currentBatchError += (weightDecay * weightsSum);
   }
 
@@ -214,6 +212,9 @@ void Network::backward(const arma::mat &&partialDerivativeOutput) {
 void Network::updateWeight(double learningRate, double weightDecay, double momentum) {
 
   for (Layer &currentLayer : net) {
+    arma::mat regMat;
+    regularizer->ForWeight(&currentLayer, std::move(regMat));
+    currentLayer.SetRegularizationMatrix(std::move(regMat));
     currentLayer.AdjustWeight(learningRate, weightDecay, momentum);
   }
 
@@ -373,4 +374,18 @@ double Network::LineSearchEvaluate(const double stepSize, const double weightDec
  */
 void Network::GetBatchError(arma::mat &&batchError_) {
   batchError_ = *batchError;
+}
+void Network::SetRegularizer(std::string regularizer_) {
+  if (regularizer_
+      == "L1") { //TODO: mettere funzione che fa diverntare tutti i caratteri piccoli (.down()??)
+    regularizer = new L1();
+  } else if (regularizer_ == "L2") {
+    regularizer = new L2();
+  } else {
+    regularizer = new L2();
+  }
+
+}
+const Regularizer *Network::GetRegularizer() {
+  return regularizer;
 }

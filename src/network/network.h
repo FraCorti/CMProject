@@ -14,7 +14,7 @@
 #include "../exception/exception.h"
 
 class Optimizer;
-
+class Regularizer;
 class Network {
  private:
   std::vector<Layer> net;
@@ -26,6 +26,7 @@ class Network {
   arma::mat *inputLabel;
   //! Saving error for optimizer
   arma::Mat<double> *batchError;  // TODO: is this needed?
+  Regularizer *regularizer;
 
   void train(const arma::mat &&trainingData,
              const arma::mat &&trainLabels,
@@ -48,6 +49,7 @@ class Network {
   void GetBatchError(arma::mat &&batchError_);
   void Evaluate(arma::mat &&outputError, const double regularization);
   void SetLossFunction(const std::string loss_function);
+  void SetRegularizer(const std::string regularizer_);
   void SetOptimizer(const std::string optimizer_);
   void Add(Layer &layer);
   void Init(const double upperBound, const double lowerBound, const int seed = 0);
@@ -65,6 +67,7 @@ class Network {
   void errorTest(const arma::mat &&trainLabelsBatch,
                  arma::mat &&outputActivateBatch,
                  arma::mat &&currentBatchError);
+  const Regularizer *GetRegularizer();
   void Clear();
   std::vector<Layer> &GetNet();
   double LineSearchEvaluate(const double stepSize, const double weightDecay, const double momentum);

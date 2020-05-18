@@ -3,6 +3,7 @@
 //
 
 #include "gradientDescent.h"
+#include "../regularizer/regularizer.h"
 
 /**   Iterate from last layer to first layer, during the iteration the gradient is computed (stored inside layer)
  *    and retropagated using RetropagationError().
@@ -38,6 +39,9 @@ void GradientDescent::OptimizeUpdateWeight(Network *network,
                                            const double momentum) {
   std::vector<Layer> &net = network->GetNet();
   for (Layer &currentLayer : net) {
+    arma::mat regMat;
+    (network->GetRegularizer())->ForWeight(&currentLayer, std::move(regMat));
+    currentLayer.SetRegularizationMatrix(std::move(regMat));
     currentLayer.AdjustWeight(learningRate, weightDecay, momentum);
   }
 }

@@ -3,6 +3,7 @@
 //
 
 #include "LBFGS.h"
+#include "../regularizer/regularizer.h"
 /***
  * Iterate over the network from last layer to first. The gradient of all the layer is computed and
  * stored, then the error is "retropagated" throgh the layer using RetroPropagationError().
@@ -327,13 +328,14 @@ void LBFGS::searchDirection(arma::mat &&approxInvHessian, arma::mat &&q, arma::m
 void LBFGS::OptimizeUpdateWeight(Network *currNetwork, const double learningRate,
                                  const double weightDecay, const double momentum) {
   double stepSize = lineSearch(currNetwork, weightDecay, momentum);
-  std::cout << " stepSize " << stepSize << std::endl;
   std::vector<Layer> &net = currNetwork->GetNet();
   size_t indexLayer = 0;
   for (Layer &currentLayer : net) {
     arma::mat oldWeight = currentLayer.GetWeight();
+    arma::mat regMat;
+    (currNetwork->GetRegularizer())->ForWeight(&currentLayer, std::move(regMat));
+    currentLayer.SetRegularizationMatrix(std::move(regMat));
     currentLayer.AdjustWeight(stepSize, weightDecay, momentum);
-    std::cout << "Layer gradient: " << arma::norm(currentLayer.GetGradientWeight(), 2) << std::endl;
     if (pastCurvatureLayer.size() == storageSize) {
       pastCurvatureLayer.pop_back();
     }
@@ -380,7 +382,6 @@ double LBFGS::lineSearchBacktracking(Network *currNetwork, const double weightDe
 
   int i;
   while (fT <= f0 + c * alphaT * initialSearchDirectionDotGradient && i < 10000) {
-    //std::cout << " alphaT " << alphaT << std::endl;
     alphaT *= rho;
 
     Network lineSearchNetworkAlphaT(*currNetwork);
