@@ -16,7 +16,7 @@ int main() {
   arma::mat validationSet;
   arma::mat testSet;
 
-  cupPreprocessing.GetSplit(90, 10, 0, std::move(trainingSet), std::move(validationSet), std::move(testSet));
+  cupPreprocessing.GetSplit(100, 0, 0, std::move(trainingSet), std::move(validationSet), std::move(testSet));
   testSet.load("../../data/monk/monks1_test_formatted.csv");
   int labelCol = 1;
 
@@ -107,21 +107,21 @@ int main() {
   cupNetwork.SetOptimizer("proximalBundleMethod");//LBFGS gradientDescent proximalBundleMethod
 
 
-  cupNetwork.Init(+1, -1);
+  cupNetwork.Init(+1e-1, -1e-1);
 
-  cupNetwork.Train(validationData,
-                   validationLabels,
+  cupNetwork.Train(testData,
+                   testLabels,
                    trainingSet,
                    trainingLabels.n_cols,
-                   20,
+                   500,
                    trainingLabels.n_rows,
                    0.9,
-                   0.0001,
+                   0.0,
                    0.0);
 
   arma::mat mat;
 
-  cupNetwork.TestWithThreshold(std::move(trainingSet), std::move(trainingLabels), 0.5);
+  cupNetwork.TestWithThreshold(std::move(testData), std::move(testLabels), 0.5);
 
   //cupNetwork.Test(std::move(testData), std::move(testLabels), std::move(mat));
   mat.print("result");
