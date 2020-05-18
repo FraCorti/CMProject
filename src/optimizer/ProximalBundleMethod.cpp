@@ -84,6 +84,7 @@ void ProximalBundleMethod::OptimizeBackward(Network *currNet, const arma::mat &&
 
   if (tL > 0.5) {  //TODO: pass this parameter (accuracy tollerance) in the constructor ?
     columnParameters += tL * updatedParameters;
+    (columnParameters += tL * updatedParameters).print("columnParameters += tL * updatedParameters");
     theta = columnParameters;
     s_c = tL * dNorm;
     s_d = 0;
@@ -91,6 +92,7 @@ void ProximalBundleMethod::OptimizeBackward(Network *currNet, const arma::mat &&
     double tR = lineSearchR(currNet, v, std::move(columnParameters), std::move(updatedParameters), tL);
     if (tL > 0) {
       columnParameters += tL * updatedParameters;
+      (columnParameters += tL * updatedParameters).print("columnParameters += tL * updatedParameters");
       theta = columnParameters + tR * updatedParameters;
       s_c = 0;
       s_d = (tR - tL) * dNorm;
@@ -100,7 +102,7 @@ void ProximalBundleMethod::OptimizeBackward(Network *currNet, const arma::mat &&
       s_d = tR * dNorm;
     }
   }
-
+  columnParameters.print("columnParameters");
   S += s_c;
   S = arma::join_cols(S, arma::mat(1, 1, arma::fill::ones) * s_d);
   a = std::max(a + s_c, s_d);
@@ -146,6 +148,12 @@ void ProximalBundleMethod::OptimizeUpdateWeight(Network *currNet,
                                                 const double weightDecay,
                                                 const double momentum) {
   unvectorizeParameters(currNet, std::move(columnParameters));
+
+  std::vector<Layer> &net = currNet->GetNet();
+  for (Layer &currentLayer : net) {
+    currentLayer.GetWeight().print("Updated weight");
+    currentLayer.GetBias().print("Updated bias");
+  }
 }
 
 /** Return a column vector with all the weights and biases of the network saved in
@@ -200,12 +208,7 @@ void ProximalBundleMethod::unvectorizeParameters(Network *currNet, arma::Col<dou
                                              true)));
     index += biasDim;
   }
-  /*
-  for (Layer &currentLayer : net) {
-    currentLayer.GetWeight().print("Updated weight");
-    currentLayer.GetBias().print("Updated bias");
-  }
-   */
+
 }
 
 /** Return a column vector with all the gradient of the weights and biases of the network stored i n
@@ -219,13 +222,15 @@ void ProximalBundleMethod::vectorizeGradients(Network *currNet, arma::Col<double
   for (Layer &currentLayer : net) {
     arma::mat gradientWeight = currentLayer.GetGradientWeight();
     arma::mat gradientBias = currentLayer.GetGradientBias();
-
+    //gradientWeight.print("Gradient weight");
+    //  gradientBias.print("Gradient bias");
     //! Concatenate weight and bias gradients
     arma::Col<double> layersParameters =
         arma::join_cols(arma::Col(gradientWeight.memptr(), gradientWeight.n_elem, true),
                         arma::Col(gradientBias.memptr(), gradientBias.n_elem, true));
 
     columnGradients = arma::join_cols(columnGradients, layersParameters);
+    //columnGradients.print("Column gradient");
     //layersParameters.print("Gradients parameters");
   }
   //columnGradients.print("Column gradient parameters");
@@ -310,7 +315,8 @@ void ProximalBundleMethod::init(Network *currNet, const arma::mat &&partialDeriv
   //! Store the parameters (weight and bias) in a single column vector.
   vectorizeParameters(currNet, std::move(columnParameters));  // columnParameters == c
   theta = arma::mat(columnParameters.memptr(), columnParameters.n_elem, true); // theta
-
+  //columnParameters.print("Column parameters");
+  //theta.print("Theta");
   //! Compute and store the current subgradient
   computeGradient(currNet, std::move(partialDerivativeOutput));
 
@@ -320,7 +326,7 @@ void ProximalBundleMethod::init(Network *currNet, const arma::mat &&partialDeriv
   //! Store the transpose of the column subgradients
   subgradients =
       arma::join_cols(subgradients, arma::rowvec(currentSubgradient.memptr(), currentSubgradient.n_elem, false)); // G
-
+  subgradients.print("first subgradient");
   //! Unflat the network weights and retrieve the error with Evaluate()
   unvectorizeParameters(currNet, std::move(columnParameters));
   currNet->Evaluate(std::move(fc), 0); // fc
@@ -346,16 +352,29 @@ void ProximalBundleMethod::setupSolverParameters(arma::mat &&alpha,
 
 
   //! Alpha value can be different, this is caused by approximation in the machine
+  (arma::mat(subgradients.n_rows, 1, arma::fill::ones) * arma::as_scalar(fc)).print(
+      "arma::mat(subgradients.n_rows, 1, arma::fill::ones) * arma::as_scalar(fc)");
+  (subgradients * columnParameters - F).print("subgradients * columnParameters - F");
   alpha =
-      arma::mat(subgradients.n_rows, 1, arma::fill::ones) * arma::as_scalar(fc) - subgradients * columnParameters - F;
+      (arma::mat(subgradients.n_rows, 1, arma::fill::ones) * arma::as_scalar(fc))
+          - (subgradients * columnParameters - F);
   // h == beta
+  alpha.print("alpha");
+  (arma::abs(alpha)).print("arma::abs(alpha)");
+  S.print("S");
+  std::cout << "gamma: " << gamma << std::endl;
+  (gamma * arma::pow(S, 2)).print("gamma * arma::pow(S, 2)");
   beta = arma::max(arma::abs(alpha), gamma * arma::pow(S, 2));
+  beta.print("beta");
   constraintCoeff = arma::join_cols(-arma::ones(1, subgradients.n_cols), subgradients).t(); // G
+  constraintCoeff.print("constraint coeff");
   //arma::mat constraintCoeff = subgradients.t();
   // TODO: capire perchè +1
   secondGradeCoeff = mu * arma::eye(columnParameters.n_elem + 1, columnParameters.n_elem + 1); // P
   secondGradeCoeff(0, 0) = 0;
+  secondGradeCoeff.print("secondGradeCoeff");
   firstGradeCoeff = arma::eye(columnParameters.n_elem + 1, 1); // q
+  firstGradeCoeff.print("firstGradeCoeff");
 }
 
 /** Set up the solver and compute the quadratic program
@@ -396,6 +415,7 @@ void ProximalBundleMethod::optimize(arma::Col<double> &&updatedParameters,
     }
   }
 
+
   // Set minimization of the model
   model.set(GRB_IntAttr_ModelSense, 1);
 
@@ -424,4 +444,5 @@ void ProximalBundleMethod::optimize(arma::Col<double> &&updatedParameters,
               << x[i].get(GRB_DoubleAttr_X) << std::endl;
     updatedParameters(i - 1) = x[i].get(GRB_DoubleAttr_X);
   }
+  updatedParameters.print("Updated parameters");
 }

@@ -117,11 +117,11 @@ int main() {
                    trainingLabels.n_rows,
                    0.9,
                    0.0001,
-                   0.7);
+                   0.0);
 
   arma::mat mat;
 
-  cupNetwork.TestWithThreshold(std::move(testData), std::move(testLabels), 0.5);
+  cupNetwork.TestWithThreshold(std::move(trainingSet), std::move(trainingLabels), 0.5);
 
   //cupNetwork.Test(std::move(testData), std::move(testLabels), std::move(mat));
   mat.print("result");
