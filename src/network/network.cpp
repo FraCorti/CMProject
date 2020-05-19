@@ -6,6 +6,8 @@
 #include "../optimizer/gradientDescent.h"
 #include "../optimizer/LBFGS.h"
 #include "../optimizer/ProximalBundleMethod.h"
+#include "../regularizer/L2.h"
+#include "../regularizer/L1.h"
 
 void Network::Add(Layer &layer) {
   net.push_back(layer);
@@ -137,14 +139,18 @@ void Network::train(const arma::mat &&trainingData,
           weightDecay);
 
     epochError = epochError + currentBatchError;
+
+    //! Saving error for optimizer
+    batchError = &currentBatchError;
+
+    //! Saving input data for line search
+    input = &inputBatch;
+    inputLabel = &labelBatch;
     backward(std::move(partialDerivativeOutput));
 
     start = end + 1;
     end = i < batchNumber ? batchSize * (i + 1) - 1 : trainingData.n_rows - 1;
 
-    //! Saving input data for line search
-    input = &inputBatch;
-    inputLabel = &labelBatch;
     optimizer->OptimizeUpdateWeight(this, learningRate, weightDecay, momentum);
   }
   epochError = epochError / batchNumber;
@@ -184,11 +190,7 @@ void Network::error(const arma::mat &&trainLabelsBatch,
                     double weightDecay) {
   lossFunction->Error(std::move(trainLabelsBatch), std::move(outputActivateBatch), std::move(currentBatchError));
   if (weightDecay > 0) {
-    double weightsSum = 0;
-
-    for (Layer &currentLayer : net) {
-      weightsSum += arma::accu(arma::pow(currentLayer.GetWeight(), 2));
-    }
+    double weightsSum = regularizer->ForError(this);
     currentBatchError += (weightDecay * weightsSum);
   }
 
@@ -204,24 +206,15 @@ void Network::error(const arma::mat &&trainLabelsBatch,
  * */
 void Network::backward(const arma::mat &&partialDerivativeOutput) {
   optimizer->OptimizeBackward(this, std::move(partialDerivativeOutput));
-/*
-  auto currentLayer = net.rbegin();
-  currentLayer->OutputLayerGradient(std::move(partialDerivativeOutput));   //TODO: move to optimizer(currentLayer,)
-  arma::mat currentGradientWeight;
-  currentLayer->GetSummationWeight(std::move(currentGradientWeight));
-  currentLayer++;
-  // Iterate from the precedent Layer of the tail to the head
-  for (; currentLayer != net.rend(); currentLayer++) {
-    currentLayer->Gradient(std::move(currentGradientWeight));
-    currentLayer->RetroPropagationError(std::move(currentGradientWeight));
-  }
-  */
 }
 
-/***/
+/***/arma::mat currentNetError; // fd
 void Network::updateWeight(double learningRate, double weightDecay, double momentum) {
 
   for (Layer &currentLayer : net) {
+    arma::mat regMat;
+    regularizer->ForWeight(&currentLayer, std::move(regMat));
+    currentLayer.SetRegularizationMatrix(std::move(regMat));
     currentLayer.AdjustWeight(learningRate, weightDecay, momentum);
   }
 
@@ -247,6 +240,27 @@ void Network::inference(arma::mat &&inputData, arma::mat &&outputData) {
   }
   outputData = activateWeight;
 }
+
+/** Compute forward and retrieve error of the network
+ *
+ * @param outputError
+ * @param regularization
+ */
+void Network::Evaluate(arma::mat &&outputError, const double regularization) {
+  arma::mat activateWeight = input->t();
+  arma::mat outputActivateBatch;
+  arma::mat currentBatchError;
+  arma::mat partialDerivativeOutput;
+
+  forward(std::move(*input), std::move(outputActivateBatch));
+
+  error(std::move(*inputLabel),
+        std::move(outputActivateBatch),
+        std::move(partialDerivativeOutput),
+        std::move(outputError),
+        regularization);
+}
+
 /***/
 void Network::TestWithThreshold(const arma::mat &&testData, const arma::mat &&testLabels, double threshold) {
   arma::mat outputActivateBatch;
@@ -311,7 +325,7 @@ void Network::SetOptimizer(const std::string optimizer_) {
   } else if (optimizer_ == "LBFGS") {
     optimizer = new LBFGS(net.size());
   } else if (optimizer_ == "proximalBundleMethod") {
-    optimizer = new ProximalBundleMethod(net.size());
+    optimizer = new ProximalBundleMethod();
   } else {
     optimizer = new GradientDescent();
   }
@@ -353,4 +367,25 @@ double Network::LineSearchEvaluate(const double stepSize, const double weightDec
   }
 
   return arma::as_scalar(currentBatchError);
+}
+/** Retrieve the batch error of the network
+ *
+ * @param batchError_ Store the current batch error
+ */
+void Network::GetBatchError(arma::mat &&batchError_) {
+  batchError_ = *batchError;
+}
+void Network::SetRegularizer(std::string regularizer_) {
+  if (regularizer_
+      == "L1") { //TODO: mettere funzione che fa diverntare tutti i caratteri piccoli (.down()??)
+    regularizer = new L1();
+  } else if (regularizer_ == "L2") {
+    regularizer = new L2();
+  } else {
+    regularizer = new L2();
+  }
+
+}
+const Regularizer *Network::GetRegularizer() {
+  return regularizer;
 }

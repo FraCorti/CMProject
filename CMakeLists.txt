@@ -70,7 +70,12 @@ add_library(Neuradillo
         src/exception/exception.cpp
         src/exception/exception.h
         src/optimizer/ProximalBundleMethod.cpp
-        src/optimizer/ProximalBundleMethod.h)
+        src/optimizer/ProximalBundleMethod.h
+        src/regularizer/regularizer.h
+        src/regularizer/L1.cpp
+        src/regularizer/L1.h
+        src/regularizer/L2.cpp
+        src/regularizer/L2.h)
 
 target_include_directories(Neuradillo
         PRIVATE

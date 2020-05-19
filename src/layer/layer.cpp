@@ -7,6 +7,7 @@
 #include "../activationFunction/logisticFunction.h"
 #include "../activationFunction/reluFunction.h"
 #include "../activationFunction/tanhFunction.h"
+
 const arma::mat &Layer::GetWeight() const {
   return weight;
 }
@@ -30,6 +31,10 @@ const arma::mat &Layer::GetDeltaBias() const {
 }
 const arma::mat &Layer::GetDirection() const {
   return direction;
+}
+
+const arma::mat Layer::GetGradientBias() const {
+  return arma::mean(gradient, 1);
 }
 
 Layer::Layer(const int inSize, const int outSize, const std::string activationFunctionString)
@@ -58,6 +63,8 @@ Layer::Layer(const int inSize, const int outSize, const std::string activationFu
     std::cout << activationFunctionString << " activationFunction not valid!" << std::endl;
     throw "activationFunction not valid!";
   }
+
+  regularizationMatrix = arma::mat(1, 1, arma::fill::zeros);
 }
 
 /** Given the activated vector of the previous layer compute the forward pass
@@ -125,7 +132,7 @@ void Layer::Gradient(const arma::mat &&summationGradientWeight) {
 /***/
 void Layer::AdjustWeight(const double learningRate, const double weightDecay, const double momentum) {
   weight = weight + momentum * deltaWeight + learningRate * direction
-      - 2 * weightDecay * weight;
+      - weightDecay * regularizationMatrix;
   bias = bias + momentum * deltaBias - learningRate * arma::mean(gradient, 1);
 
   deltaWeight = momentum * deltaWeight + learningRate * direction;
@@ -174,12 +181,35 @@ void Layer::LineSearchForward(const arma::mat &&input,
                               const double nesterovMomentum) {
 
   output = (weight + nesterovMomentum * deltaWeight + stepSize * direction
-      - 2 * weightDecay * weight + nesterovMomentum * deltaWeight) * input;
+      - weightDecay * regularizationMatrix + nesterovMomentum * deltaWeight) * input;
   output.each_col() +=
       (bias + nesterovMomentum * deltaBias - stepSize * arma::mean(gradient, 1) + nesterovMomentum * deltaBias);
 
 }
+
 void Layer::SetWeight(const arma::mat &&newWeight) {
   weight = newWeight;
-  //TODO: bias update
+}
+
+void Layer::SetBias(const arma::mat &&newBias) {
+  bias = newBias;
+}
+
+/** Return the dimensions of the weight matrix <n_rows, n_cols>
+ *
+ * @return
+ */
+std::pair<int, int> Layer::GetWeightDimensions() const {
+  return std::pair<int, int>(weight.n_rows, weight.n_cols);
+}
+
+/** Return the dimension of the bias columns vector
+ *
+ * @return
+ */
+int Layer::GetBiasRow() const {
+  return bias.n_rows;
+}
+void Layer::SetRegularizationMatrix(const arma::mat &&regularizationMatrix_) {
+  regularizationMatrix = regularizationMatrix_;
 }
