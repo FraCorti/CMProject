@@ -58,13 +58,11 @@ void ProximalBundleMethod::OptimizeBackward(Network *currNet, const arma::mat &&
   unvectorizeParameters(currNet, std::move(theta));
   currNet->Evaluate(std::move(currentNetError), 0);
 
-  currentNetError.print("currentNetError");
-
   //! Store current subgradients (weight and biases) in a single column vector
   currentSubgradient.clear();
   computeGradient(currNet, std::move(partialDerivativeOutput));
   vectorizeGradients(currNet, std::move(currentSubgradient));  // g
-  std::cout << "norm currentSubgradient " << (arma::norm(currentSubgradient)) << std::endl;
+  //std::cout << "norm currentSubgradient " << (arma::norm(currentSubgradient)) << std::endl;
   //! Store the error of the network
   arma::mat previousParameterError;  // fc
   unvectorizeParameters(currNet, std::move(columnParameters));
@@ -105,9 +103,7 @@ void ProximalBundleMethod::OptimizeBackward(Network *currNet, const arma::mat &&
   S = arma::join_cols(S, arma::mat(1, 1, arma::fill::ones) * s_d);
   a = std::max(a + s_c, s_d);
 
-  std::cout << "v: " << v << std::endl;
-
-  // TODO: continue
+  //std::cout << "v: " << v << std::endl;
 
 }
 

@@ -5,10 +5,10 @@
 #include <chrono>
 
 int main() {
-  /*
-  cout.precision(17);
-  cout.setf(ios::fixed);
-*/
+
+  arma::cout.precision(3);
+  arma::cout.setf(std::ios::fixed);
+
   Preprocessing cupPreprocessing("../../data/monk/monks1_train_formatted.csv");
   arma::mat trainingSet;
   arma::mat validationSet;
@@ -103,19 +103,19 @@ int main() {
   cupNetwork.Add(firstLayer);
   cupNetwork.Add(lastLayer);
   cupNetwork.SetRegularizer("L2");//L1 L2
-  cupNetwork.SetOptimizer("gradientDescent");//LBFGS gradientDescent proximalBundleMethod
+  cupNetwork.SetOptimizer("proximalBundleMethod");//LBFGS gradientDescent proximalBundleMethod
   cupNetwork.SetNesterov(false);
 
   cupNetwork.Init(+1e-1, -1e-1, 30);
-
+  std::cout << " Residual " << "Convergence speed " << "Computational time" << std::endl;
   cupNetwork.Train(trainingData,
                    trainingLabels,
                    trainingSet,
                    trainingLabels.n_cols,
-                   700,
+                   5000,
                    trainingLabels.n_rows,
                    0.9,
-                   0.00005,
+                   0.0,
                    0.8);
 
   arma::mat mat;

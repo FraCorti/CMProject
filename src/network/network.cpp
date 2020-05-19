@@ -8,6 +8,7 @@
 #include "../optimizer/ProximalBundleMethod.h"
 #include "../regularizer/L2.h"
 #include "../regularizer/L1.h"
+#include <chrono>
 
 void Network::Add(Layer &layer) {
   net.push_back(layer);
@@ -53,9 +54,10 @@ double Network::Train(arma::mat validationSet, arma::mat validationLabelSet, arm
   arma::mat currentError = arma::zeros(1, 1);
   arma::mat deltaError;
   arma::mat previousError;
-  double thresholdStopCondition = 0.00001;
+  double thresholdStopCondition = 0.000000000000000000000000000000000000000000000000001;
   bool stopCondition = false;
   double nDelta = 0.0;
+  auto start = std::chrono::high_resolution_clock::now();
   for (int currentEpoch = 1; currentEpoch <= epoch && !stopCondition; currentEpoch++) {
 
     // Split the data from the training set.
@@ -87,13 +89,33 @@ double Network::Train(arma::mat validationSet, arma::mat validationLabelSet, arm
       stopCondition = true;
     }
 
+    /** Remove after done curves
+     */
+
+    arma::Col<double> columnGradients;
+    for (Layer &currentLayer : net) {
+      //TODO: Per LBFGS usare GetDirection()
+      arma::mat gradientWeight = currentLayer.GetGradientWeight();
+      arma::mat gradientBias = currentLayer.GetGradientBias();
+      //! Concatenate weight and bias gradients
+      columnGradients =
+          arma::join_cols(columnGradients, arma::join_cols(arma::Col(gradientWeight), arma::Col(gradientBias)));
+    }
+
+    double currentNormGradient = arma::norm(columnGradients);
+
     // add of the stop condition on validation set error
     previousError = currentError;
-    currentError = arma::zeros(1, 1);
-    Test(std::move(validationSet), std::move(validationLabelSet), std::move(currentError));
+    //currentError = arma::zeros(1, 1);
+    //Test(std::move(validationSet), std::move(validationLabelSet), std::move(currentError));
 
-    arma::mat errortemp = arma::join_rows(epochError, currentError);
-    errortemp.print("");
+    auto elapsed = std::chrono::high_resolution_clock::now() - start;
+    auto msec = std::chrono::duration_cast<std::chrono::milliseconds>(elapsed).count();
+
+    arma::mat
+        errortemp = arma::join_rows(arma::join_rows(epochError, arma::ones(1, 1) * currentNormGradient),
+                                    arma::ones(1, 1) * msec);
+    errortemp.raw_print("");
     deltaError = previousError - currentError;
     if (deltaError.at(0, 0) < 0) {
       nDelta++;
