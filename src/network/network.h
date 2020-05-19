@@ -27,7 +27,7 @@ class Network {
   //! Saving error for optimizer
   arma::Mat<double> *batchError;  // TODO: is this needed?
   Regularizer *regularizer;
-
+  bool nesterov = true;
   void train(const arma::mat &&trainingData,
              const arma::mat &&trainLabels,
              arma::mat &&epochError,
@@ -41,7 +41,7 @@ class Network {
              arma::mat &&partialDerivativeOutput,
              arma::mat &&currentBatchError,
              double weightDecay = 0.0);
-  void backward(const arma::mat &&partialDerivativeOutput);
+  void backward(const arma::mat &&partialDerivativeOutput, const double momentum = 0.0);
   void updateWeight(double learningRate, double weightDecay = 0.0, double momentum = 0.0);
   void inference(arma::mat &&, arma::mat &&);
 
@@ -50,6 +50,9 @@ class Network {
   void Evaluate(arma::mat &&outputError, const double regularization);
   void SetLossFunction(const std::string loss_function);
   void SetRegularizer(const std::string regularizer_);
+  void SetNesterov(bool nesterov_);
+  bool GetNesterov();
+
   void SetOptimizer(const std::string optimizer_);
   void Add(Layer &layer);
   void Init(const double upperBound, const double lowerBound, const int seed = 0);

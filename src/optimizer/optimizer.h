@@ -10,7 +10,9 @@
 class Optimizer {
  public:
   virtual ~Optimizer() = default;
-  virtual void OptimizeBackward(Network *network, const arma::mat &&partialDerivativeOutput) = 0;
+  virtual void OptimizeBackward(Network *network,
+                                const arma::mat &&partialDerivativeOutput,
+                                const double momentum = 0.0) = 0;
   virtual void OptimizeUpdateWeight(Network *network,
                                     const double learningRate,
                                     const double weightDecay,

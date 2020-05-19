@@ -9,7 +9,8 @@
  * @param currNet
  * @param partialDerivativeOutput
  */
-void ProximalBundleMethod::OptimizeBackward(Network *currNet, const arma::mat &&partialDerivativeOutput) {
+void ProximalBundleMethod::OptimizeBackward(Network *currNet, const arma::mat &&partialDerivativeOutput,
+                                            const double momentum) {
 
   gamma = 0.5;
   mu = 1;

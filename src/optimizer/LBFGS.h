@@ -51,7 +51,9 @@ class LBFGS : public Optimizer {
  public:
   ~LBFGS() override = default;
   LBFGS(const int nLayer);
-  void OptimizeBackward(Network *currNet, const arma::mat &&partialDerivativeOutput) override;
+  void OptimizeBackward(Network *currNet,
+                        const arma::mat &&partialDerivativeOutput,
+                        const double momentum = 0.0) override;
   void OptimizeUpdateWeight(Network *network, const double learningRate,
                             const double weightDecay, const double momentum) override;
 };
