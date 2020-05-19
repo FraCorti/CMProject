@@ -11,7 +11,7 @@
  * @param currNetwork Current network considered
  * @param partialDerivativeOutput Partial derivative of the output layer
  */
-void LBFGS::OptimizeBackward(Network *currNetwork, const arma::mat &&partialDerivativeOutput) {
+void LBFGS::OptimizeBackward(Network *currNetwork, const arma::mat &&partialDerivativeOutput, const double momentum) {
   std::vector<Layer> &net = currNetwork->GetNet();
   auto currentLayer = net.rbegin();
 

@@ -98,27 +98,25 @@ int main() {
   Network cupNetwork;
   cupNetwork.SetLossFunction("meanSquaredError");
 
-  Layer firstLayer(trainingSet.n_cols - labelCol, 25, "tanhFunction");
-  Layer secondLayer(25, 5, "tanhFunction");
-  Layer lastLayer(5, labelCol, "logisticFunction"); // logisticFunction linearFunction
+  Layer firstLayer(trainingSet.n_cols - labelCol, 4, "tanhFunction");
+  Layer lastLayer(4, labelCol, "logisticFunction"); // logisticFunction linearFunction
   cupNetwork.Add(firstLayer);
-  cupNetwork.Add(secondLayer);
   cupNetwork.Add(lastLayer);
   cupNetwork.SetRegularizer("L2");//L1 L2
-  cupNetwork.SetOptimizer("proximalBundleMethod");//LBFGS gradientDescent proximalBundleMethod
+  cupNetwork.SetOptimizer("gradientDescent");//LBFGS gradientDescent proximalBundleMethod
+  cupNetwork.SetNesterov(false);
 
+  cupNetwork.Init(+1e-1, -1e-1, 30);
 
-  cupNetwork.Init(+1, -1);
-
-  cupNetwork.Train(testData,
-                   testLabels,
+  cupNetwork.Train(trainingData,
+                   trainingLabels,
                    trainingSet,
                    trainingLabels.n_cols,
-                   250,
+                   700,
                    trainingLabels.n_rows,
                    0.9,
                    0.00005,
-                   0.0);
+                   0.8);
 
   arma::mat mat;
 

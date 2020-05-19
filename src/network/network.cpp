@@ -53,7 +53,7 @@ double Network::Train(arma::mat validationSet, arma::mat validationLabelSet, arm
   arma::mat currentError = arma::zeros(1, 1);
   arma::mat deltaError;
   arma::mat previousError;
-  double thresholdStopCondition = 0.00000000000000001;
+  double thresholdStopCondition = 0.00001;
   bool stopCondition = false;
   double nDelta = 0.0;
   for (int currentEpoch = 1; currentEpoch <= epoch && !stopCondition; currentEpoch++) {
@@ -146,7 +146,7 @@ void Network::train(const arma::mat &&trainingData,
     //! Saving input data for line search
     input = &inputBatch;
     inputLabel = &labelBatch;
-    backward(std::move(partialDerivativeOutput));
+    backward(std::move(partialDerivativeOutput), momentum);
 
     start = end + 1;
     end = i < batchNumber ? batchSize * (i + 1) - 1 : trainingData.n_rows - 1;
@@ -204,8 +204,8 @@ void Network::error(const arma::mat &&trainLabelsBatch,
  *
  *  @param partialDerivativeOutput Partial derivative of the output layer 
  * */
-void Network::backward(const arma::mat &&partialDerivativeOutput) {
-  optimizer->OptimizeBackward(this, std::move(partialDerivativeOutput));
+void Network::backward(const arma::mat &&partialDerivativeOutput, const double momentum) {
+  optimizer->OptimizeBackward(this, std::move(partialDerivativeOutput), momentum);
 }
 
 /***/arma::mat currentNetError; // fd
@@ -357,13 +357,13 @@ double Network::LineSearchEvaluate(const double stepSize, const double weightDec
   currentLayer->OutputLayerGradient(std::move(currentBatchError));
   //currentLayer->SetDirection(std::move(currentLayer->GetGradientWeight()));
   arma::mat currentGradientWeight;
-  currentLayer->RetroPropagationError(std::move(currentGradientWeight));
+  currentLayer->RetroPropagationError(std::move(currentGradientWeight), momentum);
   currentLayer++;
   // Iterate from the precedent Layer of the tail to the head
   for (; currentLayer != net.rend(); currentLayer++) {
     currentLayer->Gradient(std::move(currentGradientWeight));
     //currentLayer->SetDirection(std::move(currentLayer->GetGradientWeight()));
-    currentLayer->RetroPropagationError(std::move(currentGradientWeight));
+    currentLayer->RetroPropagationError(std::move(currentGradientWeight), momentum);
   }
 
   return arma::as_scalar(currentBatchError);
@@ -388,4 +388,10 @@ void Network::SetRegularizer(std::string regularizer_) {
 }
 const Regularizer *Network::GetRegularizer() {
   return regularizer;
+}
+void Network::SetNesterov(bool nesterov_) {
+  nesterov = nesterov_;
+}
+bool Network::GetNesterov() {
+  return nesterov;
 }
