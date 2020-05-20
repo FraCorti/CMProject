@@ -54,7 +54,7 @@ double Network::Train(arma::mat validationSet, arma::mat validationLabelSet, arm
   arma::mat currentError = arma::zeros(1, 1);
   arma::mat deltaError;
   arma::mat previousError;
-  double thresholdStopCondition = 0.000000000000000000000000000000000000000000000000001;
+  double thresholdStopCondition = 0.000001;
   bool stopCondition = false;
   double nDelta = 0.0;
   auto start = std::chrono::high_resolution_clock::now();
