@@ -244,14 +244,26 @@ my model can be trust inside a small ball $\tau^i$ created around the point wher
 But, as shown in \cite{numerical} section 6.1 (subsection "Properties of the BFGS method"),  $B_{k+1}$ will be positive definite whenever $H_{k}$ is positive definite. We need to respect the \textit{secant equation} sez. \ref{secant-equation} so the updating formula of $B_{k+1}$ is well defined and therefore $H_{k+1}$ is positive definite. This behaviour 
 is ensured whenever the initial approximation $B_{0}$ is positive definite and the \textit{secant equation} is satisfied. 
 
-Also if the $\alpha_{k}$ (step length) is computed by an inexact line search that satisfies the Wolfe conditions and the first step tried has always value equal to 1, then the search direction of a quasi-Newton method approximates the Newton direction well enough so that the step size $\alpha_{k}$ will satisfy the Wolfe conditions as the iterates converge to the solution (as reported in \cite{numerical}). This present a condition that if it is satisfied produce a superlinearly convergent iteration for all $x_{k}$ in the proximity of a solution $x_{*}$. 
-The assumption is formally proved in Theorem 3.6 written in \cite{numerical}. Indeed if $c_{1}<\frac{1}{2}$ and $d_{k}$ is equal to $B_{k}\nabla f_{k}$ (which is our case as mention in \ref{direction}) Theorem 3.6 is equivalent to: 
+Also if the $\alpha_{k}$ (step length) is computed by an inexact line search that satisfies the Wolfe conditions and the first step tried has always value equal to 1, then the search direction of a quasi-Newton method approximates the Newton direction well enough so that the step size $\alpha_{k}$ will satisfy the Wolfe conditions as the iterates converge to the solution (as reported in \cite{numerical}). This present a condition that if it is satisfied produce a superlinearly convergent iteration for all $x_{k}$ in the proximity of a solution $x_{*}$.  
+
+The assumption is formally proved in \cite{numerical} (Theorem 3.6): suppose that $f: \textnormal{ }\mathbb{R}^n \rightarrow \mathbb{R}$ is twice continuously differentiable. Consider the iteration $x_{k+1} = x_{k} + \alpha_{k}d_{k}$, where $d_{k}$ is a descent direction and $\alpha_{k}$ satisfies the Wolfe conditions with $c_{1} <= \frac{1}{2}$ (which is our case). If the sequence $\{ x_{k} \}$ converges to a point $x_{*}$ such that $\nabla f(x_{*}) = 0$ and $\nabla^2f(x_{*})$ is positive definite, and if the search direction satisfies: 
+\begin{equation}
+ \lim_{k\to\infty}\frac{\Vert (\nabla f_{k} + \nabla^2 f_{k} d_{k})\Vert}{\Vert d_{k} \Vert} = 0.
+\end{equation} 
+then 
+\begin{itemize}
+	\item the step length $\alpha_{k} = 1$ is admissible for all $k$ greater than a certain index $k_{0}$;
+	\item if $\alpha_{k} = 1$ for all $k>k_{0}, x_{k}$ converges to $x_{*}$ superlinearly.
+\end{itemize}
+
+ Indeed since the objective function is twice continuously differentiable (as mention above), $c_{1}<\frac{1}{2}$ (we use 1e-4) and $d_{k}$ is equal to $B_{k}\nabla f_{k}$ (which is our case as mention in \ref{direction}) Theorem 3.6 is equivalent to: 
 \begin{equation}
 \label{L-BFGSConv}
- \lim_{k\to\infty}\frac{\Vert (B_{k} - \nabla^2f(x^*) d_{k})\Vert}{\Vert p_{k} \Vert} = 0.
+ \lim_{k\to\infty}\frac{\Vert (B_{k} - \nabla^2f(x^*) d_{k})\Vert}{\Vert d_{k} \Vert} = 0.
 \end{equation}
 
-This shows that a superlinear convergence rate can be obtained even if the sequence of $B_{k}$ does not converge to $\nabla^2f(x^*)$. It is sufficient that the $B_{k}$ is positive definite (which is our case as mention above, section 6.1 of \cite{numerical}) and its accuracy approximations increase to $\nabla^2f(x^*)$ progressively. The condition \ref{L-BFGSConv} is sufficient to ensure the local superlinear convergence of L-BFGS (more in general of the quasi-Newton methods).
+This shows that a superlinear convergence rate can be obtained even if the sequence of $B_{k}$ does not converge to $\nabla^2f(x^*)$. It is sufficient that the $B_{k}$ is positive definite (which is our case as mention above, section 6.1 of \cite{numerical}) and its accuracy approximations increase to $\nabla^2f(x^*)$ progressively. The condition \ref{L-BFGSConv} is sufficient to ensure the local superlinear convergence of L-BFGS (more in general of the quasi-Newton methods). This is formalized in \cite{numerical} (precisely in Theorem 3.7):
+suppose that $f: \textnormal{ }\mathbb{R}^n \rightarrow \mathbb{R}$ is twice continuously differentiable. Consider the iteration: $x_{k+1}=x_{k} + p_{k}$ (that is, the step length $\alpha_{k}$ is uniformly 1) and that $p_{k}$ is given by $B_{k}\nabla f_{k}$ (as mention in \ref{direction}). Let us assume that $x_{k}$ converges to a point $x_{*}$ such that $\nabla f(x_{*}) = 0$ and $\nabla^2f(x_{*})$ is positive definite. Then $x_{k}$ converges superlinearly if and only if \ref{L-BFGSConv} holds. The proof can be found in \cite{numerical}. 
 
 Clearly, if $m$ is very small the behaviour of L-BFGS will be similar to the Gradient method and if $m$ is very large the behaviour as BFGS. However $m$ is problem dependent so a good trade-off between CPU computational time and convergence speed needs to be found when choosing it.
 

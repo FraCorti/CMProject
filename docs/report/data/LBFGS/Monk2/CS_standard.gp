@@ -129,7 +129,7 @@ set x2label ""
 set x2label  font "" textcolor lt -1 norotate
 set xrange [ * : * ] noreverse nowriteback
 set x2range [ * : * ] noreverse nowriteback
-set ylabel "error" 
+set ylabel "norm gradient" 
 set ylabel  font ",14" textcolor lt -1 rotate
 set y2label "" 
 set y2label  font "" textcolor lt -1 rotate
@@ -173,5 +173,5 @@ GNUTERM = "qt"
 x = 0.0
 GPFUN_f = "f(x) = x"
 # add smooth bezier to the end to have curves more smooth
-plot "LBFGS_5_Monk2_Results_NoReg.txt" w lines title "5 past curvature" lt rgb "red" lw 2, "LBFGS_10_Monk2_Results_NoReg.txt" w lines title "10 past curvature" lt rgb "blue" lw 2,"LBFGS_15_Monk2_Results_NoReg.txt" w lines title "15 past curvature" lt rgb "black" lw 2
+plot "LBFGS_0.0_Monk2_Results.txt" using 2 w lines title "0.0 L2" lt rgb "red" lw 2, "LBFGS_0.0003_Monk2_Results.txt" using 2 w lines title "0.0003 L2" lt rgb "black" lw 2, "LBFGS_0.0005_Monk2_Results.txt" using 2 w lines title "0.0005 L2" lt rgb "#005A32" lw 2, "LBFGS_0.0007_Monk2_Results.txt" using 2 w lines title "0.0007 L2" lt rgb "#4f127b" lw 2
 #    EOF
