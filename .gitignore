@@ -542,3 +542,5 @@ TSWLatexianTemp*
 docs/report/relazione.pdf
 
 .idea/saveactions_settings.xml
+
+*.gp
