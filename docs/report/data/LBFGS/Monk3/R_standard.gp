@@ -115,7 +115,7 @@ set cbtics  norangelimit autofreq
 set rtics axis in scale 1,0.5 nomirror norotate  autojustify
 set rtics  norangelimit autofreq 
 unset ttics
-set title "Convergence speed Monk 1" 
+set title "Residual Monk 3" 
 set title  font ",16" norotate
 set timestamp bottom 
 set timestamp "" 
@@ -129,7 +129,7 @@ set x2label ""
 set x2label  font "" textcolor lt -1 norotate
 set xrange [ * : * ] noreverse nowriteback
 set x2range [ * : * ] noreverse nowriteback
-set ylabel "error" 
+set ylabel "residual" 
 set ylabel  font ",14" textcolor lt -1 rotate
 set y2label "" 
 set y2label  font "" textcolor lt -1 rotate
@@ -173,5 +173,5 @@ GNUTERM = "qt"
 x = 0.0
 GPFUN_f = "f(x) = x"
 # add smooth bezier to the end to have curves more smooth
-plot [:15][] "LBFGS_5_Monk1_Results_NoReg.txt" w lines title "5 past curvature" lt rgb "red" lw 2, "LBFGS_10_Monk1_Results_NoReg.txt" w lines title "10 past curvature" lt rgb "blue" lw 2,"LBFGS_15_Monk1_Results_NoReg.txt" w lines title "15 past curvature" lt rgb "black" lw 2
+plot "LBFGS_0.0_Monk3_Results.txt" using 1 w lines title "0.0 L2" lt rgb "red" lw 2, "LBFGS_0.0003_Monk3_Results.txt" using 1 w lines title "0.0003 L2" lt rgb "black" lw 2, "LBFGS_0.0005_Monk3_Results.txt" using 1 w lines title "0.0005 L2" lt rgb "#005A32" lw 2, "LBFGS_0.0007_Monk3_Results.txt" using 1 w lines title "0.0007 L2" lt rgb "#4f127b" lw 2
 #    EOF
