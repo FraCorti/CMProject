@@ -232,7 +232,7 @@ L-BFGS guarantee global convergence under specific assumption:
 
 
 Assumption 1 is satisfied, since our loss function f is twice continuously differentiable as we said in \ref{LF:Properties}. 
-
+                                                       
 Assumption 2 can be satisfied by adding to computed approximated Hessian a positive diagonal matrix.
 The first method is to choose small $\epsilon^i$ such that $H^i=\nabla^2f(x^i) + \epsilon^iI\succ0$, any $\epsilon^i>-\lambda^n$ works but brings numerical issue. 
 The second method is to compute spectral decomposition of $\nabla^2f(x^i)=H\wedge H$, where $\wedge$ is a diagonal matrix whose diagonal elements are the corresponding eigenvalues, and then replace all the negative eigenvalues by a small positive number $\delta$ that is larger than machine precision so $H^i=H\overline{\wedge}H \textnormal{ with } \overline{\gamma}=max\{\lambda^i,\delta\}$. But in both cases the cost is $O(n^3)$, too large for big problem. Another method is to use trust region method, in fact $Q_{x^i}(y)$ has no minimum on $R^n$ but it does on a compact set. So 
@@ -358,7 +358,7 @@ As mentioned in \cite{PaperBM} and demonstrated by Y. Du and A. Ruszczyński in 
 \end{itemize}
   Then the convergence rate is linear. In this case, we suppose that given the number of iteration $k$, the precision of the solution is approximately $O(1/k)$. Without any assumption, the convergence rate is sublinear. 
 
-The convergence theorem is not applicable on our case, because our loss function is not convex. We think that this would be relevant in general in practice, but due to the \textit{ Lipschitz continuity} of our loss function we think that the method can converge.\\
+The convergence theorem does not apply to our case, because our loss function is not convex. We think that this would be relevant in practice, but due to the \textit{Lipschitz continuity} of our loss function we suppose that the method can converge. 
 
 In this direction, the section 4: "Convergence Analysis" of \cite{PBM} helped us to understand that under specific assumption and constraint the proximal bundle method for non convex function surely converge. The assumption are:
 \begin{enumerate} \label{convergence:PBM}
@@ -376,7 +376,7 @@ In this direction, the section 4: "Convergence Analysis" of \cite{PBM} helped us
 	\end{equation}
 	and 
 	\begin{equation}
-	 K_{S}(x) = \{d \in \rm I\!R^{n} | \quad there \quad exist \quad  t_i \downarrow 0 \quad and \quad d_{i} \to d \quad with \quad (x + t_i*d_i) \in B\}
+	 K_{S}(x) = \{d \in \rm I\!R^{n} | \textnormal{ there} \textnormal{ exist } t_i \downarrow 0 \textnormal{ and } d_{i} \to d \textnormal{ with } (x + t_i*d_i) \in B\}
 	\end{equation}
 	 is valid.
 \end{enumerate}
