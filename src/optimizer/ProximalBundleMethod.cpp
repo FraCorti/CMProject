@@ -12,9 +12,6 @@
 void ProximalBundleMethod::OptimizeBackward(Network *currNet, const arma::mat &&partialDerivativeOutput,
                                             const double momentum) {
 
-  gamma = 0.5;
-  mu = 1;
-
   //! Set-up bundle method parameters
   if (singletonInit) {
     init(currNet, std::move(partialDerivativeOutput));
@@ -81,7 +78,7 @@ void ProximalBundleMethod::OptimizeBackward(Network *currNet, const arma::mat &&
   double tL = lineSearchL(currNet, v, std::move(columnParameters), std::move(updatedParameters));
   double dNorm = arma::norm(updatedParameters);
 
-  if (tL > 0.5) {  //TODO: pass this parameter (accuracy tollerance) in the constructor ?
+  if (tL > tL_tolerance) {
     columnParameters += tL * updatedParameters;
     theta = columnParameters;
     s_c = tL * dNorm;
@@ -226,8 +223,8 @@ double ProximalBundleMethod::lineSearchL(Network *currNet,
                                          arma::Col<double> &&c,
                                          const arma::Col<double> &&d) {
   double tL = 0;
-  double r = 1;
-  while (r - tL > 0.001) { //TODO: pass this parameter (accuracy tollerance) in the constructor
+  double r = r_max;
+  while (r - tL > accuracy_tolerance) {
     double m = (r + tL) / 2.0;
 
     arma::mat lNetError; // error returned from updated weight: columnParameters + tL * d
@@ -238,8 +235,7 @@ double ProximalBundleMethod::lineSearchL(Network *currNet,
     unvectorizeParameters(currNet, std::move(c));
     currNet->Evaluate(std::move(netError), 0);
 
-    //TODO: pass mL in the costructor (0.1)
-    if (arma::as_scalar(lNetError) <= arma::as_scalar(netError) + 0.1 * tL * v) {
+    if (arma::as_scalar(lNetError) <= arma::as_scalar(netError) + mL * tL * v) {
       tL = m;
     } else {
       r = m;
@@ -263,7 +259,7 @@ double ProximalBundleMethod::lineSearchR(Network *currNet,
                                          const double tL) {
   double tR = tL;
   double r = 1;
-  while (r - tR > 0.0001) { //TODO: pass this parameter 0.0001 in the constructor
+  while (r - tR > 0.0001) {
     double m = (r + tR) / 2.0;
     arma::mat lNetError; // error returned from updated weight: columnParameters + tL * d
     unvectorizeParameters(currNet, std::move(c + tL * d));
@@ -278,7 +274,7 @@ double ProximalBundleMethod::lineSearchR(Network *currNet,
     double alpha =
         std::abs(
             arma::as_scalar(lNetError) - arma::as_scalar(rNetError) - (tL - tR) * arma::dot(currentSubgradient, d));
-    if (-alpha + arma::dot(currentSubgradient, d) >= 0.99 * v) { // TODO: pass 0.99 as parameter
+    if (-alpha + arma::dot(currentSubgradient, d) >= mR * v) {
       tR = m;
     } else {
       r = m;
@@ -397,8 +393,46 @@ void ProximalBundleMethod::optimize(arma::Col<double> &&updatedParameters,
     updatedParameters(i - 1) = x[i].get(GRB_DoubleAttr_X);
   }
 }
-ProximalBundleMethod::ProximalBundleMethod() : env(true) {
+ProximalBundleMethod::ProximalBundleMethod()
+    : env(true), mu(1), gamma(0.5), r_max(1), accuracy_tolerance(0.001), tL_tolerance(0.5), mR(0.99), mL(0.1) {
   // Create an environment
   env.set("LogFile", "mip1.log");
   env.start();
+}
+void ProximalBundleMethod::SetParameters(double mu_,
+                                         double gamma_,
+                                         double r_max_,
+                                         double accuracy_tolerance_,
+                                         double mR_,
+                                         double mL_,
+                                         double tL_tolerance_) {
+  if (mu_ > 1 || mu_ < 0) {
+    throw Exception("mu must be between 0 and 1 \n");
+  }
+  if (gamma_ > 1 || gamma_ < 0) {
+    throw Exception("gamma must be between 0 and 1 \n");
+  }
+  if (r_max_ > 1 || r_max_ < 0) {
+    throw Exception("r_max must be between 0 and 1 \n");
+  }
+  if (accuracy_tolerance_ > 1 || accuracy_tolerance_ < 0) {
+    throw Exception("accuracy_tolerance must be between 0 and 1 \n");
+  }
+  if (mR_ > 1 || mR_ < 0) {
+    throw Exception("mR must be between 0 and 1 \n");
+  }
+  if (mL_ > 1 || mL_ < 0) {
+    throw Exception("mL must be between 0 and 1 \n");
+  }
+  if (tL_tolerance_ > 1 || tL_tolerance_ < 0) {
+    throw Exception("tL_tolerance must be between 0 and 1 \n");
+  }
+
+  mu = mu_;
+  gamma = gamma_;
+  r_max = r_max_;
+  accuracy_tolerance = accuracy_tolerance_;
+  tL_tolerance = tL_tolerance_;
+  mR = mR_;
+  mL = mL_;
 }

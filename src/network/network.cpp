@@ -340,17 +340,9 @@ std::vector<Layer> &Network::GetNet() {
 /** Set the optimizer of the Neural network
  *
  */
-void Network::SetOptimizer(const std::string optimizer_) {
-  if (optimizer_
-      == "gradientDescent") { //TODO: mettere funzione che fa diverntare tutti i caratteri piccoli (.down()??)
-    optimizer = new GradientDescent();
-  } else if (optimizer_ == "LBFGS") {
-    optimizer = new LBFGS(net.size());
-  } else if (optimizer_ == "proximalBundleMethod") {
-    optimizer = new ProximalBundleMethod();
-  } else {
-    optimizer = new GradientDescent();
-  }
+void Network::SetOptimizer(Optimizer *optimizer_) {
+
+  optimizer = optimizer_;
 
 }
 /***
@@ -416,4 +408,7 @@ void Network::SetNesterov(bool nesterov_) {
 }
 bool Network::GetNesterov() {
   return nesterov;
+}
+Network::Network() {
+  optimizer = new GradientDescent();
 }

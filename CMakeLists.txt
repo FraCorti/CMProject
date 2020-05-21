@@ -78,7 +78,7 @@ add_library(Neuradillo
         src/regularizer/L2.h)
 
 target_include_directories(Neuradillo
-        PRIVATE
+        PUBLIC
         ${GUROBI_INCLUDE_DIRS}
         )
 

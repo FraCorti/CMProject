@@ -46,14 +46,14 @@ class Network {
   void inference(arma::mat &&, arma::mat &&);
 
  public:
+  Network();
   void GetBatchError(arma::mat &&batchError_);
   void Evaluate(arma::mat &&outputError, const double regularization);
   void SetLossFunction(const std::string loss_function);
   void SetRegularizer(const std::string regularizer_);
   void SetNesterov(bool nesterov_);
   bool GetNesterov();
-
-  void SetOptimizer(const std::string optimizer_);
+  void SetOptimizer(Optimizer *optimizer_);
   void Add(Layer &layer);
   void Init(const double upperBound, const double lowerBound, const int seed = 0);
   double Train(arma::mat validationSet, arma::mat validationLabelSet, arma::mat trainingSet,

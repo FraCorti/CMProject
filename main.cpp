@@ -2,6 +2,9 @@
 #include "armadillo"
 #include "src/preprocessing/preprocessing.h"
 #include "src/network/network.h"
+#include "src/optimizer/LBFGS.h"
+#include "src/optimizer/gradientDescent.h"
+#include "src/optimizer/ProximalBundleMethod.h"
 #include <chrono>
 
 int main() {
@@ -98,25 +101,28 @@ int main() {
   Network cupNetwork;
   cupNetwork.SetLossFunction("meanSquaredError");
 
-  Layer firstLayer(trainingSet.n_cols - labelCol, 4, "tanhFunction");
-  Layer lastLayer(4, labelCol, "logisticFunction"); // logisticFunction linearFunction
+  Layer firstLayer(trainingSet.n_cols - labelCol, 15, "tanhFunction");
+  Layer lastLayer(15, labelCol, "logisticFunction"); // logisticFunction linearFunction
   cupNetwork.Add(firstLayer);
   cupNetwork.Add(lastLayer);
   cupNetwork.SetRegularizer("L2");//L1 L2
-  cupNetwork.SetOptimizer("proximalBundleMethod");//LBFGS gradientDescent proximalBundleMethod
+  //Optimizer *opt = new LBFGS(2);
+  //Optimizer *opt = new GradientDescent();//LBFGS gradientDescent proximalBundleMethod
+  Optimizer *opt = new ProximalBundleMethod();
+  cupNetwork.SetOptimizer(opt);//LBFGS gradientDescent proximalBundleMethod
   cupNetwork.SetNesterov(false);
 
-  cupNetwork.Init(+1e-1, -1e-1, 30);
+  cupNetwork.Init(+1e-2, -1e-2, 69);
   std::cout << " Residual " << "Convergence speed " << "Computational time" << std::endl;
   cupNetwork.Train(trainingData,
                    trainingLabels,
                    trainingSet,
                    trainingLabels.n_cols,
-                   5000,
+                   400,
                    trainingLabels.n_rows,
                    0.9,
                    0.0,
-                   0.8);
+                   0.0);
 
   arma::mat mat;
 

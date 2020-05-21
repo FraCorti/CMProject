@@ -16,7 +16,10 @@ class LBFGS : public Optimizer {
   //! The pop operation is done on the tail of the queue.
   std::vector<std::deque<std::pair<arma::mat, arma::mat>>>
       pastCurvatureLayer;
-
+  double alpha_max;
+  int maxStep;
+  double c1;
+  double c2;
   unsigned long storageSize;
   double lineSearchBacktracking(Network *currNet,
                                 const double weightDecay, const double momentum);
@@ -56,6 +59,11 @@ class LBFGS : public Optimizer {
                         const double momentum = 0.0) override;
   void OptimizeUpdateWeight(Network *network, const double learningRate,
                             const double weightDecay, const double momentum) override;
+  void SetParameters(int storageSize_ = 15,
+                     int maxStep_ = 100,
+                     double alpha_max_ = 1,
+                     double c1_ = 0.001,
+                     double c2_ = 0.9);
 };
 
 #endif //MLPROJECT_SRC_OPTIMIZER_LBFGS_H_

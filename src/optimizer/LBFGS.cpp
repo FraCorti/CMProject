@@ -77,7 +77,7 @@ double LBFGS::computeDirectionDescent(Network *currNetwork) {
 double LBFGS::lineSearch(Network *currNetwork, const double weightDecay, const double momentum) {
 
   double alpha_0 = 0;
-  double alpha_max = 1;
+  double alpha_max = this->alpha_max;
 
   // Update the current alpha with a value between currentAlpha and alpha_max
   std::uniform_real_distribution<double> unif(alpha_0, alpha_max);
@@ -86,7 +86,6 @@ double LBFGS::lineSearch(Network *currNetwork, const double weightDecay, const d
   std::default_random_engine re;
 
   double currentAlpha = unif(re);
-  int maxStep = 100;
 
   //! Compute \phi'(0) and check the descent direction of the network
   double initialSearchDirectionDotGradient = computeDirectionDescent(currNetwork);
@@ -102,8 +101,6 @@ double LBFGS::lineSearch(Network *currNetwork, const double weightDecay, const d
 
   //! Current error of the network, \phi(0)
   double phi0 = lineSearchNetworkAlpha0.LineSearchEvaluate(0, weightDecay, momentum);
-  double c1 = 0.0001;
-  double c2 = 0.9;
 
   double previousAlpha = alpha_0;
   double phiPreviousAlpha = std::numeric_limits<double>::max();
@@ -169,8 +166,6 @@ double LBFGS::zoom(Network *currNetwork,
                    const double initialSearchDirectionDotGradient) {
   int i = 0;
   double alphaJ = 1; //  = alphaHi
-  const double c1 = 0.001;
-  const double c2 = 0.9;
 
   // Set the seed to have repeatable executions
   std::default_random_engine re;
@@ -349,7 +344,7 @@ void LBFGS::OptimizeUpdateWeight(Network *currNetwork, const double learningRate
   }
 }
 LBFGS::LBFGS(const int nLayer) // TODO: capire come settare lo storage size
-    : pastCurvatureLayer(nLayer), storageSize(50) {
+    : pastCurvatureLayer(nLayer), storageSize(15), alpha_max(1), maxStep(100), c1(0.001), c2(0.9) {
 }
 
 /***
@@ -418,4 +413,21 @@ double LBFGS::cubicInterpolation(double alphaLo,
   return alphaHi
       - (alphaHi - alphaLo) * ((searchDirectionDotGradientAlphaHi + d2 - d1) / searchDirectionDotGradientAlphaHi
           - searchDirectionDotGradientAlphaLo + 2 * d2);
+}
+void LBFGS::SetParameters(int storageSize_, int maxStep_, double alpha_max_, double c1_, double c2_) {
+  if (alpha_max_ > 1 || alpha_max_ < 0) {
+    throw Exception("alpha_max must be between 0 and 1 \n");
+  }
+  if (c1_ > 1 || c1_ < 0) {
+    throw Exception("c1 must be between 0 and 1 \n");
+  }
+  if (c2_ > 1 || c2_ < 0) {
+    throw Exception("c2 must be between 0 and 1 \n");
+  }
+
+  storageSize = storageSize_;
+  maxStep = maxStep_;
+  alpha_max = alpha_max_;
+  c1 = c1_;
+  c2 = c2_;
 }

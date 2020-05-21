@@ -18,10 +18,15 @@ class ProximalBundleMethod : public Optimizer {
   double a;
   arma::mat F;
   arma::mat S;
-  double mu;
-  double gamma;
   bool singletonInit = true; // singleton for init method
   GRBEnv env;
+  double mu;
+  double gamma;
+  double r_max;
+  double accuracy_tolerance;
+  double tL_tolerance;
+  double mR;
+  double mL;
   void init(Network *currNet, const arma::mat &&partialDerivativeOutput);
   double lineSearchL(Network *currNet, double v, arma::Col<double> &&c, const arma::Col<double> &&d);
   double lineSearchR(Network *currNet,
@@ -47,6 +52,15 @@ class ProximalBundleMethod : public Optimizer {
                         const double momentum = 0.0) override;
   void OptimizeUpdateWeight(Network *network, const double learningRate,
                             const double weightDecay, const double momentum) override;
+
+  void SetParameters(double mu_ = 1,
+                     double gamma_ = 0.5,
+                     double r_max_ = 1,
+                     double accuracy_tolerance_ = 0.001,
+                     double mR_ = 0.99,
+                     double mL_ = 0.01,
+                     double tL_tolerance_ = 0.5);
+
 };
 
 #endif //CMPROJECT_SRC_OPTIMIZER_PROXIMALBUNDLEMETHOD_H_
