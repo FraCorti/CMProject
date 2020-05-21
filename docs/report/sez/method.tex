@@ -56,7 +56,7 @@ Convergence of this algorithm is strictly connected to the choice of $\eta$, the
 \end{equation}
 \\
 The convergence rate is of $O(\frac{1}{\sqrt{k}})$ (after k steps) when the algorithm is applied to a convex problem. 
-Moreover, if we assume that the Hessian matrix $\nabla^2f(x^*)$ is positive definite, means that the loss function is a strongly convex function and the convergence rate is $O(\frac{1}{k})$. \cite{goodfellow}
+Moreover, if we assume that the Hessian matrix $\nabla^2f(x_*)$ is positive definite, means that the loss function is a strongly convex function and the convergence rate is $O(\frac{1}{k})$. \cite{goodfellow}
 
 Our objective function is not convex, so we need more constraint in order to use what we said before.
 D.P. Bertsekas proved the following, which appears as proposition 1.2.4 of \cite{bert03}.
@@ -259,24 +259,24 @@ then
  Indeed since the objective function is twice continuously differentiable (as mention above), $c_{1}<\frac{1}{2}$ (we use 1e-4) and $d_{k}$ is equal to $B_{k}\nabla f_{k}$ (which is our case as mention in \ref{direction}) Theorem 3.6 is equivalent to: 
 \begin{equation}
 \label{L-BFGSConv}
- \lim_{k\to\infty}\frac{\Vert (B_{k} - \nabla^2f(x^*) d_{k})\Vert}{\Vert d_{k} \Vert} = 0.
+ \lim_{k\to\infty}\frac{\Vert (B_{k} - \nabla^2f(x_*) d_{k})\Vert}{\Vert d_{k} \Vert} = 0.
 \end{equation}
 
-This shows that a superlinear convergence rate can be obtained even if the sequence of $B_{k}$ does not converge to $\nabla^2f(x^*)$. It is sufficient that the $B_{k}$ is positive definite (which is our case as mention above, section 6.1 of \cite{numerical}) and its accuracy approximations increase to $\nabla^2f(x^*)$ progressively. The condition \ref{L-BFGSConv} is sufficient to ensure the local superlinear convergence of L-BFGS (more in general of the quasi-Newton methods). This is formalized in \cite{numerical} (precisely in Theorem 3.7):
+This shows that a superlinear convergence rate can be obtained even if the sequence of $B_{k}$ does not converge to $\nabla^2f(x_*)$. It is sufficient that the $B_{k}$ is positive definite (which is our case as mention above, section 6.1 of \cite{numerical}) and its accuracy approximations increase to $\nabla^2f(x_*)$ progressively. The condition \ref{L-BFGSConv} is sufficient to ensure the local superlinear convergence of L-BFGS (more in general of the quasi-Newton methods). This is formalized in \cite{numerical} (precisely in Theorem 3.7):
 suppose that $f: \textnormal{ }\mathbb{R}^n \rightarrow \mathbb{R}$ is twice continuously differentiable. Consider the iteration: $x_{k+1}=x_{k} + p_{k}$ (that is, the step length $\alpha_{k}$ is uniformly 1) and that $p_{k}$ is given by $B_{k}\nabla f_{k}$ (as mention in \ref{direction}). Let us assume that $x_{k}$ converges to a point $x_{*}$ such that $\nabla f(x_{*}) = 0$ and $\nabla^2f(x_{*})$ is positive definite. Then $x_{k}$ converges superlinearly if and only if \ref{L-BFGSConv} holds. The proof can be found in \cite{numerical}. 
 
 Clearly, if $m$ is very small the behaviour of L-BFGS will be similar to the Gradient method and if $m$ is very large the behaviour as BFGS. However $m$ is problem dependent so a good trade-off between CPU computational time and convergence speed needs to be found when choosing it.
 
 \subsection{Bundle methods}
 Bundle methods are used mainly with non-differentiable loss function. The main idea of these methods is to use the past subgradients as global information. In convex function we know that at each iteration we get a subgradient in which the epigraph of the loss function is always above the epigraph of the subgradient, so epi($L_x$) $ \supseteq $ epi($f$) .\\ 
-We define as \{$x^i$\} the sequence of iterates that will hopefully converge at some point $x_*$. 
+We define as \{$x_i$\} the sequence of iterates that will hopefully converge at some point $x_*$. 
 The bundle of first-order information is:
 \begin{equation}
-\{x^i\}\rightarrow \mathcal{B}=\{(x^i, f^i=f(x^i), g^i \in \partial f(x^i)\}
+\{x_i\}\rightarrow \mathcal{B}=\{(x_i, f^i=f(x_i), g^i \in \partial f(x_i)\}
 \end{equation}
 and the cutting-plane model of $f$ - $(1 +\epsilon)$-order model as:
 \begin{equation}
-f_B(x) = \max{\{f^i+ \langle g^i,x - x^i \rangle:  (x^i,f^i,g^i)\in B\}}
+f_B(x) = \max{\{f^i+ \langle g^i,x - x_i \rangle:  (x_i,f^i,g^i)\in B\}}
 \end{equation}
 in which $g^i$ is the subgradient chosen at $i^{th}$ iteration.
 Before getting deep in defining the bundle methods, we need to introduce some information about subgradient.
@@ -303,17 +303,17 @@ We know that $f_B$ is a polyhedral function, for this reason is composed by a fi
 In this way, we can define the master problem as:
 \begin{equation}
 \label{MP}
-min\{f_B(x)\} = min\{v : v \geq f^i + \langle g^i, x-x^i \rangle \qquad (x^i, f^i, g^i) \in B \}
+min\{f_B(x)\} = min\{v : v \geq f^i + \langle g^i, x-x_i \rangle \qquad (x_i, f^i, g^i) \in B \}
 \end{equation} 
-A method to use efficiently the \ref{MP} equation is the \textit{cutting plane algorithm} in which at every iteration we add the knowledge of the $g^i$ sub-gradient at $B$ if the $v^i$ is greater than $f(x^*)$ otherwise we find the optimal value of $f$.  
-Unfortunately, the master problem as defined in \ref{MP} have some issue when the $x^i$ is very far to $x_*$. Due to this, the cutting plane algorithm does not work very well in practice.
+A method to use efficiently the \ref{MP} equation is the \textit{cutting plane algorithm} in which at every iteration we add the knowledge of the $g^i$ sub-gradient at $B$ if the $v^i$ is greater than $f(x_*)$ otherwise we find the optimal value of $f$.  
+Unfortunately, the master problem as defined in \ref{MP} have some issue when the $x_i$ is very far to $x_*$. Due to this, the cutting plane algorithm does not work very well in practice.
 For this reason, we use a stabilized master problem: 
 \begin{equation}
 \label{SMP}
 min\{f_B(x)\ + \mu \parallel x- \overline{x}\parallel_{2}^2/2 \}
 \end{equation} 
-in which $\overline{x}$ is a particular point called \textit{stability center} and $\mu$ is the \textit{stability parameter}. We introduce a term that is used to take close the new point $x^*_B$ from $\overline{x}$.
-Usually, $\overline{x}$ is choose as the best $x^i$ at the moment and $\mu$ is an hyperparameter.
+in which $\overline{x}$ is a particular point called \textit{stability center} and $\mu$ is the \textit{stability parameter}. We introduce a term that is used to take close the new point $x_{*B}$ from $\overline{x}$.
+Usually, $\overline{x}$ is choose as the best $x_i$ at the moment and $\mu$ is an hyperparameter.
 We know that at large $\mu$ the parable is extremely sticky and we will do a small movement in the next iteration.
 Instead, when we have a small $\mu$, the parable is too flat and in this case we can have the same result as in the un-stabilized cutting plane method. For this reason, is important to find the right $\mu$ to use.
 \subsubsection{Algorithm}
@@ -340,7 +340,7 @@ Instead, when we have a small $\mu$, the parable is too flat and in this case we
 	\end{algorithmic}
 \end{algorithm}
 
-In the algorithm we find that $\overline{x} \leftarrow x^*$ if a serious step is made, otherwise $\overline{x}$ unchanged and we made a null step.
+In the algorithm we find that $\overline{x} \leftarrow x_*$ if a serious step is made, otherwise $\overline{x}$ unchanged and we made a null step.
 There are multiple methods to choose how to decrease or increase $\mu$, they are taken as heuristic and tuned during the experiments part. The computational cost of each iteration depends from the size of the \textit{B}, when it increase the cost increase it too.
 
 \subsubsection{Algorithm convergence}
@@ -350,11 +350,17 @@ The convergence of the \textit{Bundle method} is guarantee under specific assump
 	\item The set $X \in R^n$ is convex and closed.
 \end{enumerate}
 
-As mentioned in \cite{PaperBM} and demonstrated by Y. Du and A. Ruszczyński in \cite{CBM}, under the assumption that the function $f()$ has a unique minimum point $x^*$ and a constant $\alpha>0$ exists, such that $f(x)-f(x*)\geq \alpha \parallel x-x^*\parallel_{2},\forall x \in R^n \textnormal{ with } f(x)\leq f(x^1)$ the convergence rate is linear. In this case, we suppose that given the number of iteration $k$, the precision of the solution is approximately $O(1/k)$. Without any assumption, the convergence rate is sublinear. 
+As mentioned in \cite{PaperBM} and demonstrated by Y. Du and A. Ruszczyński in chapter 4: "Rate of convergence" of \cite{CBM} ("Assumption 6: strong convexity of the function $f(\cdot)$" ) under the assumption that:
+\begin{itemize}
+	\item The function $f(\cdot)$ has a unique minimum point $x_*$;
+	\item $\exists \alpha>0$, such that $f(x)-f(x_*)\geq \alpha \parallel x-x_*\parallel_{2},\forall x \in$ $\rm I\!R^{n}$ $\textnormal{ with } f(x)\leq f(x_1)$ 
+	\\ (where $x_1$ are solutions of problems \ref{SMP} at the earlier iterations of the method).
+\end{itemize}
+  Then the convergence rate is linear. In this case, we suppose that given the number of iteration $k$, the precision of the solution is approximately $O(1/k)$. Without any assumption, the convergence rate is sublinear. 
 
 The convergence theorem is not applicable on our case, because our loss function is not convex. We think that this would be relevant in general in practice, but due to the \textit{ Lipschitz continuity} of our loss function we think that the method can converge.\\
 
-In this direction, the section 4:"Convergence Analysis" of \cite{PBM} helped us to understand that under specific assumption and constraint the proximal bundle method for non convex function surely converge. The assumption are:
+In this direction, the section 4: "Convergence Analysis" of \cite{PBM} helped us to understand that under specific assumption and constraint the proximal bundle method for non convex function surely converge. The assumption are:
 \begin{enumerate} \label{convergence:PBM}
 	\item The function $f$ is pseudoconvex and and weakly semismooth;
 	\item The function $g$ of the subgradient is pseudoconvex and weakly semismooth;
@@ -370,12 +376,10 @@ In this direction, the section 4:"Convergence Analysis" of \cite{PBM} helped us 
 	\end{equation}
 	and 
 	\begin{equation}
-	 K_{S}(x) = \{d \in R^{n} | \quad there \quad exist \quad  t_i \downarrow 0 \quad and \quad d_{i} \to d \quad with \quad (x + t_i*d_i) \in B\}
+	 K_{S}(x) = \{d \in \rm I\!R^{n} | \quad there \quad exist \quad  t_i \downarrow 0 \quad and \quad d_{i} \to d \quad with \quad (x + t_i*d_i) \in B\}
 	\end{equation}
 	 is valid.
 \end{enumerate}
 
-\texttt{TOGLIAMO????????????}
-We observe that there exist different Bundle method algorithm for non-convex function optimization, as showed in \cite{NCBM} by Dominikus Noll. At the time being, we are not able to implement and further analyze the previously cite paper. 
 
 %Next, we expect a brief recall of the algorithmic properties that you expect to see in the experiments. Is the algorithm(if it is iterative) guaranteed to converge? Is it going to be stable and return a good approximation of the solution(if it is direct)? What is its complexity? Are there any relevant convergence results? Are the hypotheses of theseconvergence results (convexity, compactness, differentiability, etc.) satisfied by your problem? If not, what are the“closest” possible results you have available, and why exactly they arenotapplicable?  Do you expect this to berelevant in practice?Again, you are advised to send us a version of this section by e-mail as soon as it is done. Again, we do not wantto see code at this point.
