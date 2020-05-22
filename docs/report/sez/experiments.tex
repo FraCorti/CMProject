@@ -69,7 +69,7 @@ To obtain a deterministic behaviour of the algorithms, we used the entire MONKS 
 			Monk3 & PBM & 400 & - & 7e-4  & 0 & 1.699e-1 & 8.410e-4 & 35003\\
 			\hline
 			\caption{Network configurations with MSE.}
-			\label{tab:best_nets}
+			\label{tab:nets_res}
 		\end{longtable}
 
 \end{center}
@@ -115,6 +115,9 @@ To obtain a deterministic behaviour of the algorithms, we used the entire MONKS 
 	\label{R-Monk3}
 \end{figure}
 \subsubsection{Computational time}
+
+In order to compare the computational time behaviour of the implemented algorithm, we decided to display their curves in the plot \ref{CT-Monk1},\ref{CT-Monk2}, and \ref{CS-Monk3}. We can observe that, as expected from the theory, the most expensive method is the Proximal Bundle Method because of the time spent in the resolution of a quadratic problem and the call to an external solver that has to do it. As we can draw in table \ref{tab:nets_res} the computational time of the Momentum Descent Approach is always lower than others, it means that it is often faster to reach a good level of error in the under consideration dataset. Moreover, we can infer that the L-BFGS algorithm gives us the best approximation of the objective function. This is due to the more information given by the approximation of the hessian. Also, for this approximation, it has to pay some computational costs that usually do not allow to use this kind of approach in all the situation. 
+
 \begin{figure}[H]
 	\centering
 	\begin{minipage}[t]{0.5\linewidth}
@@ -157,7 +160,8 @@ To obtain a deterministic behaviour of the algorithms, we used the entire MONKS 
 
 
 
-\subsubsection{Convergence Speed}
+\subsubsection{Gradient Convergence Speed}
+There we can observe that what the theory says about the convergence speed is verified in practice. We notice that in all three monk dataset the norm of the gradient is not smooth. In our opinion, this is due to the starting point of the training and the non-convexity of the problem. We know from the theory that this method tends to have some problems with local minima. Also, we can observe that at a certain point the norm tends to stabilize and go to zero. With this, we can infer that in the neighbourhood of the visited minima there are not other minima better than it and our search of the best minima can stop.
 \begin{figure}[H]
 	\centering
 	\begin{minipage}[t]{0.5\linewidth}
