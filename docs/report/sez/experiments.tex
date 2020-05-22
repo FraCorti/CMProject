@@ -11,13 +11,10 @@ To test the correctness of the algorithms we used the MONK's and the ML-CUP data
 \subsection{MONKS} 
 To obtain a deterministic behavior of the algorithms, we used the entire MONKS datasets as  input of the network. We obtained three matrices that had dimensions: $124x18$ (Monk 1), $169x17$ (Monk 2) and $122x17$ (Monk 3). In order to compare the behavior of the algorithms, we collected for every epoch three parameters: the error of the network (in our case MSE), the norm of the gradient and the computational time spent on completing the epoch. These three parameters were used to make the convergence speed, residual and computational time plots shown below. For a better visualization of the plots an enlargement of each of them is shown aside.
 
-
-
 \begin{center}
 	\small\addtolength{\tabcolsep}{-3pt}
-	\begin{table}[h!]
 		\centering
-		\begin{tabular}{|c|c|c|c|c|c|c|c|c|}
+		\begin{longtable}{|c|c|c|c|c|c|c|c|c|}
 			\hline
 			\textbf{Task}& \textbf{Optimizer}&\textbf{Iteration} & \textbf{L rate} & \multicolumn{1}{l|}{\textbf{Lambda}} & \textbf{Mom} & \textbf{MSE}& \textbf{$\Vert \nabla f_{k}\Vert$ }& \textbf{Time(ms)}\\ \hline 
 			Monk1 & MDA & 900 & 0.9 & 0  & 0 & 8.67e-3 & 3.450e-1 & 267 \\
@@ -52,27 +49,27 @@ To obtain a deterministic behavior of the algorithms, we used the entire MONKS d
 			Monk2 & PBM & 400 & - & 3e-4  & 0 & 1.211e-1 & 3.365e-4 & 37129\\
 			Monk2 & PBM & 400 & - & 5e-4  & 0 & 2.018e-1 & 3.365e-4 & 39902\\
 			Monk2 & PBM & 400 & - & 7e-4  & 0 & 2.825e-1 & 3.365e-4 & 37130\\
-			Monk3 & MDA & 900 & 0.9 & 0  & 0 & e- & e- & \\
-			Monk3 & MDA & 900 & 0.9 & 0  & 0.3 & e- & e- & \\
-			Monk3 & MDA & 900 & 0.9 & 0  & 0.6 & e- & e- & \\
-			Monk3 & MDA & 900 & 0.9 & 0  & 0.9 & e- & e- & \\
-			Monk3 & NMDA & 900 & 0.9 & 0  & 0 & e- & e- & \\
-			Monk3 & NMDA & 900 & 0.9 & 0  & 0.3 & e- & e- & \\
-			Monk3 & NMDA & 900 & 0.9 & 0  & 0.6 & e- & e- & \\
-			Monk3 & NMDA & 900 & 0.9 & 0  & 0.9 & e- & e- & \\
-			Monk3 & L-BFGS & 50 & - & 0  & 0 & e- & e- & \\
-			Monk3 & L-BFGS & 50 & - & 3e-4  & 0  & e- & e- & \\
-			Monk3 & L-BFGS & 50 & - & 5e-4  & 0  & e- & e- & \\
-			Monk3 & L-BFGS & 50 & - & 7e-4  & 0  & e- & e- & \\
-			Monk3 & PBM & 400 & - & 0  & 0 & e- & e- & \\
-			Monk3 & PBM & 400 & - & 3e-4  & 0 & e- & e- & \\
-			Monk3 & PBM & 400 & - & 5e-4  & 0 & e- & e- & \\
-			Monk3 & PBM & 400 & - & 7e-4  & 0 & e- & e- & \\
+			Monk3 & MDA & 900 & 0.9 & 0  & 0 & 1.968e-2 & 3.236e-2 & 280\\
+			Monk3 & MDA & 900 & 0.9 & 0  & 0.3 & 1.864e-2 & 2.297e-2 & 131\\
+			Monk3 & MDA & 900 & 0.9 & 0  & 0.6 & 1.754e-2 & 1.301e-2 & 105\\
+			Monk3 & MDA & 900 & 0.9 & 0  & 0.9 & 1.254e-2 & 7.248e-3 & 142\\
+			Monk3 & NMDA & 900 & 0.9 & 0  & 0 & 1.968e-2 & 3.236e-2 & 106\\
+			Monk3 & NMDA & 900 & 0.9 & 0  & 0.3 & 1.863e-2 & 2.277e-2 & 129\\
+			Monk3 & NMDA & 900 & 0.9 & 0  & 0.6 & 1.754e-2 & 1.267e-2 & 300\\
+			Monk3 & NMDA & 900 & 0.9 & 0  & 0.9 & 1.254e-2 & 7.139e-3 & 189\\
+			Monk3 & L-BFGS & 50 & - & 0  & 0 & 8.196e-3 & 1.068e-12 & 8319\\
+			Monk3 & L-BFGS & 50 & - & 3e-4  & 0  & 5.781e-2 & 3.603e-1 & 7947\\
+			Monk3 & L-BFGS & 50 & - & 5e-4  & 0  & 8.555e-2 & 1.895e-1 & 12729\\
+			Monk3 & L-BFGS & 50 & - & 7e-4  & 0  & 7.940e-2 & 1.525e-1 & 10153\\
+			Monk3 & PBM & 400 & - & 0  & 0 & 1.231e-2 & 8.410e-4 & 35543\\
+			Monk3 & PBM & 400 & - & 3e-4  & 0 & 7.988e-2 & 8.410e-4 & 35239\\
+			Monk3 & PBM & 400 & - & 5e-4  & 0 & 1.249e-1 & 8.410e-4 & 35924\\
+			Monk3 & PBM & 400 & - & 7e-4  & 0 & 1.699e-1 & 8.410e-4 & 35003\\
 			\hline
-		\end{tabular}
-		\caption{Network configurations with MSE.}
-		\label{tab:best_nets}
-	\end{table}
+			\caption{Network configurations with MSE.}
+			\label{tab:best_nets}
+		\end{longtable}
+
 \end{center}
 
 
