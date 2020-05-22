@@ -40,23 +40,118 @@ Each variant of the methods was tested with specific seed and initial interval o
 		\caption{MONK's problems parameter.}
 		\label{tab:dati}
 	\end{table}
-\subsubsection{Convergence Speed}
 
-\texttt{Next, set up and describe experiments. You are supposed to test the algorithm on a realistic range of examples, interms of size, structure, and sparsity: it is typically not OK if your largest example is 10x10. While you are notexpected to fire up an HPC to run your test suite, you are welcome to try to get a sense on how algorithms scale, andwhat would be the maximum size of problems that you could successfully tackle on an ordinary machine.Numerical experiments are performed mainly for two reasons:•To confirm that the methods work as expected: how close do they get to the true solution of the problem? Howcan you check it? Is there a “residual”, or “gap” value that you can check? Do they converge with the expectedrate (linearly, sublinearly, superlinarly, . . . ) that the theory predicts? Does the error decrease monotonically, ifit is expected to do so?•To evaluate trade-offs and compare various algorithms: which algorithm is faster? If algorithm\part{title} A takes feweriterations than algorithm B, but the single iterations are more expensive, which one is the winner? How doesthis depend on the characteristics of the problem to be solved (size, density, . . . )?
-3 Project submission and oral exam3Comparison with off-the-shelf algorithms is also welcome (and typically necessary at least to check correctness) toassess whether your approach could ever be competitive under the right conditions (and what these are).During this process, properly setting thresholds and algorithmic parameters is a key and completely nontrivialaspect.  Proper setting of thresholds and algorithmic parameters is indeed one of the “dark secrets” of numericalalgorithms: basically any algorithm you can write has them, and it will misbehave if you don’t set them properly.Also, their setting can have a huge impact on performamce. Thus, a minimal testing activity about the effect of theparameters is almost surely needed. A full-scale test a-la hypermetameters optimization in ML is also completelypossible, and welcome, but be aware that this is anyway rather different from what one would do in ML, even for“ML projects”. The point is that the properties one is looking at are fundamentally different: for ML one looks forlearning (accuracy, recall, . . . ), while in this course one is looking at “how close the solution I got is to what I wouldhave liked to get, and how costly was it to get there”. Hence, reporting here the same hypermetameters optimizationtables done for ML does not cut it. Not that thesecannotbe reported, as they still give some potentially interestinginformation, but it’s not the information we are crucially interested in.When designing your experiments, and later your graphs and/or tables, you should have these goals in mind. Toquote a famous mathematician, “the purpose of computing is insight, not numbers.”}
-
-
+\subsubsection{Residual}
 \begin{figure}[H]
 	\centering
 	\begin{minipage}[t]{0.5\linewidth}
-		\includegraphics[width=\linewidth]{img/Monk1_LBFGS_NoReg_standard.png}
+		\includegraphics[width=\linewidth]{data/Comparison/Monk1/Monk1_R_Comparison_standard.png}
 		%\subcaption{MSE}
 	\end{minipage}%
 	\begin{minipage}[t]{0.5\linewidth}
-		\includegraphics[width=\linewidth]{img/Monk1_LBFGS_NoReg_zoom.png}
+		\includegraphics[width=\linewidth]{data/Comparison/Monk1/Monk1_R_Comparison_zoom.png}
 		%\subcaption{Accuracy}
 	\end{minipage}
-	\caption{LBFGS convergence for MONK’s 1.}
+	\caption{}
+\end{figure}
+\begin{figure}[H]
+	\centering
+	\begin{minipage}[t]{0.5\linewidth}
+		\includegraphics[width=\linewidth]{data/Comparison/Monk2/Monk2_R_Comparison_standard.png}
+		%\subcaption{MSE}
+	\end{minipage}%
+	\begin{minipage}[t]{0.5\linewidth}
+		\includegraphics[width=\linewidth]{data/Comparison/Monk2/Monk2_R_Comparison_zoom.png}
+		%\subcaption{Accuracy}
+	\end{minipage}
+	\caption{}
+\end{figure}
+\begin{figure}[H]
+	\centering
+	\begin{minipage}[t]{0.5\linewidth}
+		\includegraphics[width=\linewidth]{data/Comparison/Monk3/Monk3_R_Comparison_standard.png}
+		%\subcaption{MSE}
+	\end{minipage}%
+	\begin{minipage}[t]{0.5\linewidth}
+		\includegraphics[width=\linewidth]{data/Comparison/Monk3/Monk3_R_Comparison_zoom.png}
+		%\subcaption{Accuracy}
+	\end{minipage}
+	\caption{}
+\end{figure}
+\subsubsection{Computational time}
+\begin{figure}[H]
+	\centering
+	\begin{minipage}[t]{0.5\linewidth}
+		\includegraphics[width=\linewidth]{data/Comparison/Monk1/Monk1_CT_Comparison_standard.png}
+		%\subcaption{MSE}
+	\end{minipage}%
+	\begin{minipage}[t]{0.5\linewidth}
+		\includegraphics[width=\linewidth]{data/Comparison/Monk1/Monk1_CT_Comparison_zoom.png}
+		%\subcaption{Accuracy}
+	\end{minipage}
+	\caption{}
+\end{figure}
+\begin{figure}[H]
+	\centering
+	\begin{minipage}[t]{0.5\linewidth}
+		\includegraphics[width=\linewidth]{data/Comparison/Monk2/Monk2_CT_Comparison_standard.png}
+		%\subcaption{MSE}
+	\end{minipage}%
+	\begin{minipage}[t]{0.5\linewidth}
+		\includegraphics[width=\linewidth]{data/Comparison/Monk2/Monk2_CT_Comparison_zoom.png}
+		%\subcaption{Accuracy}
+	\end{minipage}
+	\caption{}
+\end{figure}
+\begin{figure}[H]
+	\centering
+	\begin{minipage}[t]{0.5\linewidth}
+		\includegraphics[width=\linewidth]{data/Comparison/Monk3/Monk3_CT_Comparison_standard.png}
+		%\subcaption{MSE}
+	\end{minipage}%
+	\begin{minipage}[t]{0.5\linewidth}
+		\includegraphics[width=\linewidth]{data/Comparison/Monk3/Monk3_CT_Comparison_zoom.png}
+		%\subcaption{Accuracy}
+	\end{minipage}
+	\caption{}
 \end{figure}
 
-\texttt{A few plots and/or tables are required to display your results. Have a purpose in mind: as for the choice of experiments,these plots should display the important features of the algorithm: convergence speed, residual, computational time,. . .Plots should be readable. If 90\% of your plot are barely-visible horizontal or vertical lines, look for a better way todisplay information. In particular,logarithmic scalesare usually a good idea to display quantities (such as residualsor errors) that vary by orders of magnitude; use them wisely. In particular, a nice feature of logarithmic plots is thata sequence with exact linear convergence (errork+1=C·errork) becomes a straight line in a logarithmic plot; hencethey display well the convergence speed of algorithms.For “ML projects”, the quantities you want to plot may be quite different from these you would in a ML course.While the “learning rate” (here “convergence rate”) is basically the same, the out-of-sample performances of the learntsolution are much less relevant here. They can still be displayed as side information, but it’s not the core result oneshould be looking at.}
+
+
+\subsubsection{Convergence Speed}
+\begin{figure}[H]
+	\centering
+	\begin{minipage}[t]{0.5\linewidth}
+		\includegraphics[width=\linewidth]{data/Comparison/Monk1/Monk1_CS_Comparison_standard.png}
+		%\subcaption{MSE}
+	\end{minipage}%
+	\begin{minipage}[t]{0.5\linewidth}
+		\includegraphics[width=\linewidth]{data/Comparison/Monk1/Monk1_CS_Comparison_zoom.png}
+		%\subcaption{Accuracy}
+	\end{minipage}
+	\caption{}
+\end{figure}
+\begin{figure}[H]
+	\centering
+	\begin{minipage}[t]{0.5\linewidth}
+		\includegraphics[width=\linewidth]{data/Comparison/Monk2/Monk2_CS_Comparison_standard.png}
+		%\subcaption{MSE}
+	\end{minipage}%
+	\begin{minipage}[t]{0.5\linewidth}
+		\includegraphics[width=\linewidth]{data/Comparison/Monk2/Monk2_CS_Comparison_zoom.png}
+		%\subcaption{Accuracy}
+	\end{minipage}
+	\caption{}
+\end{figure}
+\begin{figure}[H]
+	\centering
+	\begin{minipage}[t]{0.5\linewidth}
+		\includegraphics[width=\linewidth]{data/Comparison/Monk3/Monk3_CS_Comparison_standard.png}
+		%\subcaption{MSE}
+	\end{minipage}%
+	\begin{minipage}[t]{0.5\linewidth}
+		\includegraphics[width=\linewidth]{data/Comparison/Monk3/Monk3_CS_Comparison_zoom.png}
+		%\subcaption{Accuracy}
+	\end{minipage}
+	\caption{}
+\end{figure}
