@@ -10,8 +10,7 @@ To test the correctness of the algorithms we used the MONK's and the ML-CUP data
 
 
 \subsection{MONKS} 
-To obtain a deterministic behaviour of the algorithms, we used the entire MONKS datasets as  input of the network. We obtained three matrices that had dimensions: $124x18$ (Monk 1), $169x17$ (Monk 2) and $122x17$ (Monk 3). In order to compare the behaviour of the algorithms, we collected  three parameters for every epoch: the error of the network (in our case MSE), the norm of the gradient and the computational time spent on completing the epoch. These three parameters were used to make the convergence speed, residual and computational time plots shown below. For a better visualization of the plots an enlargement of each of them is shown aside. Before showing the plots a table with all the configurations  the final results with all the configu
-
+To obtain a deterministic behaviour of the algorithms, we used the entire MONKS datasets as input of the network. We obtained three matrices that had dimensions: $124x18$ (Monk 1), $169x17$ (Monk 2), and $122x17$ (Monk 3). In order to compare the behaviour of the algorithms, we collected three parameters for every epoch: the error of the network (in our case MSE), the norm of the gradient and the computational time spent on completing the epoch. These three parameters were used to make the convergence speed, residual and computational time plots shown below. For better visualization of the plots an enlargement of each of them is shown aside. Before showing the plots a table with all the configurations used and the values obtained are shown.
 
 \begin{center}
 	\small\addtolength{\tabcolsep}{-3pt}
@@ -75,6 +74,8 @@ To obtain a deterministic behaviour of the algorithms, we used the entire MONKS 
 \end{center}
 
 \subsubsection{Residual}
+The residual values results we obtained from the algorithms respect what we expect from the theory.  As we can see from the plots below (see fig \ref{R-Monk1} for example), the number of epochs needed to convergence by the L-BFGS confirms the superlinear convergence behaviour we mentioned above (sez. \ref{L-BFGSConv}).  Also we can see in the plots that the linear convergence of the Momentum Descent Approach (sez.  \ref{MDA-convergence}) and the Proximal Bundle Method (sez. \ref{PBM-Convergence}) is respected. Of course, the curves obtained from the Proximal Bundle Method are not smooth as those obtained with the Momentum Descent Approach, this is due to the fact that Bundle methods construct and minimize an approximation $f_B(x)$ of the function using the subgradients (as mention above sez. \ref{Bundle-methods}).  It's interesting to view that all of these methods even with a noisy dataset as Monk 3 converge with the same convergence as mentioned in the theory. 
+
 \begin{figure}[H]
 	\centering
 	\begin{minipage}[t]{0.5\linewidth}

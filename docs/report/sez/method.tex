@@ -49,6 +49,7 @@ The update rule for the velocity vector \textbf{v} is the following:
 \end{algorithm}
 
 \subsubsection{Method convergence}
+\label{MDA-convergence}
 Convergence of this algorithm is strictly connected to the choice of $\eta$, the learning rate parameter. It is important to gradually decrease $\eta$ over iterations, in order to guarantee convergence. A sufficient condition to ensure convergence of momentum descent is that 
 \begin{equation}
 \label{assumption:momentum_descent}
@@ -223,7 +224,7 @@ Limited-memory variants  of  the  quasi-Newton  approach use  Hessian  approxima
 Each iteration can be performed at cost of $O(mn)$ arithmetic operations, where $m$ is the number of steps stored in memory.
 
 \subsubsection{Algorithm Convergence}
-
+\label{L-BFGSConv}
 L-BFGS guarantee global convergence under specific assumption:
 \begin{enumerate} \label{convergence:assumption}
 	\item The objective function f is twice continuously differentiable;
@@ -258,7 +259,6 @@ then
 
  Indeed since the objective function is twice continuously differentiable (as mention above), $c_{1}<\frac{1}{2}$ (we use 1e-4) and $d_{k}$ is equal to $B_{k}\nabla f_{k}$ (which is our case as mention in \ref{direction}) Theorem 3.6 is equivalent to: 
 \begin{equation}
-\label{L-BFGSConv}
  \lim_{k\to\infty}\frac{\Vert (B_{k} - \nabla^2f(x_*) d_{k})\Vert}{\Vert d_{k} \Vert} = 0.
 \end{equation}
 
@@ -268,6 +268,7 @@ suppose that $f: \textnormal{ }\mathbb{R}^n \rightarrow \mathbb{R}$ is twice con
 Clearly, if $m$ is very small the behaviour of L-BFGS will be similar to the Gradient method and if $m$ is very large the behaviour as BFGS. However $m$ is problem dependent so a good trade-off between CPU computational time and convergence speed needs to be found when choosing it.
 
 \subsection{Bundle methods}
+\label{Bundle-methods}
 Bundle methods are used mainly with non-differentiable loss function. The main idea of these methods is to use the past subgradients as global information. In convex function we know that at each iteration we get a subgradient in which the epigraph of the loss function is always above the epigraph of the subgradient, so epi($L_x$) $ \supseteq $ epi($f$) .\\ 
 We define as \{$x_i$\} the sequence of iterates that will hopefully converge at some point $x_*$. 
 The bundle of first-order information is:
@@ -344,6 +345,7 @@ In the algorithm we find that $\overline{x} \leftarrow x_*$ if a serious step is
 There are multiple methods to choose how to decrease or increase $\mu$, they are taken as heuristic and tuned during the experiments part. The computational cost of each iteration depends from the size of the \textit{B}, when it increase the cost increase it too.
 
 \subsubsection{Algorithm convergence}
+\label{PBM-Convergence}
 The convergence of the \textit{Bundle method} is guarantee under specific assumption as showed in theorem 7.16 in \cite{NonOpt}:
 \begin{enumerate} \label{convergence:assBM}
 	\item The function $f$ is convex;
