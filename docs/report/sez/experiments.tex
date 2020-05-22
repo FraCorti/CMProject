@@ -11,10 +11,10 @@ To test the correctness of the algorithms we used the MONK's and the ML-CUP data
 \subsection{MONKS} 
 To obtain a deterministic behavior of the algorithms, we used the entire MONKS datasets as  input of the network. We obtained three matrices that had dimensions: $124x18$ (Monk 1), $169x17$ (Monk 2) and $122x17$ (Monk 3). In order to compare the behavior of the algorithms, we collected for every epoch three parameters: the error of the network (in our case MSE), the norm of the gradient and the computational time spent on completing the epoch. These three parameters were used to make the convergence speed, residual and computational time plots shown below. For a better visualization of the plots an enlargement of each of them is shown aside.
 
-Each variant of the methods was tested with specific seed and initial interval of weight in order to make the execution repeatable.
+Each variant of the methods was tested with specific seed and initial interval of weight in order to make the execution repeatable. 
 \texttt{La tabella la mettiamo in appendice???????}
-\begin{center}
 	\begin{table}[H]
+		\centering
 		\begin{tabular}{|c|c|c|c|c|}
 			\hline
 			\textbf{Task} &	\textbf{Method} &\textbf{ Variant} & \textbf{Initialization} &\textbf{Seed} \\ \hline
@@ -40,7 +40,6 @@ Each variant of the methods was tested with specific seed and initial interval o
 		\caption{MONK's problems parameter.}
 		\label{tab:dati}
 	\end{table}
-\end{center}
 \subsubsection{Convergence Speed}
 
 \texttt{Next, set up and describe experiments. You are supposed to test the algorithm on a realistic range of examples, interms of size, structure, and sparsity: it is typically not OK if your largest example is 10x10. While you are notexpected to fire up an HPC to run your test suite, you are welcome to try to get a sense on how algorithms scale, andwhat would be the maximum size of problems that you could successfully tackle on an ordinary machine.Numerical experiments are performed mainly for two reasons:•To confirm that the methods work as expected: how close do they get to the true solution of the problem? Howcan you check it? Is there a “residual”, or “gap” value that you can check? Do they converge with the expectedrate (linearly, sublinearly, superlinarly, . . . ) that the theory predicts? Does the error decrease monotonically, ifit is expected to do so?•To evaluate trade-offs and compare various algorithms: which algorithm is faster? If algorithm\part{title} A takes feweriterations than algorithm B, but the single iterations are more expensive, which one is the winner? How doesthis depend on the characteristics of the problem to be solved (size, density, . . . )?
