@@ -1,17 +1,14 @@
 \section{Introduction}
-At the beginning, we provide a short description of the problem. Next, we talk about the implemented method to find the gradient and the activation function used in the experiments. At the end, we provide some information about the used regularization method.
+At the beginning we provide a short description of the problem. Next, we talk about the implemented method to find the gradient and the activation function used in the experiments. At the end, we give some information about the used regularization method.
 \subsection{Neural network}
-Let M be a neural network with specific topology.
-\\
-The main goal of this project was to learn and develop three different optimization methods for M.
-We exploit:
+Let \textit{M} be a neural network with a specific topology. The main goal of this project was to learn and develop three different optimization methods for \textit{M}. We exploit:
 \begin{itemize}
 	\item Standard momentum descent approach;
 	\item Algorithm of the class of limited-memory quasi-Newton methods for L2 regularization;
 	\item Algorithm of the class of bundle methods for L1 regularization;
 \end{itemize}
-\subsection{Back-propagation}
-The back-propagation algorithm can be divided in two equally important part:
+\subsection{Backpropagation}
+The backpropagation algorithm can be divided in two part:
 \begin{itemize}
 	\item Compute the network's gradient;
 	\item Use the knowledge of the gradient to do the next step depending on the optimizer chosen;
@@ -19,7 +16,7 @@ The back-propagation algorithm can be divided in two equally important part:
 \subsection{Activation function}
 \label{activationFunction}
 The activation function of a node defines the output of that node given an input or set of inputs. 
-Desirable properties of this function can be:
+Properties of this function can be:
 \begin{itemize}
 	\item Nonlinear;
 	\item Range;
@@ -50,6 +47,7 @@ For the aim of our project, we chose to use two different activation function:
 		\end{align*} 
 	\end{itemize}
 \end{itemize}
+Since the purpose of
 \subsection{Loss Function}
 \label{Loss:Mse}
 The \textit{Loss Function} is a function used to evaluate the performance of a model, given the $h(w)$ vector compute by the network and the desired vector values $\widehat{y}$ measures the average of the squares of the errors. There are several \textit{Loss Function} used in machine learning algorithms but we are going to focus on the \textit{Mean Squared Error} (MSE). This is obtained by the formula: 	
@@ -86,9 +84,13 @@ So we want to find any optimal solution: $x_{*} \in X  \textnormal{ such that } 
 	\begin{equation}
 	h(x) = \phi_{k}(b_{k} + \sum_{j}w_{kj} \phi_{j}(b_{j} + \sum_{i}w_{ji}x))
 	\end{equation}
-	where $x$ is the input and $\phi_{i}$ is an activation function. MSE is a composition of the Euclidean norm,that is quadratic, and the output function, so the composition between the used activation function. To ensure it's Lipschitz continuity we have to restrict its domain to a bounded one. As mentioned in section \ref{activationFunction} each layer can use a \textit{sigmoid} bounded between (0,1) or \textit{tanH} bounded between (-1,+1) as activation function. Since every output layer is bounded the MSE is a continuous function.
+	where $x$ is the input and $\phi_{i}$ is an activation function. MSE is a composition of the Euclidean norm that is quadratic, and the output function, so the composition between the used activation functions. To ensure it's Lipschitz continuity we have to restrict its domain to a bounded one, since we initialize the weights of the network using a uniform distribution that generates value between [1,-1] this is true. Also, this set containing the initial value of the weights it's formally bounded since exists a ball with radius \textit{r} that include all the elements inside. 
+	\begin{equation}
+	X \subseteq \mathbb{R}^{n}  \textnormal{ bounded: } \exists  \textnormal{r >0  s.t S}  \in B(0,r)
+	\end{equation}
+	  Moreover $X$ is closed because its complementary set is open. This by definition (since $X$ is closed and bounded) prove that the set $X \subseteq \mathbb{R}^{n}$ we consider is compact. As mentioned in section \ref{activationFunction} each layer can use a \textit{sigmoid} bounded between (0,1) or \textit{tanH} bounded between (-1,+1) as activation function. Since every output layer is bounded the MSE is a continuous function.
 	
-	\item  \textbf{Differentiability}:  we are going to use \textit{sigmoid} (section \ref{sigmoid}) and \textit{hyperbolic tangent} (section \ref{tanH}) as activation functions. These function are continuous and twice differentiable with bounded Lipschitz continuous derivative. So \textit{Mean Squared Error} is a differentiable function since the network is a composition of continuously differentiable functions. Moreover, we know that the gradient of our loss function is Lipschitz continuous when we bound the weight of our layer. This because it is a product between bounded Lipschitz continuous functions. For this reason we decided to initialize the weight and the bias of our network with a uniform distribution taken in the range of two parameter.
+	\item  \textbf{Differentiability}:  we are going to use \textit{sigmoid} (section \ref{sigmoid}) and \textit{hyperbolic tangent} (section \ref{tanH}) as activation functions. These function are continuous and twice differentiable with bounded Lipschitz continuous derivative. So \textit{Mean Squared Error} is a differentiable function since the network is a composition of continuously differentiable functions. Moreover, we know that the gradient of our loss function is Lipschitz continuous when we bound the set of the initialization of the layer's weight (which is our case as mention before). Indeed it is a product between bounded Lipschitz continuous functions. For this reason we decided to initialize the weight and the bias of our network with a uniform distribution taken in the range of two parameter.
 	\item \textbf{Convexity}: all the functions used as activated function ($sigmoid$ and $tanH$) are not convex functions. Since our $MSE$ \textit{Loss Function} is obtained combining these not convex functions $MSE$ is not convex.
 \end{itemize}
 

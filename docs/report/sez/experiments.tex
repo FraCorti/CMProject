@@ -74,7 +74,7 @@ To obtain a deterministic behaviour of the algorithms, we used the entire MONKS 
 \end{center}
 
 \subsubsection{Residual}
-The residual values results we obtained from the algorithms respect what we expect from the theory.  As we can see from the plots below (see fig \ref{R-Monk1} for example), the number of epochs needed to convergence by the L-BFGS confirms the superlinear convergence behaviour we mentioned above (sez. \ref{L-BFGSConv}).  Also we can see in the plots that the linear convergence of the Momentum Descent Approach (sez.  \ref{MDA-convergence}) and the Proximal Bundle Method (sez. \ref{PBM-Convergence}) is respected. Of course, the curves obtained from the Proximal Bundle Method are not smooth as those obtained with the Momentum Descent Approach, this is due to the fact that Bundle methods construct and minimize an approximation $f_B(x)$ of the function using the subgradients (as mention above sez. \ref{Bundle-methods}).  It's interesting to view that all of these methods even with a noisy dataset as Monk 3 converge with the same convergence as mentioned in the theory. 
+The residual values results we obtained from the algorithms respect what we expect from the theory.  As we can see from the plots below (see fig \ref{R-Monk1} for example), the number of epochs needed to convergence by the L-BFGS confirms the superlinear convergence behaviour we mentioned above (sez. \ref{L-BFGSConv}).  Also we can see in the plots that the linear convergence of the Momentum Descent Approach (sez.  \ref{MDA-convergence}) and the Proximal Bundle Method (sez. \ref{PBM-Convergence}) is respected. Of course, the curves obtained from the Proximal Bundle Method are not smooth as those obtained with the Momentum Descent Approach, this is due to the fact that Bundle methods construct and minimize an approximation $f_B(x)$ of the function using the subgradients (as mention above sez. \ref{Bundle-methods}).  It's interesting to view that all of these methods even with a noisy dataset as Monk 3 converge with the same convergence rate as mentioned in the theory. 
 
 \begin{figure}[H]
 	\centering
@@ -116,8 +116,7 @@ The residual values results we obtained from the algorithms respect what we expe
 	\label{R-Monk3}
 \end{figure}
 \subsubsection{Computational time}
-
-In order to compare the computational time behaviour of the implemented algorithm, we decided to display their curves in the plot \ref{CT-Monk1},\ref{CT-Monk2}, and \ref{CS-Monk3}. We can observe that, as expected from the theory, the most expensive method is the Proximal Bundle Method because of the time spent in the resolution of a quadratic problem and the call to an external solver that has to do it. As we can draw in table \ref{tab:nets_res} the computational time of the Momentum Descent Approach is always lower than others, it means that it is often faster to reach a good level of error in the under consideration dataset. Moreover, we can infer that the L-BFGS algorithm gives us the best approximation of the objective function. This is due to the more information given by the approximation of the hessian. Also, for this approximation, it has to pay some computational costs that usually do not allow to use this kind of approach in all the situation. 
+To compare the computational time behaviour of the implemented algorithm, we decided to display their curves in the plots \ref{CT-Monk1},\ref{CT-Monk2}, and \ref{CT-Monk3}. We can observe that, as expected from the theory, the most expensive method is the Proximal Bundle Method because of the time spent on the resolution of a quadratic programming problem by an external solver that has to do it. As we can draw in table \ref{tab:nets_res} the computational time of the Momentum Descent Approach is always lower than the others, it means that it is faster to reach a good value of the error in the Monks dataset. Moreover, we can infer that the L-BFGS algorithm gives us the best approximation of the objective function, meanwhile at a greater cost for each iteration. This is due to the better descent direction given by the approximation of the Hessian. Also, for this approximation, it has to pay some high computational costs that usually do not allow to use this kind of approach in all the situation. 
 
 \begin{figure}[H]
 	\centering
@@ -161,8 +160,8 @@ In order to compare the computational time behaviour of the implemented algorith
 
 
 
-\subsubsection{Gradient Convergence Speed}
-There we can observe that what the theory says about the convergence speed is verified in practice. We notice that in all three monk dataset the norm of the gradient is not smooth. In our opinion, this is due to the starting point of the training and the non-convexity of the problem. We know from the theory that this method tends to have some problems with local minima. Also, we can observe that at a certain point the norm tends to stabilize and go to zero. With this, we can infer that in the neighbourhood of the visited minima there are not other minima better than it and our search of the best minima can stop.
+\subsubsection{Gradient norm convergence speed}
+Here we can observe that the behaviour of the algorithms follows what we stated before in the theory about their convergence speed. We view from the plots that the norm of the gradient is not smooth in all the Monks dataset. In our opinion, this is due to the starting point of the training and the non-convexity of the objective function. We know from the theory that these methods tend to have some problems with the local minimum. Also, we can observe that at a certain point the norm tends to stabilize and converge to zero. Therefore, we can infer that in the neighbourhood of the last visited minima there are no other minimum better than itself and the search of the best minima can stop.
 \begin{figure}[H]
 	\centering
 	\begin{minipage}[t]{0.5\linewidth}
