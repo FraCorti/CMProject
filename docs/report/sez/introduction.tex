@@ -47,7 +47,7 @@ For the aim of our project, we chose to use two different activation function:
 		\end{align*} 
 	\end{itemize}
 \end{itemize}
-Since the purpose of 
+The purpose of the nonlinearity is to ensure that the neural network is a universal function approximator.
 \subsection{Loss Function}
 \label{Loss:Mse}
 The \textit{Loss Function} is a function used to evaluate the performance of a model, given the $h(w)$ vector compute by the network and the desired vector values $\widehat{y}$ measures the average of the squares of the errors. There are several \textit{Loss Function} used in machine learning algorithms but we are going to focus on the \textit{Mean Squared Error} (MSE). This is obtained by the formula: 	
@@ -85,7 +85,7 @@ So we want to find any optimal solution: $x_{*} \in X  \textnormal{ such that } 
 	h(x) = \phi_{k}(b_{k} + \sum_{j}w_{kj} \phi_{j}(b_{j} + \sum_{i}w_{ji}x))
 	\end{equation}
 	where $x$ is the input and $\phi_{i}$ is an activation function. MSE is a composition of the Euclidean norm that is quadratic, and the output function, so the composition between the used activation functions. To ensure it's Lipschitz continuity we have to restrict its domain to a bounded set, but as mentioned in section \ref{activationFunction} each layer can use a \textit{sigmoid} that bounds the output between (0,1) or \textit{tanH} that bounds the output  between (-1,+1) as activation function. Since in our case every layer's output is bounded the MSE is a continuous function.	
-	\item  \textbf{Differentiability}:  we are going to use \textit{sigmoid} (section \ref{sigmoid}) and \textit{hyperbolic tangent} (section \ref{tanH}) as activation functions. These function are continuous and twice differentiable with bounded Lipschitz continuous derivative. So \textit{Mean Squared Error} is a differentiable function since the network is a composition of continuously differentiable functions. Moreover, we know that the gradient of our loss function is Lipschitz continuous when we restrict the weight to a bounded set. This is verified in our case because the weights of the network are initialized using a uniform distribution, taken in the range $[1,-1]$. Also, this set containing the initial value of the weights it's formally bounded by definition since exists a ball with radius \textit{r} that include all the elements inside it: 
+	\item  \textbf{Differentiability}:  we are going to use \textit{sigmoid} (section \ref{sigmoid}) and \textit{hyperbolic tangent} (section \ref{tanH}) as activation functions. These functions are continuous and twice differentiable with bounded Lipschitz continuous derivative. So \textit{Mean Squared Error} is a differentiable function since the network is a composition of continuously differentiable functions. Moreover, we know that the gradient of our loss function is Lipschitz continuous when we restrict the weight to a bounded set. This is verified in our case because the weights of the network are initialized using a uniform distribution, taken in the range $[1,-1]$. Also, this set containing the initial value of the weights it's formally bounded by definition since exists a ball with radius \textit{r} that include all the elements inside it: 
 	\begin{equation}
 	X \subseteq \mathbb{R}^{n}  \textnormal{ bounded: } \exists  \textnormal{r >0  s.t S}  \in B(0,r).
 	\end{equation}
