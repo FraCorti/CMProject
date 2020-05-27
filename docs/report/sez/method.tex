@@ -322,23 +322,43 @@ Instead, when we have a small $\mu$, the parable is too flat and in this case we
 	\caption{PBM.}
 	\label{alg:PBM}
 	\begin{algorithmic}[4]
-		\Require{Function f, sub-gradients g;}
-		\Require{Best value $\overline{x}$;}
-		\Require{Armijo condition $m_1$;}
-		\Require{Stopping criteria $\epsilon$;}
-		\Procedure{$\overline{x}$ = PBM}{f,g,$\overline{x}, m_1, \epsilon$}
-		\State choose $\mu; B \leftarrow \{(\overline{x},f( \overline{x}),g(\overline{x}) )\}$;
+		\Procedure{PBM}{}
+		\State initialization:
+		\State $x_1 \in \mathbb{R}^n, \,  J=\{1\}, \, \overline{t} \in (0,1], \, m_{L} \in (0,\frac{1}{2}), \, u_1>0, \, \epsilon>0 \textnormal{ and } v_0= -\epsilon$;
+		\State Set k=1;
+		\State Evaluate f($x_1$ ) and $ \xi_1 \in \partial f (x_1)$;
 		\Repeat
-		\State $x_*\leftarrow argmin\{f_B(x) +\mu \parallel x_* - \overline{x}\parallel^2_2/2\}$;
-		\If{$f(x_*)\leq f(\overline{x}) +m_1(f_B(x_*)-f(\overline{x}))$}
-		\State $ x \leftarrow x_* $; possibly decrease $ \mu $;
-		\Else possibly increase $\mu$;
+		\State $d_k\leftarrow argmin_{d\in \mathbb{R}^n }\{f_B(x_{k} + d) +\frac{1}{2}\mu_{k}d^{T}d\}$;
+		\State Compute $v_{k} \leftarrow f_B(x_{k} + d) - f(x_k)$;
+		\State Find step sizes $t^{k}_{L}$ and  $t^{k}_{R}$;
+		\If{$f(x_{k} + t^{k}_{L} *d_{k} )\leq f(x_{k}) + m_{L}*t^{k}_{L}*v_{k}$}
+			\If{$t^{k}_{L}> \overline{t}$}
+				\State LONG SERIOUS STEP
+				\State Set $x_{k+1}= x_{k} + t^{k}_{L}*d_{k}$;
+				\State Set $y_{k+1}= x_{k+1}$
+				\State Evaluate $\xi_{k+1} \in \partial f (y_{k+1})$ 
+				\State END LONG SERIOUS STEP
+			\Else
+				\State SHORT SERIOUS STEP
+				\State Set $x_{k+1}= x_{k} + t^{k}_{L}*d_{k}$;
+				\State Set $y_{k+1}= x_{k}+t^{k}_{R}*d_{k}$
+				\State Evaluate $\xi_{k+1} \in \partial f (y_{k+1})$ 
+				\State END SHORT SERIOUS STEP
+			\EndIf
+		\Else
+			\State NULL STEP
+			\State Set $x_{k+1}= x_{k}$;
+			\State Set $y_{k+1}= x_{k}+t^{k}_{R}*d_{k}$
+			\State Evaluate $\xi_{k+1} \in \partial f (y_{k+1})$ 
+			\State END NULL STEP		
 		\EndIf
-		\State $B \leftarrow B 	\cup (x_*,f(x_+),g(x_*) )$;
-		\Until{\textbf{$\mu\parallel x_* - \overline{x}\parallel_2\leq\epsilon$.}}
+		\State Update $J_{k}$ and $u_{k}$ according some updating rules;
+		\State $k=k+1$;
+		\Until{\textbf{$v_{k}>\epsilon$.}}
 		\EndProcedure 
 	\end{algorithmic}
 \end{algorithm}
+
 
 In the algorithm we find that $\overline{x} \leftarrow x_*$ if a serious step is made, otherwise $\overline{x}$ unchanged and we made a null step.
 There are multiple methods to choose how to decrease or increase $\mu$, they are taken as heuristic and tuned during the experiments part. The computational cost of each iteration depends from the size of the \textit{B}, when it increase the cost increase it too.
