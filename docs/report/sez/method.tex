@@ -359,8 +359,7 @@ Instead, when we have a small $\mu$, the parable is too flat and in this case we
 	\end{algorithmic}
 \end{algorithm}
 
-
-In the algorithm we find that $\overline{x} \leftarrow x_*$ if a serious step is made, otherwise $\overline{x}$ unchanged and we made a null step.
+In this algorithm we use some trial points $y_{j} \in \mathbb{R}^{n}$. We find that $x_{k} \leftarrow x_{k+1}$ if a serious step is made and $y_{k+1} \leftarrow x_{k+1}$ if a long serious step is made. Otherwise $y_{k + 1} \leftarrow  x_{k}+t^{k}_{R}*d_{k}$ if a short serious step or a null step is made. $x_{k+1}$ is unchanged if we made a null step.
 There are multiple methods to choose how to decrease or increase $\mu$, they are taken as heuristic and tuned during the experiments part. The computational cost of each iteration depends from the size of the \textit{B}, when it increase the cost increase it too.
 
 \subsubsection{Algorithm convergence}
