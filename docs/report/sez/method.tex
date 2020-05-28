@@ -272,12 +272,12 @@ Bundle methods are used mainly with non-differentiable loss function. The main i
 We define as \{$x_i$\} the sequence of iterates that will hopefully converge at some point $x_*$. 
 The bundle of first-order information is:
 \begin{equation}
-\{x_i\}\rightarrow \mathcal{B}=\{(x_i, f^i=f(x_i), g^i \in \partial f(x_i)\}
+\{x_{k}\}\rightarrow \mathcal{B}=\{(x_{k}, f^k=f(x_{k}), g^{k} \in \partial f(x_{k})\}
 \end{equation}
 and the cutting-plane model of $f$ - $(1 +\epsilon)$-order model as:
 \begin{equation}
 \label{CP-model}
-f_B(x) = \max{\{f^i+ \langle g^i,x - x_i \rangle:  (x_i,f^i,g^i)\in B\}}
+f_B(x) = \max{\{f^k+ \langle g^k,x - x_l \rangle:  (x_k,f^k,g^k)\in B\}}
 \end{equation}
 in which $g^i$ is the subgradient chosen at $i^{th}$ iteration.
 Before getting deep in defining the bundle methods, we need to introduce some information about subgradient.
@@ -304,7 +304,7 @@ We know that $f_B$ is a polyhedral function, for this reason is composed by a fi
 In this way, we can define the master problem as:
 \begin{equation}
 \label{MP}
-min\{f_B(x)\} = min\{v : v \geq f^i + \langle g^i, x-x_i \rangle \qquad (x_i, f^i, g^i) \in B \}
+min\{f_B(x)\} = min\{v : v \geq f^k + \langle g^k, x-x_k \rangle \qquad (x_k, f^k, g^k) \in B \}
 \end{equation} 
 A method to use efficiently the \ref{MP} equation is the \textit{cutting plane algorithm} in which at every iteration we add the knowledge of the $g^i$ sub-gradient at $B$ if the $v^i$ is greater than $f(x_*)$ otherwise we find the optimal value of $f$.  
 Unfortunately, the master problem as defined in \ref{MP} have some issue when the $x_i$ is very far to $x_*$. Due to this, the cutting plane algorithm does not work very well in practice.
@@ -318,10 +318,7 @@ Usually, $\overline{x}$ is choose as the best $x_i$ at the moment and $\mu$ is a
 We know that at large $\mu$ the parable is extremely sticky and we will do a small movement in the next iteration.
 Instead, when we have a small $\mu$, the parable is too flat and in this case we can have the same result as in the un-stabilized cutting plane method. For this reason, is important to find the right $\mu$ to use.
 \subsubsection{Proximal Bundle Method}
-The main idea behind the Proximal Bundle Method is to approximate the objective function $f$ by the \textit{cutting-plane} model we mention in \ref{CP-model}. Moreover, following \cite{NonsmoothOPT} the model can be rewritten in the following equivalent form: 
-
-
-To obtain the step size to apply into the result $d_{k}$ obtained solving the \textit{Master problem}, we used the following line search procedure (as described in \cite{NonsmoothOPT}): 
+The main idea behind the Proximal Bundle Method is to approximate the objective function $f$ by the \textit{cutting-plane} model we mention in \ref{CP-model}. To obtain the step size to apply into the result $d_{k}$ obtained solving the \textit{Master problem}, we used the following line search procedure (as described in \cite{NonsmoothOPT}): 
 Assume that $m_{L} \in (0, \frac{1}{2}, m_{R} \in (m_{L},1))$ \textnormal{ and } $ \bar{t} \in (0,1])$ are fixed line search parameters. We first search for the largest number $t_{L}^k \in [0,1]$ such that $t_{L}^k \geq \bar{t}$ and
 \begin{equation}
 \label{linesearchCondition}
@@ -346,6 +343,14 @@ x_{k+1} = x_{k} + t_{L}^k d_{k} \textnormal{ and } y_{k+1}= x_{k}+t_{R}^k  d_{k}
 where $t_{R}^h > t_{L}^h$ is such that 
 \begin{equation}
 - \beta_{k+1}^{k+1}+ g^i d_{k} \geq m_{R}v_{k}.
+\end{equation}
+where 
+\begin{equation}
+\alpha_{j}^k = f(x_{k}) - f(y_{j}) -g^k(x_{k}-\hat{x})
+\end{equation}
+is a \textit{linearization error}. In our case, since \textit{f} is non-convex, $\alpha_{j}^k$ can be replaced by $\beta_{j}^k$ called \textit{subgradient locality measure} (see chapter 12 of \cite{NonsmoothOPT}): 
+\begin{equation}
+\beta_{j}^k = max\{|\alpha_{j}^k|,\gamma || x_{k}-y_{j} ||^2\},
 \end{equation}
 \begin{algorithm}[H]
 	\caption{PBM.}
