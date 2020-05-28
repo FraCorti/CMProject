@@ -344,11 +344,11 @@ where $t_{R}^h > t_{L}^h$ is such that
 \begin{equation}
 - \beta_{k+1}^{k+1}+ g^i d_{k} \geq m_{R}v_{k}.
 \end{equation}
-where 
+where $\alpha_{j}$ is a \textit{linearization error}: 
 \begin{equation}
-\alpha_{j}^k = f(x_{k}) - f(y_{j}) -g^k(x_{k}-\hat{x})
+\alpha_{j}^k = f(x_{k}) - f(y_{j}) -g^k(x_{k}-\hat{x}).
 \end{equation}
-is a \textit{linearization error}. In our case, since \textit{f} is non-convex, $\alpha_{j}^k$ can be replaced by $\beta_{j}^k$ called \textit{subgradient locality measure} (see chapter 12 of \cite{NonsmoothOPT}): 
+But in our case, since \textit{f} is non-convex, $\alpha_{j}^k$ can be replaced by $\beta_{j}^k$ called \textit{subgradient locality measure} (see chapter 12 of \cite{NonsmoothOPT}): 
 \begin{equation}
 \beta_{j}^k = max\{|\alpha_{j}^k|,\gamma || x_{k}-y_{j} ||^2\},
 \end{equation}
