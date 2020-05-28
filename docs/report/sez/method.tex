@@ -276,6 +276,7 @@ The bundle of first-order information is:
 \end{equation}
 and the cutting-plane model of $f$ - $(1 +\epsilon)$-order model as:
 \begin{equation}
+\label{CP-model}
 f_B(x) = \max{\{f^i+ \langle g^i,x - x_i \rangle:  (x_i,f^i,g^i)\in B\}}
 \end{equation}
 in which $g^i$ is the subgradient chosen at $i^{th}$ iteration.
@@ -310,14 +311,42 @@ Unfortunately, the master problem as defined in \ref{MP} have some issue when th
 For this reason, we use a stabilized master problem: 
 \begin{equation}
 \label{SMP}
-min\{f_B(x)\ + \mu \parallel x- \overline{x}\parallel_{2}^2/2 \}
+ d_{k}=argmin\{f_B(x)\ + \mu \parallel x- \overline{x}\parallel_{2}^2/2 \}
 \end{equation} 
 in which $\overline{x}$ is a particular point called \textit{stability center} and $\mu$ is the \textit{stability parameter}. We introduce a term that is used to take close the new point $x_{*B}$ from $\overline{x}$.
 Usually, $\overline{x}$ is choose as the best $x_i$ at the moment and $\mu$ is an hyperparameter.
 We know that at large $\mu$ the parable is extremely sticky and we will do a small movement in the next iteration.
 Instead, when we have a small $\mu$, the parable is too flat and in this case we can have the same result as in the un-stabilized cutting plane method. For this reason, is important to find the right $\mu$ to use.
-\subsubsection{Algorithm}
+\subsubsection{Proximal Bundle Method}
+The main idea behind the Proximal Bundle Method is to approximate the objective function $f$ by the \textit{cutting-plane} model we mention in \ref{CP-model}. Moreover, following \cite{NonsmoothOPT} the model can be rewritten in the following equivalent form: 
 
+
+To obtain the step size to apply into the result $d_{k}$ obtained solving the \textit{Master problem}, we used the following line search procedure (as described in \cite{NonsmoothOPT}): 
+Assume that $m_{L} \in (0, \frac{1}{2}, m_{R} \in (m_{L},1))$ \textnormal{ and } $ \bar{t} \in (0,1])$ are fixed line search parameters. We first search for the largest number $t_{L}^k \in [0,1]$ such that $t_{L}^k \geq \bar{t}$ and
+\begin{equation}
+\label{linesearchCondition}
+f(x_{k}+t_{L}^k d_{k}) \leq f(x_{k}) + m_{L}t_{L}^k v_{k}, 
+\end{equation}
+where $v_{k}$ is the predicted amount of descent 
+\begin{equation}
+v_{k} = \hat{f_{k}}(x_{k}+d_{k}) - f(x_{k}) < 0.
+\end{equation}
+If exists that parameter we take a \textit{long serious step}:
+\begin{equation}
+x_{k+1} = x_{k} + t_{L}^k d_{k} \textnormal{ and } y_{k+1}= x_{k+1}.
+\end{equation}
+Otherwise, if \ref{linesearchCondition} holds but $0 < t_{L}^k < \hat{t}$, we take a \textit{short serious step}:
+\begin{equation}
+x_{k+1} = x_{k} + t_{L}^k d_{k} \textnormal{ and } y_{k+1}= x_{k}+t_{R}^k d_{k}
+\end{equation} 
+and, if $t_ {L}^k=0$, we take a \textit{null step}: 
+\begin{equation}
+x_{k+1} = x_{k} + t_{L}^k d_{k} \textnormal{ and } y_{k+1}= x_{k}+t_{R}^k  d_{k}
+\end{equation}
+where $t_{R}^h > t_{L}^h$ is such that 
+\begin{equation}
+- \beta_{k+1}^{k+1}+ g^i d_{k} \geq m_{R}v_{k}.
+\end{equation}
 \begin{algorithm}[H]
 	\caption{PBM.}
 	\label{alg:PBM}
@@ -326,7 +355,7 @@ Instead, when we have a small $\mu$, the parable is too flat and in this case we
 		\State initialization:
 		\State $x_1 \in \mathbb{R}^n, \,  J=\{1\}, \, \overline{t} \in (0,1], \, m_{L} \in (0,\frac{1}{2}), \, u_1>0, \, \epsilon>0 \textnormal{ and } v_0= -\epsilon$;
 		\State Set k=1;
-		\State Evaluate f($x_1$ ) and $ \xi_1 \in \partial f (x_1)$;
+		\State Evaluate f($x_1$) and $ \xi_1 \in \partial f (x_1)$;
 		\Repeat
 		\State $d_k\leftarrow argmin_{d\in \mathbb{R}^n }\{f_B(x_{k} + d) +\frac{1}{2}\mu_{k}d^{T}d\}$;
 		\State Compute $v_{k} \leftarrow f_B(x_{k} + d) - f(x_k)$;
@@ -359,8 +388,7 @@ Instead, when we have a small $\mu$, the parable is too flat and in this case we
 	\end{algorithmic}
 \end{algorithm}
 
-In this algorithm we use some trial points $y_{j} \in \mathbb{R}^{n}$. We find that $x_{k} \leftarrow x_{k+1}$ if a serious step is made and $y_{k+1} \leftarrow x_{k+1}$ if a long serious step is made. Otherwise $y_{k + 1} \leftarrow  x_{k}+t^{k}_{R}*d_{k}$ if a short serious step or a null step is made. $x_{k+1}$ is unchanged if we made a null step.
-There are multiple methods to choose how to decrease or increase $\mu$, they are taken as heuristic and tuned during the experiments part. The computational cost of each iteration depends from the size of the \textit{B}, when it increase the cost increase it too.
+
 
 \subsubsection{Algorithm convergence}
 \label{PBM-Convergence}
