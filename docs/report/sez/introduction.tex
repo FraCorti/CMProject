@@ -101,7 +101,10 @@ MSE = \frac{1}{n} \parallel h(x) - \widehat{y} \parallel_{2}^2
 
 Moreover the train phase of a supervised machine learning algorithm can be seen as an optimization (in our case minimization) of the \textit{Loss Function} by altering the weights of the network $w$.   
 Since the purpose of neural networks is to build models that fits data, we want to minimize the \textit{Loss Function} in order to have good prediction on unseen data. This minimization process is done through optimization algorithms but to minimize the \textit{Loss Function} it must have certain properties.	
-
+The gradient for the MSE with respect to \textit{h(x)} is defined as:
+\begin{equation}
+\nabla_{h(x)}MSE(h(x), \hat{y})=h(x)-\hat{y}
+\end{equation}
 \subsubsection{Loss Function properties}
 \label{LF:Properties}
 In an optimization problem given $X$ any set and $f: X \rightarrow \mathbb{R}$ any function we want
@@ -124,12 +127,8 @@ So we want to find any optimal solution: $x_{*} \in X  \textnormal{ such that } 
 	h(x) = \phi_{k}(b_{k} + \sum_{j}w_{kj} \phi_{j}(b_{j} + \sum_{i}w_{ji}x))
 	\end{equation}
 	where $x$ is the input and $\phi_{i}$ is an activation function. MSE is a composition of the Euclidean norm that is quadratic, and the output function, so the composition between the used activation functions. To ensure it's Lipschitz continuity we have to restrict its domain to a bounded set, but as mentioned in section \ref{activationFunction} each layer can use a \textit{sigmoid} that bounds the output between (0,1) or \textit{tanH} that bounds the output  between (-1,+1) as activation function. Since in our case every layer's output is bounded the MSE is a continuous function.	
-	\item  \textbf{Differentiability}:  we are going to use \textit{sigmoid} (section \ref{sigmoid}) and \textit{hyperbolic tangent} (section \ref{tanH}) as activation functions. These functions are continuous and twice differentiable with bounded Lipschitz continuous derivative. So \textit{Mean Squared Error} is a differentiable function since the network is a composition of continuously differentiable functions. Moreover, we know that the gradient of our loss function is Lipschitz continuous when we restrict the weight to a bounded set. This is verified in our case because the weights of the network are initialized using a uniform distribution, taken in the range $[1,-1]$. Also, this set containing the initial value of the weights it's formally bounded by definition since exists a ball with radius \textit{r} that include all the elements inside it: 
-	\begin{equation}
-	X \subseteq \mathbb{R}^{n}  \textnormal{ bounded: } \exists  \textnormal{r >0  s.t S}  \in B(0,r).
-	\end{equation}
-	Moreover $X$ is closed because its complementary set is open. This by definition (since $X$ is closed and bounded) prove that the set $X \subseteq \mathbb{R}^{n}$ we consider is compact.
-	\item \textbf{Convexity}: all the functions used as activated function ($sigmoid$ and $tanH$) are not convex functions. Since our MSE \textit{Loss Function} is obtained combining these not convex functions MSE is not convex.
+	\item  \textbf{Differentiability}:  the network use \textit{sigmoid} (section \ref{sigmoid}) and \textit{hyperbolic tangent} (section \ref{tanH}) as activation functions. These functions are continuous and twice differentiable with bounded Lipschitz continuous derivative. So \textit{Mean Squared Error} is a differentiable function since the network is a composition of continuously differentiable functions. Moreover, the gradient of our loss function is Lipschitz continuous if we restrict the weights to a bounded set and we use activation functions with Lipschitz derivative. The weights of the network are initialized using a uniform distribution, taken in the range $[1,-1]$.
+	\item \textbf{Convexity}: all the functions used as activated function ($sigmoid$ and $tanH$) are not convex functions. Since our MSE \textit{Loss Function} is obtained combining these not convex functions MSE is not convex. Moreover, the properties of the sigmoid and hyperbolic tangent activation function described in \S \ref{activationFunction} allow the gradient of our loss functions to be Lipschitz continuous.
 \end{itemize}
 
 \subsection{Regularization}
