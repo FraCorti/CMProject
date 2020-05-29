@@ -4,17 +4,20 @@ At the beginning we provide a short description of the problem. Next, we talk ab
 Let \textit{M} be a neural network with a specific topology. The main goal of this project was to learn and develop three different optimization methods for \textit{M}. We exploit:
 \begin{itemize}
 	\item Standard momentum descent approach;
-	\item Algorithm of the class of limited-memory quasi-Newton methods for L2 regularization;
-	\item Algorithm of the class of bundle methods for L1 regularization;
+	\item L-BFGS algorithm of the class of limited-memory quasi-Newton methods for L2 regularization;
+	\item Proximal Bundle Method algorithm of the class of bundle methods for L1 regularization;
 \end{itemize}
 \subsection{Backpropagation}
 The backpropagation algorithm can be divided in two phases (as mentioned in \cite{backpropagation}):
-\begin{itemize}
-	\item Compute the network's gradient;
-	\item Use the knowledge of the gradient to do the next step depending on the optimizer chosen;
-\end{itemize}
-The computation of the gradient is divided in two parts that are \textit{forward} and \textit{backward}. In the \textit{forward} phase we have the input matrix \textit{x} flow through the network ending in the output layer that compute the output h(w). This later, is compared with the desired vector values $\widehat{y}$:
+\begin{enumerate}
+	\item Compute the network's gradient that is the derivative of the cost function
+	$\nabla_{\theta} J(\theta)$, with $\theta$ representing the ANN's parameters (weights and bias). The algorithm used to compute the gradient is the \textit{back-propagation} described by
+	algorithm \ref{alg:fp} and \ref{alg:bp};
+	\item Use the knowledge of the gradient to do the next step using one of the optimizers chosen;
+\end{enumerate}
+The computation of the gradient is divided in two parts that are \textit{forward} and \textit{backward}. In the \textit{forward} phase the input matrix \textit{x} flow through the network ending in the output layer that compute the output \textit{h(x)}. This later, is compared with the desired vector values $\widehat{y}$:
 \begin{algorithm}[H]
+	\caption{Forward propagation}
 	\label{alg:fp}
 	\begin{algorithmic}[1]
 		\Procedure{Forward propagation}{}
@@ -23,8 +26,29 @@ The computation of the gradient is divided in two parts that are \textit{forward
 		\State $\mathbf{a}_{k} = \mathbf{b}_{k} + \mathbf{W}_{k}\mathbf{h}_{k - 1}$
 		\State $\mathbf{h}_{k} = f(\mathbf{a}_{k})$
 		\EndFor
-		\State $\hat{\mathbf{y}} = \mathbf{h}_{l}$
-		\State $J = L(\hat{\mathbf{y}}, \mathbf{y}) + \lambda \Omega(\theta)$
+		\State $\mathbf{h(x)} = \mathbf{h}_{l}$
+		\State $J = L(\mathbf{h(x)}, \mathbf{y}) + \lambda \Omega(\theta)$
+		\EndProcedure
+	\end{algorithmic}
+\end{algorithm}
+In our case $J$ is the \textit{Mean Squared Error} function. Since the neural network is a composition of functions the Chain Rule is used to compute the partial derivative of the weights that compose it. 
+
+\begin{algorithm}[H]
+	\caption{Backward computation}
+	\label{alg:bp}
+	\begin{algorithmic}[2]
+		\Procedure{Backward propagation}{}
+		\State $\mathbf{g} \leftarrow \nabla_{\hat{\mathbf{y}}}J = \nabla_{\hat{\mathbf{y}}}
+		L(\mathbf{h(x)}, \mathbf{y})$
+		\For{$k = l, l - 1, \ldots, 1$}
+		\State $\mathbf{g} \leftarrow \nabla_{\mathbf{a}_{k}}J = \mathbf{g} \ \odot \
+		f'(\mathbf{a}_{k})$
+		\State $\nabla_{\mathbf{b}_{k}}J = \mathbf{g} \ + \ \lambda \nabla_{\mathbf{b}_{k}}
+		\Omega(\theta)$
+		\State $\nabla_{\mathbf{W}_{k}}J = \mathbf{g}\mathbf{h}_{k - 1}^{T} \ + \ \lambda
+		\nabla_{\mathbf{W}_{k}} \Omega(\theta)$
+		\State $\mathbf{g} = \nabla_{\mathbf{h}_{k - 1}}J = \mathbf{W}_{k}^{T}\mathbf{g}$
+		\EndFor
 		\EndProcedure
 	\end{algorithmic}
 \end{algorithm}
