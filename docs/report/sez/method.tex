@@ -448,10 +448,10 @@ where $\xi(x + t*d) \in \partial f (x + t*d)$.
 \\
 A function $f : \mathbb{R}^n \rightarrow \mathbb{R}$ is $f^{\circ}$-pseudoconvex, if it is locally Lipschitz continuous and for all x, y $\in \mathbb{R}^n$
 \begin{equation}
-f(y)<f(x) \, implies \, f^{\circ}(x;y-x)<0
+f(y)<f(x) \, \textnormal{ implies } \, f^{\circ}(x;y-x)<0
 \end{equation}
-Where $f^{\circ}(x;y)$ is the \textit{Clarke’s} generalized directional derivative of f at x in the direction y and is defined by
+Where $f^{\circ}(x;y)$ is the \textit{Clarke’s} generalized directional derivative of f at x in the direction y and it is defined as
 \begin{equation}
 f^{\circ}(x,y)=\lim_{z\rightarrow x,t\downarrow 0}\frac{f(z+t*d)-f(z)}{t}
 \end{equation}
-We do not know is our loss function is $f^{\circ}$-pseudoconvex  and weakly semismooth. We think that the properties defined in section \ref{LF:Properties} can help to make it so.
+We do not know if our loss function is $f^{\circ}$-pseudoconvex  and weakly semismooth. We think that the properties defined in section \ref{LF:Properties} can help to make it so.
