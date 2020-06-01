@@ -101,10 +101,58 @@ MSE = \frac{1}{n} \parallel h(x) - \widehat{y} \parallel_{2}^2
 
 Moreover the train phase of a supervised machine learning algorithm can be seen as an optimization (in our case minimization) of the \textit{Loss Function} by altering the weights of the network $w$.   
 Since the purpose of neural networks is to build models that fits data, we want to minimize the \textit{Loss Function} in order to have good prediction on unseen data. This minimization process is done through optimization algorithms but to minimize the \textit{Loss Function} it must have certain properties.	
-The gradient for the MSE with respect to \textit{h(x)} is defined as:
+The gradient for the MSE with respect to $x_{i}$ is defined as:
 \begin{equation}
-\nabla_{h(x)}MSE(h(x), \hat{y})=h(x)-\hat{y}
+\nabla_{x_{i}}MSE(x, \hat{y})= 2*(h(x)-\hat{y})_{i} * h'(x)
 \end{equation}
+The $\nabla w $ is equal to:
+\begin{equation*}
+\nabla w= -\frac{\partial MSE(x, \hat{y})}{\partial w} \, =\, - \sum_{i=1}^n \frac{\partial MSE(x, \hat{y})_i}{\partial w} = \sum_{i=1}^n -\frac{\partial MSE(x, \hat{y})_i}{\partial w} = \sum_{i=1}^n \nabla_{i} w
+\end{equation*}
+The $\nabla_{i} w $ for a generic \textit{t} is equal to:
+\begin{equation*}
+\nabla_{i} w_{t} \, = \, -\frac{\partial MSE(x, \hat{y})_i}{\partial w_{t}} \, = \, -\frac{\partial MSE(x, \hat{y})_i}{\partial o_{t}} * \frac{\partial o_{t}}{\partial net_{t}}*\frac{\partial net_{t}}{\partial w_{t}}
+\end{equation*}
+where $o_{t} \, = \, f_{t}(net_{t})$, $f_{t}$ is the activation function at layer \textit{t}, $net_{t} \, = \, \sum_{i=1}^n w_{t,i}*o_{t-1,i}$ and $ o_{0} $ are the inputs.
+\\
+So, $\frac{\partial net_{t}}{\partial w_{t,i}}$ is equal to:
+\begin{equation*}
+\frac{\partial net_{t}}{\partial w_{t}} \, = \, \frac{\partial\sum_{r=1}^n  w_{t,r}*o_{t-1,r}}{\partial w_{t,i}} \, = \, o_{t-1,i}
+\end{equation*}
+The term $\frac{\partial o_{t}}{\partial net_{t}}$ is equal to:
+\begin{equation*}
+ \frac{\partial o_{t}}{\partial net_{t}} \, = \, f'(net_{t})
+\end{equation*}
+We define:
+\begin{equation*}
+\delta_{t} \,=\, -\frac{\partial MSE(x, \hat{y})_i}{\partial o_{t}} * \frac{\partial o_{t}}{\partial net_{t}}
+\end{equation*}
+Now we have to study two different case for $\frac{\partial MSE(x, \hat{y})_i}{\partial o_{t}}$, when the t is the output layer and when t is a hidden layer.
+\\
+Case t = k (where k is the last layer):
+\begin{equation*}
+\frac{\partial MSE(x, \hat{y})_i}{\partial o_{k}} \, = \, -\frac{1}{2} * \frac{\sum_{r=1}^n \partial((h(x) - \widehat{y})_{r}^2)}{\partial o_{k}} \, = \, - \frac{\sum_{r=1}^n (h(x)-\hat{y})_{r} * h'(x) \partial((h(x) - \widehat{y})_{r})}{\partial o_{k}} \, = \, (h(x)-\hat{y}) * h'(x)
+\end{equation*}
+So, $\delta_{t}$ is equal to:
+\begin{equation*}
+\delta_{k} \, = \, (h(x)-\hat{y}) * h'(x) * f'(net_{k})
+\end{equation*}
+
+Case t = j (where j is a hidden layer):
+\begin{equation*}
+\frac{\partial MSE(x, \hat{y})_i}{\partial o_{j}} \,
+ = \, -\frac{1}{2} * \sum_{r=j}^k\frac{ \partial((h(x) - \widehat{y})_{r}^2)}{\partial o_{r}} \, 
+= \, -\frac{1}{2} * \sum_{r=j}^k\frac{ \partial((h(x) - \widehat{y})_{r}^2)}{\partial o_{r}} * \frac{\partial o_{r}}{\partial net_{r}} * \frac{\partial net_{r}}{\partial o_{j}}
+\end{equation*}
+
+\begin{equation*}
+= \, \sum_{k} \delta_{k} * w_{k,j}
+\end{equation*}
+Where:
+\begin{equation*}
+\frac{\partial net_{r}}{\partial o_{j}} \, = \, \frac{\sum_{r=1}^n\partial w_{k,r}*o_{r}}{\partial o_{j}} \, = \,  w_{k,j}
+\end{equation*}
+
 \subsubsection{Loss Function properties}
 \label{LF:Properties}
 In an optimization problem given $X$ any set and $f: X \rightarrow \mathbb{R}$ any function we want
