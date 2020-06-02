@@ -1,5 +1,5 @@
 \section{Introduction}
-At the beginning we provide a short description of the problem. Next, we talk about the implemented method to find the gradient and the activation function used in the experiments. At the end, we give some information about the used regularization method.
+At the beginning we provide a short description of the problem. Next, we talk about the implemented method to find the gradient and the activation function used in the experiments. In the end, we give some information about the used regularization method.
 \subsection{Neural network}
 Let \textit{M} be a neural network with a specific topology. The main goal of this project was to learn and develop three different optimization methods for \textit{M}. We exploit:
 \begin{itemize}
@@ -8,14 +8,14 @@ Let \textit{M} be a neural network with a specific topology. The main goal of th
 	\item Proximal Bundle Method algorithm of the class of bundle methods for L1 regularization;
 \end{itemize}
 \subsection{Backpropagation}
-The backpropagation algorithm can be divided in two phases (as mentioned in \cite{backpropagation}):
+The backpropagation algorithm can be divided into two phases (as mentioned in \cite{backpropagation}):
 \begin{enumerate}
 	\item Compute the network's gradient that is the derivative of the cost function
 	$\nabla_{\theta} J(\theta)$, with $\theta$ representing the ANN's parameters (weights and bias). The algorithm used to compute the gradient is the \textit{back-propagation} described by
 	algorithm \ref{alg:fp} and \ref{alg:bp};
 	\item Use the knowledge of the gradient to do the next step using one of the optimizers chosen;
 \end{enumerate}
-The computation of the gradient is divided in two parts that are \textit{forward} and \textit{backward}. In the \textit{forward} phase the input matrix \textit{x} flow through the network ending in the output layer that compute the output \textit{h(x)}. This later, is compared with the desired vector values $\widehat{y}$:
+The computation of the gradient is divided in two parts that are \textit{forward} and \textit{backward}. In the \textit{forward} phase the input matrix \textit{x} flow through the network ending in the output layer that computes the output \textit{h(x)}. This later is compared with the desired vector values $\widehat{y}$:
 \begin{algorithm}[H]
 	\caption{Forward propagation}
 	\label{alg:fp}
@@ -31,7 +31,7 @@ The computation of the gradient is divided in two parts that are \textit{forward
 		\EndProcedure
 	\end{algorithmic}
 \end{algorithm}
-In our case $J$ is the \textit{Mean Squared Error} function. Since the neural network is a composition of functions the Chain Rule is used to compute the partial derivative of the weights that compose it. 
+In our case, $J$ is the \textit{Mean Squared Error} function. Since the neural network is a composition of functions the Chain Rule is used to compute the partial derivative of the weights that compose it. 
 
 \begin{algorithm}[H]
 	\caption{Backward computation}
@@ -99,16 +99,17 @@ The \textit{Loss Function} can be represented as a composition of the Euclidean 
 MSE = \frac{1}{n} \parallel h(x) - \widehat{y} \parallel_{2}^2  
 \end{equation}
 
-Moreover the train phase of a supervised machine learning algorithm can be seen as an optimization (in our case minimization) of the \textit{Loss Function} by altering the weights of the network $w$.   
-Since the purpose of neural networks is to build models that fits data, we want to minimize the \textit{Loss Function} in order to have good prediction on unseen data. This minimization process is done through optimization algorithms but to minimize the \textit{Loss Function} it must have certain properties.	
-The gradient for the MSE with respect to $x_{i}$ is defined as:
+Moreover, the training phase of a supervised machine learning algorithm can be seen as an optimization (in our case minimization) of the \textit{Loss Function} by altering the weights of the network $w$.   
+Since the purpose of neural networks is to build models that fit data, we want to minimize the \textit{Loss Function} to have a good prediction on unseen data. This minimization process is done through optimization algorithms but to minimize the \textit{Loss Function} it must have certain properties.	
+The gradient for the MSE concerning $x_{i}$ is defined as:
 \begin{equation}
 \nabla_{x_{i}}MSE(x, \hat{y})= 2*(h(x)-\hat{y})_{i} * h'(x)
 \end{equation}
 The $\nabla w $ is equal to:
-\begin{equation*}
+\begin{equation}
+\label{derivationGradient}
 \nabla w= -\frac{\partial MSE(x, \hat{y})}{\partial w} \, =\, - \sum_{i=1}^n \frac{\partial MSE(x, \hat{y})_i}{\partial w} = \sum_{i=1}^n -\frac{\partial MSE(x, \hat{y})_i}{\partial w} = \sum_{i=1}^n \nabla_{i} w
-\end{equation*}
+\end{equation}
 The $\nabla_{i} w $ for a generic \textit{t} is equal to:
 \begin{equation*}
 \nabla_{i} w_{t} \, = \, -\frac{\partial MSE(x, \hat{y})_i}{\partial w_{t}} \, = \, -\frac{\partial MSE(x, \hat{y})_i}{\partial o_{t}} * \frac{\partial o_{t}}{\partial net_{t}}*\frac{\partial net_{t}}{\partial w_{t}}
@@ -145,13 +146,24 @@ Case t = j (where j is a hidden layer):
 = \, -\frac{1}{2} * \sum_{r=j}^k\frac{ \partial((h(x) - \widehat{y})_{r}^2)}{\partial o_{r}} * \frac{\partial o_{r}}{\partial net_{r}} * \frac{\partial net_{r}}{\partial o_{j}}
 \end{equation*}
 
-\begin{equation*}
+\begin{equation}
+\label{retropagation}
 = \, \sum_{k} \delta_{k} * w_{k,j}
-\end{equation*}
+\end{equation}
 Where:
 \begin{equation*}
 \frac{\partial net_{r}}{\partial o_{j}} \, = \, \frac{\sum_{r=1}^n\partial w_{k,r}*o_{r}}{\partial o_{j}} \, = \,  w_{k,j}
 \end{equation*}
+After the derivation we can state that in the output layer $k$ the gradient is defined as: 
+\begin{equation}
+\label{partialOutput}
+\nabla w_{k} \, = \, (h(x)-\hat{y}) * h'(x) * f'(net_{k})  * o_{t-1,i}
+\end{equation}
+and in the hidden layer $j$ is defined as:
+\begin{equation}
+\label{partialHidden}
+\nabla w_{j} \, = \, (\sum_{k} \delta_{k} * w_{k,j}) * f'(net_{j}) * o_{t-1,i}
+\end{equation}
 
 \subsubsection{Loss Function properties}
 \label{LF:Properties}
@@ -161,7 +173,7 @@ In an optimization problem given $X$ any set and $f: X \rightarrow \mathbb{R}$ a
 \end{equation}
 where X is the feasible region, f is the objective function and $v(P) = f_{*}$ is the optimal value. In our case $X \subseteq \mathbb{R}^{n}$ and we want to be sure that exist an optimal solution.
 
-So we want to find any optimal solution: $x_{*} \in X  \textnormal{ such that } f(x_{*}) = f_{*}$ but this can be impossible for many reasons. For the \textit{Weierstrass} theorem to ensure that our function has an optimal solution we need that $X \subseteq \mathbb{R}^{n}$ is compact and $f$ is continuous (or lower semi-continuous) and differentiable. 
+So we want to find an optimal solution: $x_{*} \in X  \textnormal{ such that } f(x_{*}) = f_{*}$ but this can be impossible for many reasons. For the \textit{Weierstrass} theorem to ensure that our function has an optimal solution we need that $X \subseteq \mathbb{R}^{n}$ is compact and $f$ is continuous (or lower semi-continuous) and differentiable. 
 
 \begin{itemize}
 	\item \textbf{Continuity}: A function $f$ is \textit{ Lipschitz continuous} on its domain $S$ if $\exists L>0$ such that
@@ -174,14 +186,14 @@ So we want to find any optimal solution: $x_{*} \in X  \textnormal{ such that } 
 	\begin{equation}
 	h(x) = \phi_{k}(b_{k} + \sum_{j}w_{kj} \phi_{j}(b_{j} + \sum_{i}w_{ji}x))
 	\end{equation}
-	where $x$ is the input and $\phi_{i}$ is an activation function. MSE is a composition of the Euclidean norm that is quadratic, and the output function, so the composition between the used activation functions. To ensure it's Lipschitz continuity we have to restrict its domain to a bounded set, but as mentioned in section \ref{activationFunction} each layer can use a \textit{sigmoid} that bounds the output between (0,1) or \textit{tanH} that bounds the output  between (-1,+1) as activation function. Since in our case every layer's output is bounded the MSE is a continuous function.	
-	\item  \textbf{Differentiability}:  the network use \textit{sigmoid} (section \ref{sigmoid}) and \textit{hyperbolic tangent} (section \ref{tanH}) as activation functions. These functions are continuous and twice differentiable with bounded Lipschitz continuous derivative. So \textit{Mean Squared Error} is a differentiable function since the network is a composition of continuously differentiable functions. Moreover, the gradient of our loss function is Lipschitz continuous if we restrict the weights to a bounded set and we use activation functions with Lipschitz derivative. The weights of the network are initialized using a uniform distribution, taken in the range $[1,-1]$.
+	where $x$ is the input and $\phi_{i}$ is an activation function. MSE is a composition of the Euclidean norm that is quadratic, and the output function, so the composition between the used activation functions. To ensure it's Lipschitz continuity we have to restrict its domain to a bounded set, but as mentioned in \S \ref{activationFunction} each layer can use a \textit{sigmoid} that bounds the output between (0,1) or \textit{tanH} that bounds the output  between (-1,+1) as activation function. Since in our case every layer's output is bounded the MSE is a continuous function.	
+	\item  \textbf{Differentiability}:  the network use \textit{sigmoid} (\S \ref{sigmoid}) and \textit{hyperbolic tangent} (\S \ref{tanH}) as activation functions. These functions are continuous and twice differentiable with bounded Lipschitz continuous derivative. So \textit{Mean Squared Error} is a differentiable function since the network is a composition of continuously differentiable functions. Moreover, the gradient of our loss function is Lipschitz continuous if we restrict the weights to a bounded set and we use activation functions with Lipschitz derivative. Also in derivation \ref{derivationGradient}, which leads to \ref{partialOutput} and \ref{partialHidden}, we can see that the gradient is bounded because it is a composition between values and derivatives of the activation function that are bounded. The weights of the network are initialized using a uniform distribution, taken in the range $[1,-1]$.
 	\item \textbf{Convexity}: all the functions used as activated function ($sigmoid$ and $tanH$) are not convex functions. Since our MSE \textit{Loss Function} is obtained combining these not convex functions MSE is not convex. Moreover, the properties of the sigmoid and hyperbolic tangent activation function described in \S \ref{activationFunction} allow the gradient of our loss functions to be Lipschitz continuous.
 \end{itemize}
 
 \subsection{Regularization}
- In machine learning, is used to insure a trade off between accuracy in training set and complexity of the model.
- We implemented and used two type of regularization, L1 and L2. They are implemented adding at the objective Loss Function a penalty term multiplied by a lambda parameter.
+ In machine learning, is used to ensure a trade-off between accuracy in the training set and complexity of the model.
+ We implemented and used two types of regularization, L1 and L2. They are implemented adding at the objective Loss Function a penalty term multiplied by a lambda parameter.
 \begin{align*}
 	{\mathbf{W} \in \mathbb{R}^n} {\ \mathit{L}(\mathbf{W}) + \lambda\Omega(\mathbf{W})}{}{}
 	\label{eq:reg}
