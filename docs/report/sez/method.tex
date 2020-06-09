@@ -72,7 +72,7 @@ Suppose also that
 \label{assumption:momentum_descent4}
 \eta_k \to 0 \  \text{ , } \ \sum_k \eta_k = \infty
 \end{equation}
-The either $f(x_k)\to - \infty$ or else \{$f(x_k)$\} converges to a finite value and $\nabla f(x_k) \to 0$. Furthermore, every limit point of \{$x_k$\} is a stationary point of $f$.
+Then either $f(x_k)\to - \infty$ or else \{$f(x_k)$\} converges to a finite value and $\nabla f(x_k) \to 0$. Furthermore, every limit point of \{$x_k$\} is a stationary point of $f$.
 The first fundamentals observation is that the loss function that we choose is a quadratic loss function and it is two times Lipschitz continue and derivable (as we said in \ref{LF:Properties}).
 
 \subsection{Limited-memory quasi-Newton methods}
@@ -234,15 +234,7 @@ L-BFGS guarantee global convergence under specific assumption:
 
 Assumption 1 is satisfied, since our loss function f is twice continuously differentiable as we said in \ref{LF:Properties}. 
                                                        
-Assumption 2 can be satisfied by adding to computed approximated Hessian a positive diagonal matrix.
-The first method is to choose small $\epsilon^i$ such that $H^i=\nabla^2f(x^i) + \epsilon^iI\succ0$, any $\epsilon^i>-\lambda^n$ works but brings numerical issue. 
-The second method is to compute spectral decomposition of $\nabla^2f(x^i)=H\wedge H$, where $\wedge$ is a diagonal matrix whose diagonal elements are the corresponding eigenvalues, and then replace all the negative eigenvalues by a small positive number $\delta$ that is larger than machine precision so $H^i=H\overline{\wedge}H \textnormal{ with } \overline{\gamma}=max\{\lambda^i,\delta\}$. But in both cases the cost is $O(n^3)$, too large for big problem. Another method is to use trust region method, in fact $Q_{x^i}(y)$ has no minimum on $R^n$ but it does on a compact set. So 
-\begin{equation}
-x^{i+1} \in \textnormal{ argmin}\{Q_{x^i}(y):y\in \tau^i\},
-\end{equation}
-my model can be trust inside a small ball $\tau^i$ created around the point where I am right now.
-
-Although, L-BFGS computes an approximation of the inverse of the Hessian $B_{k}$ that is directly multiplied with the gradient $\nabla f_{k}$ to obtain a direction $p_{k}$ (see algorithm \ref{L-BFGSTwoLoop}), so methods that manually modify the Hessian to make it positive definite are not used. Indeed, to produce a descent direction we need to guarantee that $B_{k+1}$  will be positive definite. This is true whenever $B_{k}$ (past approximation) is positive definite, as shown in \cite{numerical} section 6.1 (subsection "Properties of the BFGS method"). Produce $B_{k+1}$ that is correctly defined is ensured whenever the initial approximation $B_{0}$ (first $B_{k}$) is positive definite and the \textit{secant equation} is satisfied for every $k$ step of the minimization process (which is our case since $B_{0}$ it is initialized as positive definite and the secant equation is checked at every iteration). 
+Assumption 2 is satisfied because L-BFGS computes an approximation of the inverse of the Hessian $B_{k}$ that is directly multiplied with the gradient $\nabla f_{k}$ to obtain a direction $p_{k}$ (see algorithm \ref{L-BFGSTwoLoop}), so methods that manually modify the Hessian to make it positive definite are not used. Indeed, to produce a descent direction we need to guarantee that $B_{k+1}$  will be positive definite. This is true whenever $B_{k}$ (past approximation) is positive definite, as shown in \cite{numerical} section 6.1 (subsection "Properties of the BFGS method"). Produce $B_{k+1}$ that is correctly defined is ensured whenever the initial approximation $B_{0}$ (first $B_{k}$) is positive definite and the \textit{secant equation} is satisfied for every $k$ step of the minimization process (which is our case since $B_{0}$ it is initialized as positive definite and the secant equation is checked at every iteration). 
 
 Also if the $\alpha_{k}$ (step length) is computed by an inexact line search that satisfies the Wolfe conditions and the first step tried has always value equal to 1, then the search direction of a quasi-Newton method approximates the Newton direction well enough so that the step size $\alpha_{k}$ will satisfy the Wolfe conditions as the iterates converge to the solution (as reported in \cite{numerical}). This present a condition that if it is satisfied produce a superlinearly convergent iteration for all $x_{k}$ in the proximity of a solution $x_{*}$. The assumption is formally proved in \cite{numerical} (Theorem 3.6): suppose that $f: \textnormal{ }\mathbb{R}^n \rightarrow \mathbb{R}$ is twice continuously differentiable. Consider the iteration $x_{k+1} = x_{k} + \alpha_{k}d_{k}$, where $d_{k}$ is a descent direction and $\alpha_{k}$ satisfies the Wolfe conditions with $c_{1} <= \frac{1}{2}$ (which is our case). If the sequence $\{ x_{k} \}$ converges to a point $x_{*}$ such that $\nabla f(x_{*}) = 0$ and $\nabla^2f(x_{*})$ is positive definite, and if the search direction satisfies: 
 \begin{equation}
