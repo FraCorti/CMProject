@@ -55,14 +55,14 @@ In our case, $J$ is the \textit{Mean Squared Error} function. Since the neural n
 \end{algorithm}
 \subsection{Activation function}
 \label{activationFunction}
-The activation function of a node defines the output of that node given an input or set of inputs. 
-Properties of this function can be:
+The activation function of a node defines its output given an input or a set of inputs. 
+Properties of this function are:
 \begin{itemize}
 	\item Nonlinear;
 	\item Range;
 	\item Continuously differentiable;
 	\item Monotonic;
-	\item Smooth functions with a monotonic derivative;
+	\item Smooth functions;
 	\item Approximates identity near the origin;
 \end{itemize}
 
@@ -94,7 +94,7 @@ The \textit{Loss Function} is a function used to evaluate the performance of a m
 \begin{equation}
 MSE = \frac{1}{n} \sum_{i=1}^n (h(x) - \widehat{y})_{i}^2
 \end{equation}
-where $n$ represents the number of sample input data we passed into in the model. 
+where $n$ represents the number of sample input data we passed into the model. 
 The \textit{Loss Function} can be represented as a composition of the Euclidean norm and the quadratic function
 \begin{equation}
 MSE = \frac{1}{n} \parallel h(x) - \widehat{y} \parallel_{2}^2  
@@ -129,7 +129,7 @@ We define:
 \begin{equation*}
 \delta_{t} \,=\, -\frac{\partial MSE(x, \hat{y})_i}{\partial o_{t}} * \frac{\partial o_{t}}{\partial net_{t}}
 \end{equation*}
-Now we have to study two different case for $\frac{\partial MSE(x, \hat{y})_i}{\partial o_{t}}$, when the t is the output layer and when t is a hidden layer.
+Now we have to study two different case for $\frac{\partial MSE(x, \hat{y})_i}{\partial o_{t}}$, when t is the output layer and when t is a hidden layer.
 \\
 Case t = k (where k is the last layer):
 \begin{equation*}
@@ -172,12 +172,12 @@ In an optimization problem given $X$ any set and $f: X \rightarrow \mathbb{R}$ a
 \begin{equation}
 (P) \quad f_{*} = min \{f(x) : x \in X\}
 \end{equation}
-where X is the feasible region, f is the objective function and $v(P) = f_{*}$ is the optimal value. In our case $X \subseteq \mathbb{R}^{n}$ and we want to be sure that exist an optimal solution.
+where X is the feasible region, f is the objective function and $v(P) = f_{*}$ is the optimal value. In our case $X \subseteq \mathbb{R}^{n}$ and we want to be sure that exists an optimal solution.
 
 So we want to find an optimal solution: $x_{*} \in X  \textnormal{ such that } f(x_{*}) = f_{*}$ but this can be impossible for many reasons. For the \textit{Bolzano-Weierstrass} theorem to ensure that our function has an optimal solution we need that $X \subseteq \mathbb{R}^{n}$ is compact and $f$ is continuous (or lower semi-continuous) and differentiable. 
 
 \begin{itemize}
-	\item \textbf{Continuity}: A function $f$ is \textit{ Lipschitz continuous} on its domain $S$ if $\exists L>0$ such that
+	\item \textbf{Continuity}: A function $f$ is \textit{Lipschitz continuous} on its domain $S$ if $\exists L>0$ such that
 	\begin{equation}
 	|f(x)-f(y)| \leq L\parallel x-y\parallel \quad \forall x,y \in S,  
 	\end{equation} 
@@ -192,12 +192,12 @@ So we want to find an optimal solution: $x_{*} \in X  \textnormal{ such that } f
 	\\
 	In our case MSE is a composition of the Euclidean norm, that is quadratic and Lipschitz continuous function, and the output function, that is the composition between the used activation functions that are Lipschitz continuous. To ensure that the Theorem 12.6 of \cite{MFD} is valid in our case, the computed value of the output function have to live in a bounded set. As mentioned in \S \ref{activationFunction} each layer can use a \textit{sigmoid} that bounds the output between (0,1) or a \textit{tanH} that bounds the output  between (-1,+1) as the activation function. Since every layer's output is bounded and the Euclidean norm receive an input in a bounded interval then for Theorem 12.6 of \cite{MFD} the MSE is a Lipschitz continuous function.	
 	\item  \textbf{Differentiability}:  the network uses \textit{sigmoid} (\S \ref{sigmoid}) and \textit{hyperbolic tangent} (\S \ref{tanH}) as activation functions. These functions are continuous and twice differentiable with bounded Lipschitz continuous derivative. So \textit{Mean Squared Error} is a differentiable function since the network is a composition of continuously differentiable functions. 
-   Moreover, in our case the gradient has to be Lipschitz continuous for the Momentum Descent Approach, instead for the L-BFGS and Proximal Bundle Method we do not need this property to converge to local minima. This implies the following discussion. The Theorem 12.4 of \cite{MFD} states that if $ f_{1}$ and $ f_{2}$ are Lipschitz continuous on a bounded interval I then $ f_{1}*f_{2}$ is Lipschitz continuous on I. For this theorem the gradient of our loss function is Lipschitz continuous if we use only activation functions with Lipschitz derivative and we restrict the weights to a bounded set. Also in derivation \ref{derivationGradient}, which leads to \ref{partialOutput} and \ref{partialHidden}, we can see that the gradient is bounded if the weights are restricted in a bounded set because it is a composition between values (weights and activation function output) and derivatives of the activation function that are bounded. The weights of the network are initialized using a uniform distribution, taken in the range $[1,-1]$. We can observe that the weights are in a compact set if the algorithm guarantees a monotone sequence of objective values (i.e. $f(x_{i})$) when it is converging to local minima. The Momentum Descent Approach produces a monotone sequence of objective values when the step length (also known as learning rate) is sufficiently small (this is verified in \cite{numerical} \S 2.2 paragraph "Search directions for line search methods"). We define the objective value as $f(w) = L(w) + \lambda || w || $ where $L(w)$ is a non negative function, $\lambda > 0$ and  $|| w ||$ is the regularization term. We can state that $f(w_{0}) = L(w_{0}) + \lambda || w_{0} || $ where $w_{0}$ is the initial point. We can assert that if the algorithm guarantees a monotonic sequence of objective values (that is our case since we use Momentum Descent Approach with a sufficiently small step length) then $f(w_{i}) = L(w_{i}) + \lambda || w_{i} || \leq f(w_{0}) \, \forall i$ . It follows that $|| w_{i} || \leq  f(w_{0}) - L(w_{i}) \leq f(w_{0})$ because $L(w_{i}) \geq 0$. For this reason $w_{i}$ lives in a compact set.  
-	\item \textbf{Convexity}: all the functions used as activated function ($sigmoid$ and $tanH$) are not convex functions. Since our MSE \textit{Loss Function} is obtained combining these not convex functions MSE is not convex. Moreover, the properties of the sigmoid and hyperbolic tangent activation function described in \S \ref{activationFunction} allow the gradient of our loss functions to be Lipschitz continuous.
+   Moreover, in our case the gradient has to be Lipschitz continuous for the Momentum Descent Approach, instead for the L-BFGS and Proximal Bundle Method we do not need this property to converge to local minima. This implies the following discussion. The Theorem 12.4 of \cite{MFD} states that if $ f_{1}$ and $ f_{2}$ are Lipschitz continuous on a bounded interval I then $ f_{1}*f_{2}$ is Lipschitz continuous on I. For this theorem the gradient of our loss function is Lipschitz continuous if we use only activation functions with Lipschitz derivative and we restrict the weights to a bounded set. Also in derivation \ref{derivationGradient}, which leads to \ref{partialOutput} and \ref{partialHidden}, we can see that the gradient is bounded if the weights are restricted in a bounded set because it is a composition between values (weights and activation function output) and derivatives of the activation function that are bounded. The weights of the network are initialized using a uniform distribution, taken in the range $[1,-1]$. We can observe that the weights are in a compact set if the algorithm guarantees a monotone sequence of objective values (i.e. $f(x_{i})$) when it is converging to local minima. The Momentum Descent Approach produces a monotone sequence of objective values when the step length (also known as learning rate) is sufficiently small (this is verified in \cite{numerical} \S 2.2 paragraph "Search directions for line search methods"). We define the objective value as $f(w) = Loss(w) + \lambda || w || $ where $Loss(w)$ is a non negative function, $\lambda > 0$ and  $|| w ||$ is the regularization term. We can state that $f(w_{0}) = Loss(w_{0}) + \lambda || w_{0} || $ where $w_{0}$ is the initial point. We can assert that if the algorithm guarantees a monotonic sequence of objective values (that is our case since we use Momentum Descent Approach with a sufficiently small step length) then $f(w_{i}) = Loss(w_{i}) + \lambda || w_{i} || \leq f(w_{0}) \, \forall i$ . It follows that $|| w_{i} || \leq  f(w_{0}) - Loss(w_{i}) \leq f(w_{0})$ because $Loss(w_{i}) \geq 0$. For this reason $w_{i}$ lives in a compact set.  
+	\item \textbf{Convexity}: all the functions used as activation function ($sigmoid$ and $tanH$) are not convex functions. Since our MSE (\textit{Loss Function}) is obtained combining these not convex functions MSE is not convex. 
 \end{itemize}
 
 \subsection{Regularization}
- In machine learning, is used to ensure a trade-off between accuracy in the training set and complexity of the model.
+ In machine learning, the regularization is used to ensure a trade-off between accuracy in the training set and complexity of the model.
  We implemented and used two types of regularization, L1 and L2. They are implemented adding at the objective Loss Function a penalty term multiplied by a lambda parameter.
 \begin{align*}
 	{\mathbf{W} \in \mathbb{R}^n} {\ \mathit{L}(\mathbf{W}) + \lambda\Omega(\mathbf{W})}{}{}
@@ -205,10 +205,10 @@ So we want to find an optimal solution: $x_{*} \in X  \textnormal{ such that } f
 \end{align*}
  
 \paragraph*{L1 regularization}
-Usually named as Lasso regression it was defined as follow:
+Usually named as Lasso regression, defined as:
 $\Omega(\textbf{W}) = \sum_{i=1}^{k} |w_i| = \|\textbf{W}\|_1$.
 \paragraph*{L2 regularization}
-Usually named as Ridge regression it was defined as follow:
+Usually named as Ridge regression, defined as:
 $\Omega(\textbf{W}) = \sum_{i=1}^{k}w_i^2 = \|\textbf{W}\|_2^2$. 
  
  
