@@ -387,7 +387,6 @@ But in our case, since \textit{f} is non-convex, $\alpha_{j}^k$ can be replaced 
 \end{algorithm}
 
 
-
 \subsubsection{Algorithm convergence}
 \label{PBM-Convergence}
 The convergence of the \textit{Bundle method} is guarantee under specific assumptions as shown in theorem 7.16 in \cite{NonOpt}:
@@ -448,3 +447,6 @@ Where $f^{\circ}(x;y)$ is the \textit{Clarke’s} generalized directional deriva
 f^{\circ}(x,y)=\lim_{z\rightarrow x,t\downarrow 0}\frac{f(z+t*d)-f(z)}{t}
 \end{equation}
 We do not know if our loss function is $f^{\circ}$-pseudoconvex  and weakly semismooth. We think that the properties defined in section \ref{LF:Properties} can help to make it so.
+
+\subsubsection{Quadratic solver}
+For the quadratic problem, we decided to use Gurobi solver \cite{Gurobi}. It uses the \textit{Barrier Method} to solve the quadratic problem. We decided to use it because it seemed well developed, fast and properly explained. In the aftermath, we think that it was the right choice because we have tried some other optimizer and we think that, after learning the library it is really simple to code our quadratic problem.
