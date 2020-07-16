@@ -469,8 +469,8 @@ Where $f^{\circ}(x;y)$ is the \textit{Clarke’s} generalized directional deriva
 f^{\circ}(x,y)=\lim_{z\rightarrow x,t\downarrow 0}\frac{f(z+t*d)-f(z)}{t}
 \end{equation}
 
-We know that our function is globally and locally Lipschitz continuous and this is surely useful to prove that our loss function is $f^{\circ}$-pseudoconvex and weakly semismooth
+We know that our function is globally and locally Lipschitz continuous and this is surely useful to prove that our loss function is $f^{\circ}$-pseudoconvex and weakly semismooth.
 At the moment, our knowledge does not allow us to face an analysis to prove it. But, we think that the properties defined in section \ref{LF:Properties} can help to make it so. 
 
 \subsubsection{Quadratic solver}
-For the quadratic problem, we decided to use Gurobi solver \cite{Gurobi}. It uses the \textit{Barrier Method} to solve the quadratic problem. We decided to use it because it seemed well developed, fast and properly explained. In the aftermath, we think that it was the right choice because we have tried some other optimizer and we think that, after learning the library it is quite simple to code our quadratic problem.
+For the quadratic problem, we decided to use Gurobi solver \cite{Gurobi}. It uses the \textit{Barrier Method} to solve the quadratic problem. We decided to use it because it seemed well developed, fast and properly explained. In the aftermath, we think that it was the right choice because we have tried some other optimizers and we think that, after learning its library it is quite simple to model our quadratic problem.
