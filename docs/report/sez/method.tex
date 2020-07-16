@@ -440,28 +440,12 @@ As mentioned in \cite{PaperBM} and demonstrated by Y. Du and A. Ruszczyński in 
 
 The convergence theorem does not apply to our case, because our loss function is not convex. We think that this would be relevant in practice, but due to the \textit{Lipschitz continuity} of our loss function we suppose that the method can converge. 
 
-In this direction, section 4: "Convergence Analysis" of \cite{PBM} helped us to understand that under specific assumption and constraint, the proximal bundle method for non convex function surely converge. The assumptions are:
+In this direction, section 4: "Convergence Analysis" of \cite{PBM} helped us to understand that under specific assumption and constraint, the proximal bundle method for non convex function surely converge. In \cite{PBM} are defined the conditions for the convergence but it takes in consideration constrained problems. For this reason, we report the simplified assumption for unconstrained problems:
 \begin{enumerate} \label{convergence:PBM}
-	\item The function $f$ is $f^{\circ}$-pseudoconvex  and weakly semismooth;
-	\item The constraint functions in $C$ are $f^{\circ}$-pseudoconvex and weakly semismooth;
-	\item The constraint qualification 
-	\begin{equation}
-	\label{CQ}
-	C^{\leq}(x)\subseteq K_{s}(x)
-	\end{equation}
-	where:
-	\begin{equation}
-	\label{C}
-	C(x)= \cup_{j\in B} g_{j}(x), \quad {B}=\{(x,f(x), g \in \partial f(x))\}
-	\end{equation}
-	and 
-	\begin{equation}
-	 K_{S}(x) = \{d \in \rm I\!R^{n} | \textnormal{ there} \textnormal{ exist } t_i \downarrow 0 \textnormal{ and } d_{i} \to d \textnormal{ with } (x + t_i*d_i) \in B\}
-	\end{equation}
-	 is valid.
+	\item The function $f$ is $f^{\circ}$-pseudoconvex;
+	\item The function $f$ is weakly semismooth;
 \end{enumerate}
-The set of all constraints $C^{\leq}$(x) is the set C defined in \ref{C} in the canonical form $\leq$. The constraints in different forms have to be converted to the canonical form that permits only $\leq$ constraints.
-\\
+
 The definition of \textit{$f^{\circ}$-pseudoconvex} and \textit{weakly semismooth} are taken by chapter 2 of \cite{PBM}.\\
 A function $f : \mathbb{R}^n \rightarrow \mathbb{R}$ is weakly semismooth if the classical directional derivative
 \begin{equation}
@@ -481,7 +465,9 @@ Where $f^{\circ}(x;y)$ is the \textit{Clarke’s} generalized directional deriva
 \begin{equation}
 f^{\circ}(x,y)=\lim_{z\rightarrow x,t\downarrow 0}\frac{f(z+t*d)-f(z)}{t}
 \end{equation}
-We do not know if our loss function is $f^{\circ}$-pseudoconvex  and weakly semismooth. We think that the properties defined in section \ref{LF:Properties} can help to make it so.
+
+We know that our function is globally and locally Lipschitz continuous and this is surely useful to prove that our loss function is $f^{\circ}$-pseudoconvex and weakly semismooth
+At the moment, our knowledge does not allow us to face an analysis to prove it. But, we think that the properties defined in section \ref{LF:Properties} can help to make it so. 
 
 \subsubsection{Quadratic solver}
 For the quadratic problem, we decided to use Gurobi solver \cite{Gurobi}. It uses the \textit{Barrier Method} to solve the quadratic problem. We decided to use it because it seemed well developed, fast and properly explained. In the aftermath, we think that it was the right choice because we have tried some other optimizer and we think that, after learning the library it is really simple to code our quadratic problem.
