@@ -26,6 +26,9 @@ The update rule for the velocity vector \textbf{v} is the following:
 \textbf{v}_k = \alpha\textbf{v}_{k-1} + \eta\nabla\textit{L}(\textbf{W}_k + \alpha\textbf{v}_{k-1}).
 \end{equation}
 
+Also, there exists a variant of the Nesterov momentum that guarantees a monotonic sequence of objective values and is named Nesterov Momentum Approach with restart, for more information we refer you to the paper \cite{NWR}. This property could be useful to state that the gradient is Lipschitz continuous, but we did not have implemented it. 
+
+
 \subsubsection{Algorithm}
 \begin{algorithm}[H]
 	\caption{Momentum Descent Algorithm. The learning rate $\eta$, the $\alpha$ term and the maximum number of iterations are given.}
@@ -74,6 +77,22 @@ Suppose also that
 \end{equation}
 Then either $f(x_k)\to - \infty$ or else \{$f(x_k)$\} converges to a finite value and $\nabla f(x_k) \to 0$. Furthermore, every limit point of \{$x_k$\} is a stationary point of $f$.
 The first fundamentals observation is that the loss function that we choose is a quadratic and it is two times Lipschitz continue and derivable (as we said in \ref{LF:Properties}).
+
+As stated in \cite{numerical} in Chapter 3 the Armijo-Wolfe conditions are defined as:
+\begin{equation}
+\label{armijo}
+f(x_k + \alpha_kp_k ) \leq f (x_k ) + c_1 \alpha_k \nabla f_k^T p_k,
+\end{equation}
+\begin{equation}
+\label{wolfe}
+\nabla f(x_k + \alpha_{k} p_k )^T p_k \geq c_2 \nabla f_k^T p_k ,
+\end{equation}
+
+Also, our implementation does not use a line search to decide the step length and this means that the Bertsekas results are not valid in our case.
+
+Indeed, we have implemented a grid search for the choice of the fixed step length. Grid search is the traditional method of hyperparameters optimization. It simply makes a complete search over a given subset of the hyperparameters space of the training algorithm. In our case we used as hyperparameters the step length and the momentum rate. Grid search suffers from high dimensional spaces, but in our case the dimensional space generated from the two hyperparameters is not too high. In theory you have to tests all possible permutation combinations of hyperparameters of given Machine Learning algorithm, but in practice usually you use to create different size of grid gradually more fine-grained. 
+
+We cannot state anything a priori regarding the convergence of the Nesterov Momentum Method applied to a non-convex problem with fixed step size found throughout the grid search method. But after analysing the results of the experimental phase, we can state that in our problems Nesterov Descent Approach have a linear convergence.
 
 \subsection{Limited-memory quasi-Newton methods}
 Limited-memory Quasi-Newton methods are useful for solving large unconstrained optimization problems in which Hessian matrices cannot be computed at a reasonable cost. More formally to minimize a function using the second order information, we create a quadratic model that approximate the function at the current $x_{k}$:
@@ -168,13 +187,14 @@ is satisfied. This is possible if $s_{k}$ and $y_{k}$ satisfy the \textit{curvat
 s_{k}^T y_{k}>0.
 \end{equation}
 The \textit{curvature condition} is satisfied when $f$ is strongly convex but for nonconvex functions we need to restrict the step $\alpha_{k}$ used in the line search procedure to guarantee the satisfiability of it.
-Moreover the \textit{curvature condition} is satisfied in the line search if we impose Wolfe conditions
-\begin{equation}
-f(x_k + \alpha_kp_k ) \leq f (x_k ) + c_1 \alpha_k \nabla f_k^T p_k,
-\end{equation}
-\begin{equation}
-\nabla f(x_k + \alpha_{k} p_k )^T p_k \geq c_2 \nabla f_k^T p_k ,
-\end{equation}
+Moreover the \textit{curvature condition} is satisfied in the line search if we impose Wolfe conditions \ref{armijo} and \ref{wolfe}
+
+%\begin{equation}
+%(x_k + \alpha_kp_k ) \leq f (x_k ) + c_1 \alpha_k \nabla %f_k^T p_k,
+%\end{equation}
+%\begin{equation}
+%\nabla f(x_k + \alpha_{k} p_k )^T p_k \geq c_2 \nabla %f_k^T p_k ,
+%\end{equation}
 or strong Wolfe conditions
 \begin{equation}
 f(x_k + \alpha_kp_k ) \leq f (x_k ) + c_1 \alpha_k \nabla f_k^T p_k,
