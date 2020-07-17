@@ -185,6 +185,7 @@ B_{k+1}y_{k}=s_{k}
 \end{equation}
 is satisfied. This is possible if $s_{k}$ and $y_{k}$ satisfy the \textit{curvature condition} 
 \begin{equation}
+\label{eq:curvature-condition}
 s_{k}^T y_{k}>0.
 \end{equation}
 The \textit{curvature condition} is satisfied when $f$ is strongly convex but for nonconvex functions we need to restrict the step $\alpha_{k}$ used in the line search procedure to guarantee the satisfiability of it.
@@ -243,6 +244,8 @@ Limited-memory variants  of  the  quasi-Newton  approach use  Hessian  approxima
 \end{algorithm}
 
 Each iteration can be performed at cost of $O(mn)$ arithmetic operations, where $m$ is the number of steps stored in memory.
+
+Our implementation uses the update rule of BFGS-Level described in \cite{PaperL-BFGS-NeuralNetwork} chapter 3. The main idea is to avoid the second-order interactions between weights of different levels and consider a separate approximate Hessian matrix (in our case defined as $B_{k}$) for each level of the network. As written in \cite{PaperL-BFGS-NeuralNetwork} this approach reduces considerably the total size of the matrix to be computed, since the Hessian matrix of a neural network is sparse with respect to the output layer because there are no interactions between output neurons.
 
 \subsubsection{Algorithm Convergence}
 \label{L-BFGSConv}
@@ -473,4 +476,4 @@ We know that our function is globally and locally Lipschitz continuous and this 
 At the moment, our knowledge does not allow us to face an analysis to prove it. But, we think that the properties defined in section \ref{LF:Properties} can help to make it so. 
 
 \subsubsection{Quadratic solver}
-For the quadratic problem, we decided to use Gurobi solver \cite{Gurobi}. It uses the \textit{Barrier Method} to solve the quadratic problem. We decided to use it because it seemed well developed, fast and properly explained. In the aftermath, we think that it was the right choice because we have tried some other optimizers and we think that, after learning its library it is quite simple to model our quadratic problem.
+For the quadratic problem, we decided to use Gurobi solver \cite{Gurobi}. It uses the \textit{Barrier Method} to solve the quadratic problem. We decided to use it because it seemed well developed, fast and properly explained, also it exposes a well written C++ API which was appropriate for our project. In the aftermath, we think that it was the right choice because we have tried some other optimizers and we believe that, after learning its library, it was quite simple to model our quadratic problem.
