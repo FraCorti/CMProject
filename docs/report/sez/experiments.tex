@@ -10,7 +10,7 @@ To test the correctness of the algorithms we used the MONK's datasets. To use th
 
 
 \subsection{MONKS} 
-To obtain a deterministic behaviour of the algorithms, we used the entire MONKS datasets as the input of the network. We obtained three matrices that had dimensions: 124x18 (Monk 1), 169x17 (Monk 2), and 122x17 (Monk 3). To compare the behaviour of the algorithms, we collected three parameters for every epoch: the error of the network (in our case MSE), the norm of the gradient and the computational time spent on completing the epoch. These three parameters were used to make the convergence speed, residual and computational time plots shown below. For better visualization of the plots an enlargement of each of them is shown aside. Before showing the plots a table with all the configurations used and the values obtained are shown.
+To obtain a deterministic behaviour of the algorithms, we used the entire MONKS datasets as the input of the network. We obtained three matrices that had dimensions: 124x18 (Monk 1), 169x17 (Monk 2), and 122x17 (Monk 3). To compare the behaviour of the algorithms, we collected three parameters for every epoch: the error of the network (in our case MSE), the norm of the gradient and the computational time spent on completing the epoch. These three parameters were used to make the convergence speed, residual and computational time plots shown below. For better visualization of the plots an enlargement of each of them is shown aside. Before showing the plots a table with all the configurations used and the values obtained is shown.
 
 \begin{center}
 	\small\addtolength{\tabcolsep}{-3pt}
@@ -79,11 +79,11 @@ The residual values results we obtained from the algorithms respect what we expe
 \begin{figure}[H]
 	\centering
 	\begin{minipage}[t]{0.5\linewidth}
-		\includegraphics[width=\linewidth]{data/Comparison/Monk1/Monk1_R_Comparison_standard.png}
+		\includegraphics[width=\linewidth]{data/Comparison/Monk1/Monk1_R_Comparison_log_standard.png}
 		%\subcaption{MSE}
 	\end{minipage}%
 	\begin{minipage}[t]{0.5\linewidth}
-		\includegraphics[width=\linewidth]{data/Comparison/Monk1/Monk1_R_Comparison_zoom.png}
+		\includegraphics[width=\linewidth]{data/Comparison/Monk1/Monk1_R_Comparison_log_zoom.png}
 		%\subcaption{Accuracy}
 	\end{minipage}
 	\caption{Residual comparison Monk 1}
@@ -92,11 +92,11 @@ The residual values results we obtained from the algorithms respect what we expe
 \begin{figure}[H]
 	\centering
 	\begin{minipage}[t]{0.5\linewidth}
-		\includegraphics[width=\linewidth]{data/Comparison/Monk2/Monk2_R_Comparison_standard.png}
+		\includegraphics[width=\linewidth]{data/Comparison/Monk2/Monk2_R_Comparison_log_standard.png}
 		%\subcaption{MSE}
 	\end{minipage}%
 	\begin{minipage}[t]{0.5\linewidth}
-		\includegraphics[width=\linewidth]{data/Comparison/Monk2/Monk2_R_Comparison_zoom.png}
+		\includegraphics[width=\linewidth]{data/Comparison/Monk2/Monk2_R_Comparison_log_zoom.png}
 		%\subcaption{Accuracy}
 	\end{minipage}
 	\caption{Residual comparison Monk 2}
@@ -105,11 +105,11 @@ The residual values results we obtained from the algorithms respect what we expe
 \begin{figure}[H]
 	\centering
 	\begin{minipage}[t]{0.5\linewidth}
-		\includegraphics[width=\linewidth]{data/Comparison/Monk3/Monk3_R_Comparison_standard.png}
+		\includegraphics[width=\linewidth]{data/Comparison/Monk3/Monk3_R_Comparison_log_standard.png}
 		%\subcaption{MSE}
 	\end{minipage}%
 	\begin{minipage}[t]{0.5\linewidth}
-		\includegraphics[width=\linewidth]{data/Comparison/Monk3/Monk3_R_Comparison_zoom.png}
+		\includegraphics[width=\linewidth]{data/Comparison/Monk3/Monk3_R_Comparison_log_zoom.png}
 		%\subcaption{Accuracy}
 	\end{minipage}
 	\caption{Residual comparison Monk 3}
