@@ -168,6 +168,7 @@ set fit brief errorvariables nocovariancevariables errorscaling prescale nowrap 
 set key right top
 set key font ",14"
 set tics font ", 13"
+set logscale y 10
 f(x) = x
 GNUTERM = "qt"
 x = 0.0
