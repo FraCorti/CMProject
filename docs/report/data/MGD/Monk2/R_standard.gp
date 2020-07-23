@@ -115,7 +115,7 @@ set cbtics  norangelimit autofreq
 set rtics axis in scale 1,0.5 nomirror norotate  autojustify
 set rtics  norangelimit autofreq 
 unset ttics
-set title "Residual Monk 1" 
+set title "Residual Monk 2" 
 set title  font ",16" norotate
 set timestamp bottom 
 set timestamp "" 
@@ -173,5 +173,5 @@ GNUTERM = "qt"
 x = 0.0
 GPFUN_f = "f(x) = x"
 # add smooth bezier to the end to have curves more smooth
-plot "NM/MGD_0_Monk1_Results.txt" using 1 w lines title "0.0 momentum" lt rgb "red" lw 2, "NM/MGD_0.3_Monk1_Results.txt" using 1 w lines title "0.3 momentum" lt rgb "blue" lw 2, "NM/MGD_0.6_Monk1_Results.txt" using 1 w lines title "0.6 momentum" lt rgb "black" lw 2, "NM/MGD_0.9_Monk1_Results.txt" using 1 w lines title "0.9 momentum" lt rgb "#005A32" lw 2
+plot "M/MGD_0_Monk2_Results.txt" using 1 w lines title "0.0 momentum" lt rgb "red" lw 2, "M/MGD_0.3_Monk2_Results.txt" using 1 w lines title "0.3 momentum" lt rgb "blue" lw 2, "M/MGD_0.6_Monk2_Results.txt" using 1 w lines title "0.6 momentum" lt rgb "black" lw 2, "M/MGD_0.9_Monk2_Results.txt" using 1 w lines title "0.9 momentum" lt rgb "#005A32" lw 2
 #    EOF

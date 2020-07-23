@@ -106,13 +106,13 @@ int main() {
   cupNetwork.Add(firstLayer);
   cupNetwork.Add(lastLayer);
   cupNetwork.SetRegularizer("L2");//L1 L2
-  //Optimizer *opt = new LBFGS(2);
+  Optimizer *opt = new LBFGS(2);
   //Optimizer *opt = new GradientDescent();//LBFGS gradientDescent proximalBundleMethod
-  Optimizer *opt = new ProximalBundleMethod();
+  //Optimizer *opt = new ProximalBundleMethod();
   cupNetwork.SetOptimizer(opt);//LBFGS gradientDescent proximalBundleMethod
   cupNetwork.SetNesterov(false);
 
-  cupNetwork.Init(+1e-2, -1e-2, 69);
+  cupNetwork.Init(+5, -5);
   std::cout << " Residual " << "Convergence speed " << "Computational time" << std::endl;
   cupNetwork.Train(trainingData,
                    trainingLabels,

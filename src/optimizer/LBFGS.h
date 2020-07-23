@@ -21,6 +21,8 @@ class LBFGS : public Optimizer {
   double c1;
   double c2;
   unsigned long storageSize;
+  std::default_random_engine re;
+
   double lineSearchBacktracking(Network *currNet,
                                 const double weightDecay, const double momentum);
 
@@ -53,7 +55,7 @@ class LBFGS : public Optimizer {
 
  public:
   ~LBFGS() override = default;
-  LBFGS(const int nLayer, const int storageSize = 15);
+  LBFGS(const int nLayer, const int storageSize = 15, const int seed = 0);
   void OptimizeBackward(Network *currNet,
                         const arma::mat &&partialDerivativeOutput,
                         const double momentum = 0.0) override;
