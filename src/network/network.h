@@ -73,6 +73,7 @@ class Network {
   const Regularizer *GetRegularizer();
   void Clear();
   std::vector<Layer> &GetNet();
+  void PrintNetwork();
   double LineSearchEvaluate(const double stepSize, const double weightDecay, const double momentum);
 };
 // TODO: Salvataggio e load (xml? https://www.boost.org/doc/libs/1_71_0/libs/serialization/doc/index.html);

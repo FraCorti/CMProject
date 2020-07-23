@@ -213,3 +213,6 @@ int Layer::GetBiasRow() const {
 void Layer::SetRegularizationMatrix(const arma::mat &&regularizationMatrix_) {
   regularizationMatrix = regularizationMatrix_;
 }
+void Layer::PrintWeight() {
+  weight.print();
+}

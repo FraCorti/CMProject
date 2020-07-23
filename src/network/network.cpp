@@ -341,9 +341,7 @@ std::vector<Layer> &Network::GetNet() {
  *
  */
 void Network::SetOptimizer(Optimizer *optimizer_) {
-
   optimizer = optimizer_;
-
 }
 /***
  *
@@ -411,4 +409,10 @@ bool Network::GetNesterov() {
 }
 Network::Network() {
   optimizer = new GradientDescent();
+}
+
+void Network::PrintNetwork() {
+  for (Layer &currentLayer : net) {
+    currentLayer.PrintWeight();
+  }
 }
