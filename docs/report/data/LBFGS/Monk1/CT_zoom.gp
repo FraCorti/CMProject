@@ -173,5 +173,5 @@ GNUTERM = "qt"
 x = 0.0
 GPFUN_f = "f(x) = x"
 # add smooth bezier to the end to have curves more smooth
-plot [:20][] "LBFGS_0.0_Monk1_Results.txt" using 3:1 w lines title "0.0 L2" lt rgb "red" lw 2, "LBFGS_0.0003_Monk1_Results.txt" using 3:1 w lines title "0.0003 L2" lt rgb "black" lw 2, "LBFGS_0.0005_Monk1_Results.txt" using 3:1 w lines title "0.0005 L2" lt rgb "#005A32" lw 2, "LBFGS_0.0007_Monk1_Results.txt" using 3:1 w lines title "0.0007 L2" lt rgb "#4f127b" lw 2
+plot [:1500][] "LBFGS_0.0_Monk1_Results.txt" using 3:1 w lines title "0.0 L2" lt rgb "red" lw 2, "LBFGS_0.0003_Monk1_Results.txt" using 3:1 w lines title "0.0003 L2" lt rgb "black" lw 2, "LBFGS_0.0005_Monk1_Results.txt" using 3:1 w lines title "0.0005 L2" lt rgb "#005A32" lw 2, "LBFGS_0.0007_Monk1_Results.txt" using 3:1 w lines title "0.0007 L2" lt rgb "#4f127b" lw 2
 #    EOF
