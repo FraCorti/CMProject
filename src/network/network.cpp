@@ -94,7 +94,7 @@ double Network::Train(arma::mat validationSet, arma::mat validationLabelSet, arm
 
     arma::Col<double> columnGradients;
     for (Layer &currentLayer : net) {
-      //TODO: Per LBFGS usare GetDirection()
+      //! For L-BFGS you can also use GetDirection() to obtain better estimate
       arma::mat gradientWeight = currentLayer.GetGradientWeight();
       arma::mat gradientBias = currentLayer.GetGradientBias();
       //! Concatenate weight and bias gradients
@@ -389,7 +389,7 @@ void Network::GetBatchError(arma::mat &&batchError_) {
 }
 void Network::SetRegularizer(std::string regularizer_) {
   if (regularizer_
-      == "L1") { //TODO: mettere funzione che fa diverntare tutti i caratteri piccoli (.down()??)
+      == "L1") {
     regularizer = new L1();
   } else if (regularizer_ == "L2") {
     regularizer = new L2();

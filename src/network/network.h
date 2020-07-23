@@ -25,7 +25,7 @@ class Network {
   arma::mat *input;
   arma::mat *inputLabel;
   //! Saving error for optimizer
-  arma::Mat<double> *batchError;  // TODO: is this needed?
+  arma::Mat<double> *batchError;
   Regularizer *regularizer;
   bool nesterov = true;
   void train(const arma::mat &&trainingData,
@@ -76,6 +76,5 @@ class Network {
   void PrintNetwork();
   double LineSearchEvaluate(const double stepSize, const double weightDecay, const double momentum);
 };
-// TODO: Salvataggio e load (xml? https://www.boost.org/doc/libs/1_71_0/libs/serialization/doc/index.html);
 #endif //MLPROJECT_SRC_NETWORK_H_
 

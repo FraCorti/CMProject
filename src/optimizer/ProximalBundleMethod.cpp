@@ -302,8 +302,6 @@ void ProximalBundleMethod::init(Network *currNet, const arma::mat &&partialDeriv
   //! Unflat the network weights and retrieve the error with Evaluate()
   currNet->Evaluate(std::move(fc), 0); // fc
 
-
-  //! TODO: Dare un nome ad f
   F = arma::join_cols(F, fc - arma::dot(currentSubgradient, columnParameters));
   // subgrad locality measure
   S = arma::mat(1, 1, arma::fill::zeros);

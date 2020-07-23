@@ -84,7 +84,6 @@ double LBFGS::lineSearch(Network *currNetwork, const double weightDecay, const d
   // Set the seed to have repeatable executions
   //std::default_random_engine re(350);
   std::default_random_engine re;
-
   double currentAlpha = unif(re);
 
   //! Compute \phi'(0) and check the descent direction of the network
@@ -171,7 +170,8 @@ double LBFGS::zoom(Network *currNetwork,
   std::default_random_engine re;
   //std::default_random_engine re();
 
-  while (i < 100) { //TODO: fix condizioni while
+  //! limit number of iteration to obtain a step length in a finite time
+  while (i < 100) {
 
     //! Compute \phi(\alpha_{j})
     Network lineSearchNetworkAlphaJ(*currNetwork);
@@ -343,8 +343,8 @@ void LBFGS::OptimizeUpdateWeight(Network *currNetwork, const double learningRate
     indexLayer++;
   }
 }
-LBFGS::LBFGS(const int nLayer) // TODO: capire come settare lo storage size
-    : pastCurvatureLayer(nLayer), storageSize(15), alpha_max(1), maxStep(100), c1(0.001), c2(0.9) {
+LBFGS::LBFGS(const int nLayer, const int storageSize)
+    : pastCurvatureLayer(nLayer), storageSize(storageSize), alpha_max(1), maxStep(100), c1(0.001), c2(0.9) {
 }
 
 /***

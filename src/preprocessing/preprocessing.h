@@ -31,7 +31,6 @@ class Preprocessing {
                   int validationPercent,
                   int testPercent,
                   arma::mat &&testSet);
-// TODO: Funzione di shuffle dei dati (chiamata dall'oggetto network a fine epoca per l'epoca successiva)
 };
 
 #endif //MLPROJECT_SRC_PREPROCESSING_PREPROCESSING_H_

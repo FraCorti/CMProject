@@ -18,7 +18,6 @@ void Preprocessing::GetSplit(int trainPercent,
                              arma::mat &&validationSet,
                              arma::mat &&testSet) {
   dataset = arma::shuffle(dataset);
-  //TODO: va bene qui lo shiuffle?
 
   if (trainPercent) {
     trainingSet = dataset.submat(0, 0, std::floor(dataset.n_rows * trainPercent / 100) - 1,
