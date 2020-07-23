@@ -82,8 +82,6 @@ double LBFGS::lineSearch(Network *currNetwork, const double weightDecay, const d
   // Update the current alpha with a value between currentAlpha and alpha_max
   std::uniform_real_distribution<double> unif(alpha_0, alpha_max);
   // Set the seed to have repeatable executions
-  //std::default_random_engine re(350);
-  std::default_random_engine re;
   double currentAlpha = unif(re);
 
   //! Compute \phi'(0) and check the descent direction of the network
@@ -167,8 +165,6 @@ double LBFGS::zoom(Network *currNetwork,
   double alphaJ = 1; //  = alphaHi
 
   // Set the seed to have repeatable executions
-  std::default_random_engine re;
-  //std::default_random_engine re();
 
   //! limit number of iteration to obtain a step length in a finite time
   while (i < 100) {
@@ -343,8 +339,14 @@ void LBFGS::OptimizeUpdateWeight(Network *currNetwork, const double learningRate
     indexLayer++;
   }
 }
-LBFGS::LBFGS(const int nLayer, const int storageSize)
+LBFGS::LBFGS(const int nLayer, const int storageSize, const int seed)
     : pastCurvatureLayer(nLayer), storageSize(storageSize), alpha_max(1), maxStep(100), c1(0.001), c2(0.9) {
+  if (seed) {
+    re.seed(seed);
+  } else {
+    std::random_device device;
+    re.seed(device());
+  }
 }
 
 /***
