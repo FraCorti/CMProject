@@ -203,7 +203,7 @@ Here we can observe that the behaviour of the algorithms follows what we stated 
 \end{figure}
 
 \subsection{Rate of convergence}
-As written in , to compute the rate of convergence we can derive an alternative faster and rapid way. Considering that
+To compute the rate of convergence we can derive an alternative faster and rapid procedure. Considering that
 \begin{equation}
 lim_{k\to \infty}\frac{|x_{k+1} - \alpha |}{|x_{k} - \alpha|^p} = \gamma > 0,
 \end{equation}
@@ -211,9 +211,8 @@ we can obtain
 \begin{equation}
 p = lim_{k\to \infty}\frac{log |x_{k+1} - \alpha | - log \gamma}{|x_{k} - \alpha|} \approx lim_{k\to \infty}\frac{log |x_{k+1} - \alpha |}{|x_{k} - \alpha|}.
 \end{equation}
-If $p=1$ the convergence is linear, if $p=2$ the convergence is quadratic and so on. 
-In our case we consider $\alpha$ as the minimum error obtained by the optimization algorithm for each problem.
-As we expect from the analysis we made, \ref{L-BFGSConv} for L-BFGS, \ref{PBM-Convergence} for Proximal Bundle method and \ref{MDA-convergence} for Momentum Descent Approach, the rate of convergence of each algorithms developed respect what we state above.
+If $p=1$ the convergence is linear and if $p=2$ the convergence is quadratic. As we can observe in figure \ref{CR-Monk2}, L-BFGS reached a superlinear rate of convergence.  In our case, we consider $\alpha$ as the minimum error obtained by the optimization algorithm for each problem.
+As we expect from the analysis we made, L-BFGS reached a superlinear convergence rate in some epoch. Also for the Momentum Descent Approach, we see that the convergence rate obtained is linear as we expected. Instead, for the Proximal Bundle method we had some convergences rate peaks that we didn't expect. In our opinion, this can be caused by the particular loss shape of Monks dataset. 
 
 \begin{figure}[H]
 	\centering
@@ -255,7 +254,5 @@ As we expect from the analysis we made, \ref{L-BFGSConv} for L-BFGS, \ref{PBM-Co
 	\label{CR-Monk3}
 \end{figure}
 
-
-
 \subsection{Conclusions on the experiments}
-As mentioned in \S\ref{LF:convexity}, the objective function is not convex. For this reason, we try to understand if the methods analysed were approaching the same minima or different ones. First of all, the analysis and comparisons were made on the weights of each different network obtained after the minimization of the loss function. We observed that only the Proximal Bundle Method was convergent to the same minima for each different hyperparameters configurations. Also, we had examined the others network, and we found that there are some minima near each other and for this reason, the weights of the network sometimes do not differ too much (e.g. Momentum Descent Approach with 0.3 and 0.6 of classical momentum with Monk1 dataset). After further analysis, we observed that the weights initialization definitely influences the minimum reached by all the networks after the optimization process.
+As mentioned in \S\ref{LF:convexity}, the objective function is not convex. For this reason, we try to understand if the methods analysed were approaching the same minima or different ones. First of all, the analysis and comparisons were made on the weights of each different network obtained after the minimization of the loss function. We observed that only the Proximal Bundle Method was convergent to the same minima for each different hyperparameters configurations. Also, we had examined the others network, and we found that there are some minima near each other and for this reason, the weights of the network sometimes do not differ too much (e.g. Momentum Descent Approach with 0.3 and 0.6 of classical momentum with Monk1 dataset). After further analysis, we observed that the weights initialization influences the minimum reached by all the networks after the optimization process.
