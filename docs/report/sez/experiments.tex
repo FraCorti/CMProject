@@ -201,3 +201,6 @@ Here we can observe that the behaviour of the algorithms follows what we stated 
 	\caption{Converge speed comparison Monk 3}
 	\label{CS-Monk3}
 \end{figure}
+
+\subsection{Conclusions on the experiments}
+As said in \S\ref{LF:convexity}, the objective function is not convex. For this reason, we try to understand if the methods analysed were approaching the same minima or different ones. First of all, the analysis and comparisons were made on the weights of each different network. We observed that only the Proximal Bundle Method was convergent to the same minima for each different hyperparameters configurations. Also, we had examined the others network, and we found that there are some minima near each other and for this reason, the weights of the network sometimes do not differ too much (e.g. Momentum Descent Approach with 0.3 and 0.6 of classical momentum with Monk1 dataset). After further analysis, we observed that the weights initialization definitely influences the choice of the minima.
