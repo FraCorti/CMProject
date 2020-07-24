@@ -10,7 +10,7 @@ To test the correctness of the algorithms we used the MONK's datasets. To use th
 
 
 \subsection{MONKS} 
-To obtain a deterministic behaviour of the algorithms, we used the entire MONKS datasets as the input of the network. We obtained three matrices that had dimensions: 124x18 (Monk 1), 169x17 (Monk 2), and 122x17 (Monk 3). To compare the behaviour of the algorithms, we collected three parameters for every epoch: the error of the network (in our case MSE), the norm of the gradient and the computational time spent on completing the epoch. These three parameters were used to make the convergence speed, residual and computational time plots shown below. For better visualization of the plots an enlargement of each of them is shown aside. Before showing the plots a table with all the configurations used and the values obtained is shown.
+To obtain a deterministic behaviour of the algorithms, we used the entire MONKS datasets as the input of the network. We obtained three matrices that had dimensions: 124x18 (Monk 1), 169x17 (Monk 2), and 122x17 (Monk 3). To compare the behaviour of the algorithms, we collected three parameters for every epoch: the error of the network (in our case MSE), the norm of the gradient and the computational time spent on completing the epoch. These three parameters were used to make the convergence speed, residual and computational time plots shown below. For a better visualization of the plots the y-axis is plotted on a logarithmic scale and an enlargement version of each plots is shown aside. Before showing the plots a table with all the configurations used and the values obtained is shown.
 
 \begin{center}
 	\small\addtolength{\tabcolsep}{-3pt}
@@ -199,8 +199,63 @@ Here we can observe that the behaviour of the algorithms follows what we stated 
 		%\subcaption{Accuracy}
 	\end{minipage}
 	\caption{Converge speed comparison Monk 3}
-	\label{CS-Monk3}
+	\label{CS-onk3}
 \end{figure}
 
+\subsection{Rate of convergence}
+As written in , to compute the rate of convergence we can derive an alternative faster and rapid way. Considering that
+\begin{equation}
+lim_{k\to \infty}\frac{|x_{k+1} - \alpha |}{|x_{k} - \alpha|^p} = \gamma > 0,
+\end{equation}
+we can obtain
+\begin{equation}
+p = lim_{k\to \infty}\frac{log |x_{k+1} - \alpha | - log \gamma}{|x_{k} - \alpha|} \approx lim_{k\to \infty}\frac{log |x_{k+1} - \alpha |}{|x_{k} - \alpha|}.
+\end{equation}
+If $p=1$ the convergence is linear, if $p=2$ the convergence is quadratic and so on. 
+In our case we consider $\alpha$ as the minimum error obtained by the optimization algorithm for each problem.
+As we expect from the analysis we made, \ref{L-BFGSConv} for L-BFGS, \ref{PBM-Convergence} for Proximal Bundle method and \ref{MDA-convergence} for Momentum Descent Approach, the rate of convergence of each algorithms developed respect what we state above.
+
+\begin{figure}[H]
+	\centering
+	\begin{minipage}[t]{0.5\linewidth}
+		\includegraphics[width=\linewidth]{data/Comparison/Monk1/Monk1_CR_standard.png}
+		%\subcaption{MSE}
+	\end{minipage}%
+	\begin{minipage}[t]{0.5\linewidth}
+		\includegraphics[width=\linewidth]{data/Comparison/Monk1/Monk1_CR_zoom.png}
+		%\subcaption{Accuracy}
+	\end{minipage}
+	\caption{Converge rate comparison Monk 1}
+	\label{CR-Monk1}
+\end{figure}
+\begin{figure}[H]
+	\centering
+	\begin{minipage}[t]{0.5\linewidth}
+		\includegraphics[width=\linewidth]{data/Comparison/Monk2/Monk2_CR_standard.png}
+		%\subcaption{MSE}
+	\end{minipage}%
+	\begin{minipage}[t]{0.5\linewidth}
+		\includegraphics[width=\linewidth]{data/Comparison/Monk2/Monk2_CR_zoom.png}
+		%\subcaption{Accuracy}
+	\end{minipage}
+	\caption{Converge rate comparison Monk 2}
+	\label{CR-Monk2}
+\end{figure}
+\begin{figure}[H]
+	\centering
+	\begin{minipage}[t]{0.5\linewidth}
+		\includegraphics[width=\linewidth]{data/Comparison/Monk3/Monk3_CR_standard.png}
+		%\subcaption{MSE}
+	\end{minipage}%
+	\begin{minipage}[t]{0.5\linewidth}
+		\includegraphics[width=\linewidth]{data/Comparison/Monk3/Monk3_CR_zoom.png}
+		%\subcaption{Accuracy}
+	\end{minipage}
+	\caption{Converge rate comparison Monk 3}
+	\label{CR-Monk3}
+\end{figure}
+
+
+
 \subsection{Conclusions on the experiments}
-As said in \S\ref{LF:convexity}, the objective function is not convex. For this reason, we try to understand if the methods analysed were approaching the same minima or different ones. First of all, the analysis and comparisons were made on the weights of each different network. We observed that only the Proximal Bundle Method was convergent to the same minima for each different hyperparameters configurations. Also, we had examined the others network, and we found that there are some minima near each other and for this reason, the weights of the network sometimes do not differ too much (e.g. Momentum Descent Approach with 0.3 and 0.6 of classical momentum with Monk1 dataset). After further analysis, we observed that the weights initialization definitely influences the choice of the minima.
+As mentioned in \S\ref{LF:convexity}, the objective function is not convex. For this reason, we try to understand if the methods analysed were approaching the same minima or different ones. First of all, the analysis and comparisons were made on the weights of each different network obtained after the minimization of the loss function. We observed that only the Proximal Bundle Method was convergent to the same minima for each different hyperparameters configurations. Also, we had examined the others network, and we found that there are some minima near each other and for this reason, the weights of the network sometimes do not differ too much (e.g. Momentum Descent Approach with 0.3 and 0.6 of classical momentum with Monk1 dataset). After further analysis, we observed that the weights initialization definitely influences the minimum reached by all the networks after the optimization process.
