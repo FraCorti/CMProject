@@ -9,9 +9,10 @@ To test the correctness of the algorithms we used the MONK's datasets. To use th
 \end{itemize}
 
 
-\subsection{MONKS} 
-To obtain a deterministic behaviour of the algorithms, we used the entire MONKS datasets as the input of the network. We obtained three matrices that had dimensions: 124x18 (Monk 1), 169x17 (Monk 2), and 122x17 (Monk 3). To compare the behaviour of the algorithms, we collected three parameters for every epoch: the error of the network (in our case MSE), the norm of the gradient and the computational time spent on completing the epoch. These three parameters were used to make the convergence speed, residual and computational time plots shown below. For a better visualization of the plots the y-axis is plotted on a logarithmic scale and an enlargement version of each plots is shown aside. Before showing the plots a table with all the configurations used and the values obtained is shown.
 
+To obtain a deterministic behaviour of the algorithms, we used the entire MONKS datasets as the input of the network. We obtained three matrices that had dimensions: 124x18 (Monk 1), 169x17 (Monk 2), and 122x17 (Monk 3). To compare the behaviour of the algorithms, we collected three parameters for every epoch: the error of the network (in our case MSE), the norm of the gradient and the computational time spent on completing the epoch. These three parameters were used to make the convergence speed, residual and computational time plots shown below. For a better visualization of the plots the y-axis is plotted on a logarithmic scale (except for section 3.3 "Rate of convergence") and an enlargement version of each plots is shown aside. Before showing the plots a table with all the configurations used and the values obtained is shown.
+
+\subsection{Configuration tested}
 \begin{center}
 	\small\addtolength{\tabcolsep}{-3pt}
 		\centering
@@ -72,19 +73,27 @@ To obtain a deterministic behaviour of the algorithms, we used the entire MONKS 
 		\end{longtable}
 
 \end{center}
+\textbf{Fare tabella con le 3 configurazioni della rete che abbiamo valutato nei grafici (prendere valori da tabella sopra).}
+
+\subsubsection{Methods minimas analysis}
+As mentioned in \S\ref{LF:convexity}, the objective function is not convex. For this reason, we try to understand if the methods analysed were approaching the same minima or different ones. First of all, the analysis and comparisons were made on the weights of each different network obtained after the minimization of the loss function. We observed that only the Proximal Bundle Method was convergent to the same minima for each different hyperparameters configurations. Also, we had examined the others network, and we found that there are some minima near each other and for this reason, the weights of the network sometimes do not differ too much (e.g. Momentum Descent Approach with 0.3 and 0.6 of classical momentum with Monk1 dataset). After further analysis, we observed that the weights initialization influences the minimum reached by all the networks after the optimization process.
 
 \subsubsection{Residual}
-The residual values results we obtained from the algorithms respect what we expect from the theory.  As we can see from the plots below (see fig \ref{R-Monk1} for example), the number of epochs needed to convergence by the L-BFGS confirms the superlinear convergence behaviour we mentioned above (sez. \ref{L-BFGSConv}).  Also we can see in the plots that the linear convergence of the Momentum Descent Approach (sez.  \ref{MDA-convergence}) and the Proximal Bundle Method (sez. \ref{PBM-Convergence}) is respected. Of course, the curves obtained from the Proximal Bundle Method are not smooth as those obtained with the Momentum Descent Approach, this is because Bundle methods construct and minimize an approximation $f_B(x)$ of the function using the subgradients (as mention above sez. \ref{Bundle-methods}).  It's interesting to view that all of these methods even with a noisy dataset as Monk 3 converge with the same convergence rate as mentioned in the theory.
+\begin{enumerate}
+	\item Cos'è il redisual nostro caso? Valori della loss function nel corso dell'algoritmo
+	\item Dire che ci sono i grafici sotto, ref a tabella delle configurazioni e dire che c'è lo zoom.
+\end{enumerate}
+\textbf{The residual values results we obtained from the algorithms respect what we expect from the theory.  As we can see from the plots below (see fig \ref{R-Monk1} for example), the number of epochs needed to convergence by the L-BFGS confirms the superlinear convergence behaviour we mentioned above (sez. \ref{L-BFGSConv}).  Also we can see in the plots that the linear convergence of the Momentum Descent Approach (sez.  \ref{MDA-convergence}) and the Proximal Bundle Method (sez. \ref{PBM-Convergence}) is respected. Of course, the curves obtained from the Proximal Bundle Method are not smooth as those obtained with the Momentum Descent Approach, this is because Bundle methods construct and minimize an approximation $f_B(x)$ of the function using the subgradients (as mention above sez. \ref{Bundle-methods}).  It's interesting to view that all of these methods even with a noisy dataset as Monk 3 converge with the same convergence rate as mentioned in the theory.}
 
 \begin{figure}[H]
 	\centering
 	\begin{minipage}[t]{0.5\linewidth}
 		\includegraphics[width=\linewidth]{data/Comparison/Monk1/Monk1_R_Comparison_log_standard.png}
-		%\subcaption{MSE}
+		\subcaption{MSE}
 	\end{minipage}%
 	\begin{minipage}[t]{0.5\linewidth}
 		\includegraphics[width=\linewidth]{data/Comparison/Monk1/Monk1_R_Comparison_log_zoom.png}
-		%\subcaption{Accuracy}
+		\subcaption{Zoom Accuracy}
 	\end{minipage}
 	\caption{Residual comparison Monk 1}
 	\label{R-Monk1}
@@ -93,11 +102,11 @@ The residual values results we obtained from the algorithms respect what we expe
 	\centering
 	\begin{minipage}[t]{0.5\linewidth}
 		\includegraphics[width=\linewidth]{data/Comparison/Monk2/Monk2_R_Comparison_log_standard.png}
-		%\subcaption{MSE}
+		\subcaption{MSE}
 	\end{minipage}%
 	\begin{minipage}[t]{0.5\linewidth}
 		\includegraphics[width=\linewidth]{data/Comparison/Monk2/Monk2_R_Comparison_log_zoom.png}
-		%\subcaption{Accuracy}
+		\subcaption{Accuracy}
 	\end{minipage}
 	\caption{Residual comparison Monk 2}
 	\label{R-Monk2}
@@ -106,11 +115,11 @@ The residual values results we obtained from the algorithms respect what we expe
 	\centering
 	\begin{minipage}[t]{0.5\linewidth}
 		\includegraphics[width=\linewidth]{data/Comparison/Monk3/Monk3_R_Comparison_log_standard.png}
-		%\subcaption{MSE}
+		\subcaption{MSE}
 	\end{minipage}%
 	\begin{minipage}[t]{0.5\linewidth}
 		\includegraphics[width=\linewidth]{data/Comparison/Monk3/Monk3_R_Comparison_log_zoom.png}
-		%\subcaption{Accuracy}
+		\subcaption{Accuracy}
 	\end{minipage}
 	\caption{Residual comparison Monk 3}
 	\label{R-Monk3}
@@ -122,11 +131,11 @@ To compare the computational time behaviour of the implemented algorithm, we dec
 	\centering
 	\begin{minipage}[t]{0.5\linewidth}
 		\includegraphics[width=\linewidth]{data/Comparison/Monk1/Monk1_CT_Comparison_log_standard.png}
-		%\subcaption{MSE}
+		\subcaption{MSE}
 	\end{minipage}%
 	\begin{minipage}[t]{0.5\linewidth}
 		\includegraphics[width=\linewidth]{data/Comparison/Monk1/Monk1_CT_Comparison_log_zoom.png}
-		%\subcaption{Accuracy}
+		\subcaption{Accuracy}
 	\end{minipage}
 	\caption{Computational time comparison Monk 1}
 	\label{CT-Monk1}
@@ -135,11 +144,11 @@ To compare the computational time behaviour of the implemented algorithm, we dec
 	\centering
 	\begin{minipage}[t]{0.5\linewidth}
 		\includegraphics[width=\linewidth]{data/Comparison/Monk2/Monk2_CT_Comparison_log_standard.png}
-		%\subcaption{MSE}
+		\subcaption{MSE}
 	\end{minipage}%
 	\begin{minipage}[t]{0.5\linewidth}
 		\includegraphics[width=\linewidth]{data/Comparison/Monk2/Monk2_CT_Comparison_log_zoom.png}
-		%\subcaption{Accuracy}
+		\subcaption{Accuracy}
 	\end{minipage}
 	\caption{Computational time comparison Monk 2}
 	\label{CT-Monk2}
@@ -148,11 +157,11 @@ To compare the computational time behaviour of the implemented algorithm, we dec
 	\centering
 	\begin{minipage}[t]{0.5\linewidth}
 		\includegraphics[width=\linewidth]{data/Comparison/Monk3/Monk3_CT_Comparison_log_standard.png}
-		%\subcaption{MSE}
+		\subcaption{MSE}
 	\end{minipage}%
 	\begin{minipage}[t]{0.5\linewidth}
 		\includegraphics[width=\linewidth]{data/Comparison/Monk3/Monk3_CT_Comparison_log_zoom.png}
-		%\subcaption{Accuracy}
+		\subcaption{Accuracy}
 	\end{minipage}
 	\caption{Computational time comparison Monk 3}
 	\label{CT-Monk3}
@@ -166,11 +175,11 @@ Here we can observe that the behaviour of the algorithms follows what we stated 
 	\centering
 	\begin{minipage}[t]{0.5\linewidth}
 		\includegraphics[width=\linewidth]{data/Comparison/Monk1/Monk1_CS_Comparison_log_standard.png}
-		%\subcaption{MSE}
+		\subcaption{MSE}
 	\end{minipage}%
 	\begin{minipage}[t]{0.5\linewidth}
 		\includegraphics[width=\linewidth]{data/Comparison/Monk1/Monk1_CS_Comparison_log_zoom.png}
-		%\subcaption{Accuracy}
+		\subcaption{Accuracy}
 	\end{minipage}
 	\caption{Converge speed comparison Monk 1}
 	\label{CS-Monk1}
@@ -179,11 +188,11 @@ Here we can observe that the behaviour of the algorithms follows what we stated 
 	\centering
 	\begin{minipage}[t]{0.5\linewidth}
 		\includegraphics[width=\linewidth]{data/Comparison/Monk2/Monk2_CS_Comparison_log_standard.png}
-		%\subcaption{MSE}
+		\subcaption{MSE}
 	\end{minipage}%
 	\begin{minipage}[t]{0.5\linewidth}
 		\includegraphics[width=\linewidth]{data/Comparison/Monk2/Monk2_CS_Comparison_log_zoom.png}
-		%\subcaption{Accuracy}
+		\subcaption{Accuracy}
 	\end{minipage}
 	 \caption{Converge speed comparison Monk 2}
 	 \label{CS-Monk2}
@@ -192,37 +201,37 @@ Here we can observe that the behaviour of the algorithms follows what we stated 
 	\centering
 	\begin{minipage}[t]{0.5\linewidth}
 		\includegraphics[width=\linewidth]{data/Comparison/Monk3/Monk3_CS_Comparison_log_standard.png}
-		%\subcaption{MSE}
+		\subcaption{MSE}
 	\end{minipage}%
 	\begin{minipage}[t]{0.5\linewidth}
 		\includegraphics[width=\linewidth]{data/Comparison/Monk3/Monk3_CS_Comparison_log_zoom.png}
-		%\subcaption{Accuracy}
+		\subcaption{Accuracy}
 	\end{minipage}
 	\caption{Converge speed comparison Monk 3}
 	\label{CS-onk3}
 \end{figure}
 
 \subsection{Rate of convergence}
-To compute the rate of convergence we can derive an alternative faster and rapid procedure. Considering that
+To compute the rate of convergence for each algorithm, we consider $\alpha$ as the minimum residual obtained by the optimization algorithm and $f(x_{k})$ as the residual obtained at the iteration $k$ plus the  regularization term used. If exists a real positive constant $\gamma$ such that
 \begin{equation}
-lim_{k\to \infty}\frac{|x_{k+1} - \alpha |}{|x_{k} - \alpha|^p} = \gamma > 0,
+\label{eq:rofFirst}
+lim_{k\to \infty}\frac{|f(x_{k+1}) - \alpha |}{|f(x_{k}) - \alpha|^p} = \gamma > 0,
 \end{equation}
-we can obtain
+we can state that the sequence of values $f(x_{k})$ produced by the algorithm has an order of convergence $p$. In our case, we can derive an alternative faster and rapid procedure. Considering the equation \ref{eq:rofFirst} we can obtain the following formula: 
 \begin{equation}
-p = lim_{k\to \infty}\frac{log |x_{k+1} - \alpha | - log \gamma}{|x_{k} - \alpha|} \approx lim_{k\to \infty}\frac{log |x_{k+1} - \alpha |}{|x_{k} - \alpha|}.
+p = lim_{k\to \infty}\frac{log |f(x_{k+1}) - \alpha | - log \gamma}{log|f(x_{k}) - \alpha|} \approx lim_{k\to \infty}\frac{log |f(x_{k+1}) - \alpha |}{log|f(x_{k}) - \alpha|}.
 \end{equation}
-If $p=1$ the convergence is linear and if $p=2$ the convergence is quadratic. As we can observe in figure \ref{CR-Monk2}, L-BFGS reached a superlinear rate of convergence.  In our case, we consider $\alpha$ as the minimum error obtained by the optimization algorithm for each problem.
-As we expect from the analysis we made, L-BFGS reached a superlinear convergence rate in some epoch. Also for the Momentum Descent Approach, we see that the convergence rate obtained is linear as we expected. Instead, for the Proximal Bundle method we had some convergences rate peaks that we didn't expect. In our opinion, this can be caused by the particular loss shape of Monks dataset. 
+If $p=1$ the convergence is linear and if $p=2$ the convergence is quadratic. We can observe in figure \ref{CR-Monk2} that L-BFGS reached a superlinear rate of convergence. \textbf{As we expect from the analysis we made, L-BFGS reached a superlinear convergence rate in some epoch. Also for the Momentum Descent Approach, we see that the convergence rate obtained is linear as we expected. Instead, for the Proximal Bundle method we had some convergences rate peaks that we didn't expect. In our opinion, this can be caused by the particular loss shape of Monks dataset.}
 
 \begin{figure}[H]
 	\centering
 	\begin{minipage}[t]{0.5\linewidth}
 		\includegraphics[width=\linewidth]{data/Comparison/Monk1/Monk1_CR_standard.png}
-		%\subcaption{MSE}
+		\subcaption{Normal view}
 	\end{minipage}%
 	\begin{minipage}[t]{0.5\linewidth}
 		\includegraphics[width=\linewidth]{data/Comparison/Monk1/Monk1_CR_zoom.png}
-		%\subcaption{Accuracy}
+		\subcaption{Zoom view}
 	\end{minipage}
 	\caption{Converge rate comparison Monk 1}
 	\label{CR-Monk1}
@@ -231,11 +240,11 @@ As we expect from the analysis we made, L-BFGS reached a superlinear convergence
 	\centering
 	\begin{minipage}[t]{0.5\linewidth}
 		\includegraphics[width=\linewidth]{data/Comparison/Monk2/Monk2_CR_standard.png}
-		%\subcaption{MSE}
+		\subcaption{MSE}
 	\end{minipage}%
 	\begin{minipage}[t]{0.5\linewidth}
 		\includegraphics[width=\linewidth]{data/Comparison/Monk2/Monk2_CR_zoom.png}
-		%\subcaption{Accuracy}
+		\subcaption{Accuracy}
 	\end{minipage}
 	\caption{Converge rate comparison Monk 2}
 	\label{CR-Monk2}
@@ -244,15 +253,12 @@ As we expect from the analysis we made, L-BFGS reached a superlinear convergence
 	\centering
 	\begin{minipage}[t]{0.5\linewidth}
 		\includegraphics[width=\linewidth]{data/Comparison/Monk3/Monk3_CR_standard.png}
-		%\subcaption{MSE}
+		\subcaption{MSE}
 	\end{minipage}%
 	\begin{minipage}[t]{0.5\linewidth}
 		\includegraphics[width=\linewidth]{data/Comparison/Monk3/Monk3_CR_zoom.png}
-		%\subcaption{Accuracy}
+	    \subcaption{Accuracy}
 	\end{minipage}
 	\caption{Converge rate comparison Monk 3}
 	\label{CR-Monk3}
 \end{figure}
-
-\subsection{Conclusions on the experiments}
-As mentioned in \S\ref{LF:convexity}, the objective function is not convex. For this reason, we try to understand if the methods analysed were approaching the same minima or different ones. First of all, the analysis and comparisons were made on the weights of each different network obtained after the minimization of the loss function. We observed that only the Proximal Bundle Method was convergent to the same minima for each different hyperparameters configurations. Also, we had examined the others network, and we found that there are some minima near each other and for this reason, the weights of the network sometimes do not differ too much (e.g. Momentum Descent Approach with 0.3 and 0.6 of classical momentum with Monk1 dataset). After further analysis, we observed that the weights initialization influences the minimum reached by all the networks after the optimization process.
