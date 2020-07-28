@@ -1,7 +1,7 @@
 # Neuradillo 
 For the Computational Mathematics for Learning and Data Analysis [course](https://esami.unipi.it/esami2/programma.php?c=42267&aa=2019&docente=FRANGIONI&insegnamento=&sd=) we expanded the functionality of [Neuradillo](https://github.com/GiovanniSorice/MLProject). Using [backpropagation](https://web.stanford.edu/class/psych209a/ReadingsByDate/02_06/PDPVolIChapter8.pdf) algorithm to compute the gradient, we added [L-BFGS](https://en.wikipedia.org/wiki/Limited-memory_BFGS) (following this [paper](https://github.com/FraCorti/CMProject/blob/master/paper/quasi-newton-NN-CM.pdf)) and [Proximal Bundle](https://en.wikipedia.org/wiki/Subgradient_method#Subgradient-projection_&_bundle_methods) optimization algorithms to train feedforward neural network. 
 
-More information about the theory and the convergence analysis regarding the algorithms can be found in the [report](https://github.com/GiovanniSorice/MLProject/blob/master/docs/report/relazione.pdf).
+More information about the theory and the convergence analysis regarding the algorithms can be found in the [report](https://github.com/FraCorti/CMProject/blob/master/docs/report/report.pdf).
 
 ## Getting started
 
@@ -45,6 +45,9 @@ Here we show some plots we obtained during the optimization phase.
 <img src="/docs/report/data/Comparison/Monk1/Monk1_CR_standard.png" width="350"><img src="/docs/report/data/Comparison/Monk2/Monk2_CR_standard.png" width="350">
 
 <img src="/docs/report/data/Comparison/Monk1/Monk1_CS_Comparison_log_standard.png" width="350"><img src="/docs/report/data/Comparison/Monk2/Monk2_CS_Comparison_log_standard.png" width="350">
+
+<img src="/docs/report/data/Comparison/Monk1/Monk1_CT_Comparison_log_standard.png" width="350"><img src="/docs/report/data/Comparison/Monk2/Monk2_CT_Comparison_log_standard.png" width="350">
+
 
 ## Acknowledgments
 This project was developed for the course of [Computational Mathematics for Learning and Data Analysis](https://esami.unipi.it/esami2/programma.php?c=42267&aa=2019&docente=FRANGIONI&insegnamento=&sd=0) at the University of Pisa under the guide of [Prof. Antonio Frangioni](http://pages.di.unipi.it/frangio/) and [Prof. Federico Poloni](http://pages.di.unipi.it/fpoloni/).
