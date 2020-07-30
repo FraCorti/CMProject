@@ -10,11 +10,10 @@ To test the correctness of the algorithms we used the MONK's datasets. To use th
 
 
 
-To obtain a deterministic behaviour of the algorithms, we used the entire MONKS datasets as the input of the network. We obtained three matrices that had dimensions: 124x18 (Monk 1), 169x17 (Monk 2), and 122x17 (Monk 3). To compare the behaviour of the algorithms, we collected three parameters for every epoch: the error of the network (in our case MSE), the norm of the gradient and the computational time spent on completing the epoch. These three parameters were used to make the convergence speed, residual and computational time plots shown below. For a better visualization of the plots the y-axis is plotted on a logarithmic scale (except for section 3.3 "Rate of convergence") and an enlargement version of each plots is shown aside. Before showing the plots a table with all the configurations used and the values obtained is shown.
+To obtain a deterministic behaviour of the algorithms, we used the entire MONKS datasets as the input of the network. We obtained three matrices that had dimensions: 124x18 (Monk 1), 169x17 (Monk 2), and 122x17 (Monk 3). To compare the behaviour of the algorithms, we collected three parameters for every iteration: the error of the network (that is MSE for not regularized network and MSE plus the regularization term for regularized network), the norm of the gradient and the computational time spent on completing the iteration. These three parameters were used to make the rate of convergence, convergence speed, error and computational time plots shown below. For a better visualization of the plots the y-axis is plotted on a logarithmic scale (except for \S \ref{sec:rate_of_convergence} "Rate of convergence") and an enlargement version of each plots is put on the side. Before showing the plots a table with all the configurations used and the values obtained is shown.
 
 \subsection{Configuration tested}
-The notation $f^*$ specifies the optimal value reached by a specific configuration of the problem (that can includes the regularization term if it is used). 
-
+The notation $f^*$ specifies the optimal value reached by a specific configuration of the problem (that includes the regularization term if it is used). 
 
 \begin{center}
 	\small\addtolength{\tabcolsep}{-3pt}
@@ -62,7 +61,7 @@ The notation $f^*$ specifies the optimal value reached by a specific configurati
 			Monk3 & NMDA & 900 & 0.9 & 0  & 0.3 & 1.863e-2 & 2.277e-2 & 129\\
 			Monk3 & NMDA & 900 & 0.9 & 0  & 0.6 & 1.754e-2 & 1.267e-2 & 300\\
 			Monk3 & NMDA & 900 & 0.9 & 0  & 0.9 & 1.254e-2 & 7.139e-3 & 189\\
-			Monk3 & L-BFGS & 50 & - & 0  & 0 & 8.196e-3 & 1.068e-12 & 8319\\
+			Monk3 & L-BFGS & 50 & - & 0  & 0 & 8.196e-3 & 1.997e-6 & 8319\\
 			Monk3 & L-BFGS & 50 & - & 3e-4  & 0  & 5.781e-2 & 3.603e-1 & 7947\\
 			Monk3 & L-BFGS & 50 & - & 5e-4  & 0  & 8.555e-2 & 1.895e-1 & 12729\\
 			Monk3 & L-BFGS & 50 & - & 7e-4  & 0  & 7.940e-2 & 1.525e-1 & 10153\\
@@ -77,7 +76,7 @@ The notation $f^*$ specifies the optimal value reached by a specific configurati
 
 \end{center}
 
-The table \ref{tab:nets_comp} contains the configurations of the networks used to obtain the plots in section \ref{sec:gradient_norm_convergence_speed}, section \ref{sec:rate_of_convergence}, section \ref{sec:computational_time} and \ref{sec:residual_error}. 
+The table \ref{tab:nets_comp} contains the configurations of the networks used to obtain the plots in \S \ref{sec:gradient_norm_convergence_speed}, \S \ref{sec:rate_of_convergence}, \S \ref{sec:computational_time} and \S \ref{sec:residual_error}. 
 
 \begin{center}
 	\small\addtolength{\tabcolsep}{-3pt}
@@ -104,7 +103,7 @@ The table \ref{tab:nets_comp} contains the configurations of the networks used t
 \subsubsection{Methods minima analysis} 
 
 As mentioned in \S\ref{LF:convexity}, the objective function is not convex. For this reason, we try to understand if the methods used were approaching the same optimal value or different ones.
-First of all, we analysed the $f^{*}$ value of each configuration to understand at which optimal value the algorithms converge. 
+First of all, we analysed the $f^{*}$ value of each configuration to understand at which optimal values the algorithms converge. 
 
 \begin{longtable}{|c|c|c|c|c|c|}
 	\hline
@@ -118,10 +117,10 @@ First of all, we analysed the $f^{*}$ value of each configuration to understand 
 	MDA & 900 & 0.9 & 0  & 0.6 & 7.535e-4 \\
 	NMDA & 900 & 0.9 & 0  & 0.3 & 2.426e-3 \\
 	MDA & 900 & 0.9 & 0  & 0.3 & 2.458e-3 \\
-	MDA & 900 & 0.9 & 0  & 0 & 8.67e-3 \\
+	MDA & 900 & 0.9 & 0  & 0 & 8.678e-3 \\
+	NMDA & 900 & 0.9 & 0  & 0 & 8.678e-3 \\
 	L-BFGS & 50 & - & 3e-4  & 0 & 6.396e-2 \\
 	L-BFGS & 50 & - & 5e-4  & 0 & 8.553e-2 \\
-	NMDA & 900 & 0.9 & 0  & 0 & 8.678e-2 \\
 	L-BFGS & 50 & - & 7e-4  & 0 & 1.201e-1 \\
 	PBM & 400 & - & 5e-4  & 0 & 1.352e-1  \\
 	PBM & 400 & - & 7e-4  & 0 & 1.893e-1  \\
@@ -131,7 +130,7 @@ First of all, we analysed the $f^{*}$ value of each configuration to understand 
 	\label{tab:nets_res_plots_Monk1}
 \end{longtable}
 
-As can be seen from table \ref{tab:nets_res_plots_Monk1} the different configuration of the optimizers MDA and NMDA with 900 iterations converge to the same optimal values. This can be stated because their optimal values differ between 3e-6 and 6e-6. Also for the L-BFGS optimizer with 5e-4 as regularization parameter using 50 iterations and the NMDA with 0.0 as momentum parameter using 900 iterations the optimal value differs of 1e-3.
+As can be seen from table \ref{tab:nets_res_plots_Monk1} the different configuration of the optimizers MDA and NMDA with 900 iterations converge to the same optimal values. This can be stated because their optimal values differ between 3e-6 and 6e-6. Also for the L-BFGS optimizer with 5e-4 as regularization parameter using 50 iterations and the NMDA with 0.0 as momentum parameter using 900 iterations the optimal values obtained differ of 1e-3.
 
 \begin{longtable}{|c|c|c|c|c|c|}
 	\hline
@@ -158,16 +157,16 @@ As can be seen from table \ref{tab:nets_res_plots_Monk1} the different configura
 	\label{tab:nets_res_plots_Monk2}
 \end{longtable}
 
+As can be seen from table \ref{tab:nets_res_plots_Monk2} the different configurations, with 0.3 and 0.6 as momentum parameter and 0.9 as learning rate, of the optimizers MDA and NMDA with 900 iterations differ of 9e-4 and 5e-4. Also the MDA and NMDA with 0 as momentum parameter obtained the same optimal values. In the end, for the L-BFGS with 5e-4 as regularization parameter and the PBM with 3e-4 as regularization parameter the optimal values obtained differ of 6e-2.  
+
 \begin{longtable}{|c|c|c|c|c|c|}
 	\hline
 	\centering
 	\textbf{Optimizer}&\textbf{Iteration} & \textbf{L rate} & \multicolumn{1}{l|}{\textbf{Lambda}} & \textbf{Mom} & \textbf{$f^{*}$} \\ \hline 
 	L-BFGS & 50 & - & 0  & 0 & 8.196e-3 		\\
 	PBM & 400 & - & 0  & 0 & 1.231e-2 			\\
-	PBM & 400 & - & 5e-4  & 0 & 1.249e-1 		\\
 	MDA & 900 & 0.9 & 0  & 0.9 & 1.254e-2 	\\
 	NMDA & 900 & 0.9 & 0  & 0.9 & 1.254e-2 	\\
-	PBM & 400 & - & 7e-4  & 0 & 1.699e-1 		\\
 	MDA & 900 & 0.9 & 0  & 0.6 & 1.754e-2 	\\
 	NMDA & 900 & 0.9 & 0  & 0.6 & 1.754e-2 	\\
 	NMDA & 900 & 0.9 & 0  & 0.3 & 1.863e-2 	\\
@@ -178,14 +177,16 @@ As can be seen from table \ref{tab:nets_res_plots_Monk1} the different configura
 	L-BFGS & 50 & - & 7e-4  & 0  & 7.940e-2 	\\
 	PBM & 400 & - & 3e-4  & 0 & 7.988e-2 		\\
 	L-BFGS & 50 & - & 5e-4  & 0  & 8.555e-2 	\\
+	PBM & 400 & - & 5e-4  & 0 & 1.249e-1 		\\
+	PBM & 400 & - & 7e-4  & 0 & 1.699e-1 		\\
 	\hline
 		\caption{Monk 3 optimizer configuration displayed in increasing order of $f^*$.}
 	\label{tab:nets_res_plots_Monk3}
 \end{longtable}
 
- Moreover, the $f^{*}$ values for the Monk1, Monk2 and Monk3 datasets are really close to each other for MDA and NMDA optimization algorithms. For Monk1, the $f^{*}$ values in L-BFGS algorithm with 3e-4 and 5e-4 as regularization parameter are close to each other, also $f^{*}$ values of L-BFGS with 7e-4 as regularization parameter is close to PBM $f^{*}$ values with 5e-4 and 7e-4 as regularization parameter. Similar behaviour can be found in Monk2. For Monk 3, there is different behaviour in which L-BFGS $f^{*}$ values with regularization are all close to each other and PBM with 3e-4 as regularization parameter is close to L-BFGS values. We observed that the L-BFGS converges to better values of the function in each problem. After further analysis, we observed that the weights initialization influences the  optimal values reached by all the networks after the optimization process.
+As can be seen from table \ref{tab:nets_res_plots_Monk3} the different configuration, with 0.0, 0.3, 0.6 and 0.9 as momentum parameter and 0.9 as learning rate, of the optimizers MDA and NMDA with 900 iterations differ of a maximum of 1e-5. In the end, for the L-BFGS with 7e-4 as regularization parameter and the PBM with 3e-4 as regularization parameter the optimal values obtained differ of 5e-4. 
 
-
+After further analysis, we observed that the weights initialization influences the  optimal values reached by all the networks after the optimization process.
 
 \subsubsection{Rate of convergence}
 \label{sec:rate_of_convergence}
@@ -200,13 +201,13 @@ p = lim_{k\to \infty}\frac{log |f(x_{k+1}) - \alpha | - log \gamma}{log|f(x_{k})
 \end{equation}
 If $p=1$ the convergence is linear and if $p=2$ the convergence is quadratic. We can observe in figure \ref{CR-Monk2} that L-BFGS reached a superlinear rate of convergence. 
 As we expect from the analysis we made, L-BFGS reached a superlinear convergence rate in some epoch. Also for the Momentum Descent Approach, we see that the convergence rate obtained is linear as we expected. Instead, for the Proximal Bundle method we had some convergences rate peaks that we didn't expect. In our opinion, this can be caused by the particular loss shape of Monks dataset.
-It's interesting to view that all of these methods even with a noisy dataset as Monk 3 converge with the same convergence rate as mentioned in the theory.
+It's interesting to view that all of these methods even with a noisy dataset as Monk 3 converge with the same convergence rate as mentioned in the theory. The rate of convergence curves obtained, also with an enlargement for each of them put to the side, are shown below.
 
 \begin{figure}[H]
 	\centering
 	\begin{minipage}[t]{0.5\linewidth}
 		\includegraphics[width=\linewidth]{data/Comparison/Monk1/Monk1_CR_standard.png}
-		\subcaption{Standard}
+		\subcaption{Original}
 	\end{minipage}%
 	\begin{minipage}[t]{0.5\linewidth}
 		\includegraphics[width=\linewidth]{data/Comparison/Monk1/Monk1_CR_zoom.png}
@@ -219,7 +220,7 @@ It's interesting to view that all of these methods even with a noisy dataset as 
 	\centering
 	\begin{minipage}[t]{0.5\linewidth}
 		\includegraphics[width=\linewidth]{data/Comparison/Monk2/Monk2_CR_standard.png}
-		\subcaption{Standard}
+		\subcaption{Original}
 	\end{minipage}%
 	\begin{minipage}[t]{0.5\linewidth}
 		\includegraphics[width=\linewidth]{data/Comparison/Monk2/Monk2_CR_zoom.png}
@@ -232,7 +233,7 @@ It's interesting to view that all of these methods even with a noisy dataset as 
 	\centering
 	\begin{minipage}[t]{0.5\linewidth}
 		\includegraphics[width=\linewidth]{data/Comparison/Monk3/Monk3_CR_standard.png}
-		\subcaption{Standard}
+		\subcaption{Original}
 	\end{minipage}%
 	\begin{minipage}[t]{0.5\linewidth}
 		\includegraphics[width=\linewidth]{data/Comparison/Monk3/Monk3_CR_zoom.png}
@@ -244,13 +245,13 @@ It's interesting to view that all of these methods even with a noisy dataset as 
 
 \subsubsection{Computational time}
 \label{sec:computational_time}
-To compare the computational time behaviour of the implemented algorithm, we decided to display their curves in the plots \ref{CT-Monk1},\ref{CT-Monk2}, and \ref{CT-Monk3}. We can observe that, as expected from the theory, the most expensive method is the Proximal Bundle Method because of the time spent on the resolution of a quadratic programming problem by an external solver. As we can see in table \ref{tab:nets_res} the computational time of the Momentum Descent Approach is always lower than the others, it means that it is faster to reach a good value of the error in the Monks dataset. Moreover, we can infer that the L-BFGS algorithm gives us the best approximation of the objective function, meanwhile at a greater cost for each iteration. This is due to the better descent direction given by the approximation of the Hessian. Also, for this approximation, it has to pay some high computational costs that usually do not allow to use this kind of approach in all the situation. 
+To compare the computational time behaviour of the implemented algorithm, we decided to display their curves in the plots \ref{CT-Monk1},\ref{CT-Monk2}, and \ref{CT-Monk3}. We can observe that, as expected from the theory, the most expensive method is the Proximal Bundle Method because of the time spent on the resolution of a quadratic programming problem by an external solver. As we can see in table \ref{tab:nets_res} the computational time of the Momentum Descent Approach is always lower than the others, it means that it is faster to reach a good value of the error in the Monks dataset. Moreover, we can infer that the L-BFGS algorithm gives us the best approximation of the objective function, meanwhile at a greater cost for each iteration. This is due to the better descent direction given by the approximation of the Hessian. Also, for this approximation, it has to pay some high computational costs that usually do not allow to use this kind of approach in all the situation. The computational time curves obtained, also with an enlargement for each of them put to the side, are shown below.
 
 \begin{figure}[H]
 	\centering
 	\begin{minipage}[t]{0.5\linewidth}
 		\includegraphics[width=\linewidth]{data/Comparison/Monk1/Monk1_CT_Comparison_log_standard.png}
-		\subcaption{Standard}
+		\subcaption{Original}
 	\end{minipage}%
 	\begin{minipage}[t]{0.5\linewidth}
 		\includegraphics[width=\linewidth]{data/Comparison/Monk1/Monk1_CT_Comparison_log_zoom.png}
@@ -263,7 +264,7 @@ To compare the computational time behaviour of the implemented algorithm, we dec
 	\centering
 	\begin{minipage}[t]{0.5\linewidth}
 		\includegraphics[width=\linewidth]{data/Comparison/Monk2/Monk2_CT_Comparison_log_standard.png}
-		\subcaption{Standard}
+		\subcaption{Original}
 	\end{minipage}%
 	\begin{minipage}[t]{0.5\linewidth}
 		\includegraphics[width=\linewidth]{data/Comparison/Monk2/Monk2_CT_Comparison_log_zoom.png}
@@ -276,7 +277,7 @@ To compare the computational time behaviour of the implemented algorithm, we dec
 	\centering
 	\begin{minipage}[t]{0.5\linewidth}
 		\includegraphics[width=\linewidth]{data/Comparison/Monk3/Monk3_CT_Comparison_log_standard.png}
-		\subcaption{Standard}
+		\subcaption{Original}
 	\end{minipage}%
 	\begin{minipage}[t]{0.5\linewidth}
 		\includegraphics[width=\linewidth]{data/Comparison/Monk3/Monk3_CT_Comparison_log_zoom.png}
@@ -288,12 +289,12 @@ To compare the computational time behaviour of the implemented algorithm, we dec
 
 \subsubsection{Gradient norm convergence speed}
 \label{sec:gradient_norm_convergence_speed}
-Here we can observe that the behaviour of the algorithms follows what we stated before in the theory about their convergence speed. We view from the plots that the norm of the gradient is not smooth in all the Monks dataset. In our opinion, this is due to the starting point of the training and the non-convexity of the objective function. We know from the theory that these methods tend to have some problems with the local minimum. Also, we can observe that at a certain point the norm tends to stabilize and converge to zero. Therefore, we can infer that in the neighbourhood of the last visited minima there are no other minimum better than itself and the search of the best minima can stop.
+Here we can observe that the behaviour of the algorithms follows what we stated before in the theory about their convergence speed. We view from the plots that the norm of the gradient is not smooth in all the Monks dataset. In our opinion, this is due to the starting point of the training and the non-convexity of the objective function. We know from the theory that these methods tend to have some problems with the local minimum. Also, we can observe that at a certain point the norm tends to stabilize and converge to zero. Therefore, we can infer that in the neighbourhood of the last visited minimum there are no other minima better than itself and the search of the best minimum can stop. The gradient norm curves obtained, also with an enlargement for each of them put to the side, are shown below.
 \begin{figure}[H]
 	\centering
 	\begin{minipage}[t]{0.5\linewidth}
 		\includegraphics[width=\linewidth]{data/Comparison/Monk1/Monk1_CS_Comparison_log_standard.png}
-		\subcaption{Standard}
+		\subcaption{Original}
 	\end{minipage}%
 	\begin{minipage}[t]{0.5\linewidth}
 		\includegraphics[width=\linewidth]{data/Comparison/Monk1/Monk1_CS_Comparison_log_zoom.png}
@@ -306,7 +307,7 @@ Here we can observe that the behaviour of the algorithms follows what we stated 
 	\centering
 	\begin{minipage}[t]{0.5\linewidth}
 		\includegraphics[width=\linewidth]{data/Comparison/Monk2/Monk2_CS_Comparison_log_standard.png}
-		\subcaption{Standard}
+		\subcaption{Original}
 	\end{minipage}%
 	\begin{minipage}[t]{0.5\linewidth}
 		\includegraphics[width=\linewidth]{data/Comparison/Monk2/Monk2_CS_Comparison_log_zoom.png}
@@ -319,7 +320,7 @@ Here we can observe that the behaviour of the algorithms follows what we stated 
 	\centering
 	\begin{minipage}[t]{0.5\linewidth}
 		\includegraphics[width=\linewidth]{data/Comparison/Monk3/Monk3_CS_Comparison_log_standard.png}
-		\subcaption{Standard}
+		\subcaption{Original}
 	\end{minipage}%
 	\begin{minipage}[t]{0.5\linewidth}
 		\includegraphics[width=\linewidth]{data/Comparison/Monk3/Monk3_CS_Comparison_log_zoom.png}
@@ -331,13 +332,15 @@ Here we can observe that the behaviour of the algorithms follows what we stated 
 
 \subsubsection{Residual error from $f^*$}
 \label{sec:residual_error}
-The residual value is obtained by the following formula: $ f(x_k) - f^*$ where  $f(x_{k})$ is the residual obtained at the iteration $k$ plus the  regularization term if it is used. The plots of the residual value obtained from the configurations in the table \ref{tab:nets_comp} are shown below. The residual curves obtained, also with an enlargement for each of them, are shown below.
+The residual values for each iteration are obtained by the following formula: $ f(x_k) - f^*$ where  $f(x_{k})$ is the residual obtained at the iteration $k$ plus the  regularization term if it is used and $f^*$ is the optimal value reached by the specific configuration of the problem (that includes the regularization term if it is used). The plots of the residual value obtained from the configurations in the table \ref{tab:nets_comp} are shown below. The residual curves obtained, also with an enlargement for each of them put to the side, are shown below.
+
+An important thing to notice is that $f^*$ may not be 0 because it depends on the function that we minimize  (that is only the MSE for not regularized network and the MSE plus the regularization term for regularized network) that can be not convex and due to this fact it can have multiple local minima in which we can stop. For this reason, to understand if an algorithm has converged to a local minimum, that cannot reach an error equal to zero but it is still a minimum, the norm of the gradient has to be checked to understand how far from the stationary point (and how far from the end of convergence) we are. This can be seen in Monk 3 with L-BFGS optimizer without regularization in which the $f^*$ obtained is 8.198e-3 but the norm of the gradient is 1.9e-6, so the algorithm has converged near a local minimum.
 
 \begin{figure}[H]
 	\centering
 	\begin{minipage}[t]{0.5\linewidth}
 		\includegraphics[width=\linewidth]{data/Comparison/Monk1/Monk1_R_Comparison_log_standard.png}
-		\subcaption{Standard}
+		\subcaption{Original}
 	\end{minipage}%
 	\begin{minipage}[t]{0.5\linewidth}
 		\includegraphics[width=\linewidth]{data/Comparison/Monk1/Monk1_R_Comparison_log_zoom.png}
@@ -350,7 +353,7 @@ The residual value is obtained by the following formula: $ f(x_k) - f^*$ where  
 	\centering
 	\begin{minipage}[t]{0.5\linewidth}
 		\includegraphics[width=\linewidth]{data/Comparison/Monk2/Monk2_R_Comparison_log_standard.png}
-		\subcaption{Standard}
+		\subcaption{Original}
 	\end{minipage}%
 	\begin{minipage}[t]{0.5\linewidth}
 		\includegraphics[width=\linewidth]{data/Comparison/Monk2/Monk2_R_Comparison_log_zoom.png}
@@ -363,7 +366,7 @@ The residual value is obtained by the following formula: $ f(x_k) - f^*$ where  
 	\centering
 	\begin{minipage}[t]{0.5\linewidth}
 		\includegraphics[width=\linewidth]{data/Comparison/Monk3/Monk3_R_Comparison_log_standard.png}
-		\subcaption{Standard}
+		\subcaption{Original}
 	\end{minipage}%
 	\begin{minipage}[t]{0.5\linewidth}
 		\includegraphics[width=\linewidth]{data/Comparison/Monk3/Monk3_R_Comparison_log_zoom.png}
