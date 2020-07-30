@@ -105,7 +105,23 @@ The notation $f^*$ specifies the optimal value reached by a specific configurati
 	\hline
 	\centering
 	 \textbf{Optimizer}&\textbf{Iteration} & \textbf{L rate} & \multicolumn{1}{l|}{\textbf{Lambda}} & \textbf{Mom} & \textbf{$f^{*}$} \\ \hline 
-	MDA & 900 & 0.9 & 0  & 0 & 8.67e-3  \\ \hline
+			L-BFGS & 50 & - & 0  & 0 & 11e-15  \\
+			PBM & 400 & - & 0  & 0 & 6.962e-6 \\
+			NMDA & 900 & 0.9 & 0  & 0.9 & 1.124e-4  \\
+			MDA & 900 & 0.9 & 0  & 0.9 & 1.159e-4 \\
+			NMDA & 900 & 0.9 & 0  & 0.6 & 7.472e-4  \\
+			MDA & 900 & 0.9 & 0  & 0.6 & 7.535e-4 \\
+			NMDA & 900 & 0.9 & 0  & 0.3 & 2.426e-3 \\
+			MDA & 900 & 0.9 & 0  & 0.3 & 2.458e-3 \\
+			MDA & 900 & 0.9 & 0  & 0 & 8.67e-3 \\
+			L-BFGS & 50 & - & 3e-4  & 0 & 6.396e-2 \\
+			L-BFGS & 50 & - & 5e-4  & 0 & 8.553e-2 \\
+			NMDA & 900 & 0.9 & 0  & 0 & 8.678e-2 \\
+			L-BFGS & 50 & - & 7e-4  & 0 & 1.201e-1 \\
+			PBM & 400 & - & 5e-4  & 0 & 1.352e-1  \\
+			PBM & 400 & - & 7e-4  & 0 & 1.893e-1  \\
+			PBM & 400 & - & 3e-4  & 0 & 8.114e-1  \\
+ \hline
 \caption{Monk 1 minima configuration.}
 \label{tab:nets_res_plots_Monk1}
 \end{longtable}
@@ -137,7 +153,23 @@ The notation $f^*$ specifies the optimal value reached by a specific configurati
 	\hline
 	\centering
 	\textbf{Optimizer}&\textbf{Iteration} & \textbf{L rate} & \multicolumn{1}{l|}{\textbf{Lambda}} & \textbf{Mom} & \textbf{$f^{*}$} \\ \hline 
-	MDA & 900 & 0.9 & 0  & 0 & 8.67e-3  \\ \hline
+	L-BFGS & 50 & - & 0  & 0 & 8.196e-3 		\\
+	PBM & 400 & - & 0  & 0 & 1.231e-2 			\\
+	PBM & 400 & - & 5e-4  & 0 & 1.249e-1 		\\
+	MDA & 900 & 0.9 & 0  & 0.9 & 1.254e-2 	\\
+	NMDA & 900 & 0.9 & 0  & 0.9 & 1.254e-2 	\\
+	PBM & 400 & - & 7e-4  & 0 & 1.699e-1 		\\
+	MDA & 900 & 0.9 & 0  & 0.6 & 1.754e-2 	\\
+	NMDA & 900 & 0.9 & 0  & 0.6 & 1.754e-2 	\\
+	NMDA & 900 & 0.9 & 0  & 0.3 & 1.863e-2 	\\
+	MDA & 900 & 0.9 & 0  & 0.3 & 1.864e-2 	\\
+	MDA & 900 & 0.9 & 0  & 0 & 1.968e-2 		\\
+	NMDA & 900 & 0.9 & 0  & 0 & 1.968e-2 	\\
+	L-BFGS & 50 & - & 3e-4  & 0  & 5.781e-2 	\\
+	L-BFGS & 50 & - & 7e-4  & 0  & 7.940e-2 	\\
+	PBM & 400 & - & 3e-4  & 0 & 7.988e-2 		\\
+	L-BFGS & 50 & - & 5e-4  & 0  & 8.555e-2 	\\
+	\hline
 	\caption{Monk 3 minima configuration.}
 	\label{tab:nets_res_plots_Monk3}
 \end{longtable}
