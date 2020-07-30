@@ -100,9 +100,34 @@ The notation $f^*$ specifies the optimal value reached by a specific configurati
 
 
 \subsubsection{Methods minima analysis} 
-\begin{huge}
-	Tabella valori minimi raggiunti
-\end{huge}
+
+\begin{longtable}{|c|c|c|c|c|c|}
+	\hline
+	\centering
+	 \textbf{Optimizer}&\textbf{Iteration} & \textbf{L rate} & \multicolumn{1}{l|}{\textbf{Lambda}} & \textbf{Mom} & \textbf{$f^{*}$} \\ \hline 
+	MDA & 900 & 0.9 & 0  & 0 & 8.67e-3  \\ \hline
+\caption{Monk 1 minima configuration.}
+\label{tab:nets_res_plots_Monk1}
+\end{longtable}
+
+\begin{longtable}{|c|c|c|c|c|c|}
+	\hline
+	\centering
+	\textbf{Optimizer}&\textbf{Iteration} & \textbf{L rate} & \multicolumn{1}{l|}{\textbf{Lambda}} & \textbf{Mom} & \textbf{$f^{*}$} \\ \hline 
+	MDA & 900 & 0.9 & 0  & 0 & 8.67e-3  \\ \hline
+	\caption{Monk 2 minima configuration.}
+	\label{tab:nets_res_plots_Monk2}
+\end{longtable}
+
+\begin{longtable}{|c|c|c|c|c|c|}
+	\hline
+	\centering
+	\textbf{Optimizer}&\textbf{Iteration} & \textbf{L rate} & \multicolumn{1}{l|}{\textbf{Lambda}} & \textbf{Mom} & \textbf{$f^{*}$} \\ \hline 
+	MDA & 900 & 0.9 & 0  & 0 & 8.67e-3  \\ \hline
+	\caption{Monk 3 minima configuration.}
+	\label{tab:nets_res_plots_Monk3}
+\end{longtable}
+
 
 As mentioned in \S\ref{LF:convexity}, the objective function is not convex. For this reason, we try to understand if the methods analysed were approaching the same minima or different ones.
 First of all, we analysed the $f^{*}$ value of each configuration to understand at which value the algorithms converge. \textbf{We observed that in general, the algorithms reach their best value without regularization as expected}. Moreover, the $f^{*}$ values for the Monk1, Monk2 and Monk3 datasets are really close to each other for MDA and NMDA optimization algorithms. For Monk1, the $f^{*}$ values in L-BFGS algorithm with 3e-4 and 5e-4 as regularization parameter are close to each other, also $f^{*}$ values of L-BFGS with 7e-4 as regularization parameter is close to PBM $f^{*}$ values with 5e-4 and 7e-4 as regularization parameter. Similar behaviour can be found in Monk2. For Monk 3, there is different behaviour in which L-BFGS $f^{*}$ values with regularization are all close to each other and PBM with 3e-4 as regularization parameter is close to L-BFGS values. We observed that the L-BFGS converges to better values of the function in each problem. After further analysis, we observed that the weights initialization influences the minimum reached by all the networks after the optimization process.
