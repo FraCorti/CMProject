@@ -76,7 +76,7 @@ The notation $f^*$ specifies the optimal value reached by a specific configurati
 
 \end{center}
 
-The table \ref{tab:nets_comp} contains the configurations of the networks used to obtain the plots in \S \ref{sec:gradient_norm_convergence_speed}, \S \ref{sec:rate_of_convergence}, \S \ref{sec:computational_time} and \S \ref{sec:residual_error}. 
+The table \ref{tab:nets_comp} contains the configurations of the networks used to obtain the plots in \S \ref{sec:gradient_norm_convergence_speed}, \S \ref{sec:rate_of_convergence}, \S \ref{sec:computational_time} and \S \ref{sec:minimum_error}. 
 
 \begin{center}
 	\small\addtolength{\tabcolsep}{-3pt}
@@ -190,14 +190,14 @@ After further analysis, we observed that the weights initialization influences t
 
 \subsubsection{Rate of convergence}
 \label{sec:rate_of_convergence}
-To compute the rate of convergence for each algorithm, we consider $\alpha$ as the minimum residuals obtained by each of the optimization algorithm (that are the $f^{*}$ obtained for each configuration) and $f(x_{k})$ as the residual obtained at the iteration $k$ plus the regularization term if it is used. If exists a real positive constant $\gamma$ such that
+To compute the rate of convergence for each algorithm, we consider $f^*$ as the optimal value obtained by each of the optimization algorithm (that includes the regularization term if it is used) and $f(x_{k})$ as the optimal value obtained at the iteration $k$ plus the regularization term if it is used. If exists a real positive constant $\gamma$ such that
 \begin{equation}
 \label{eq:rofFirst}
-lim_{k\to \infty}\frac{|f(x_{k+1}) - \alpha |}{|f(x_{k}) - \alpha|^p} = \gamma > 0,
+lim_{k\to \infty}\frac{|f(x_{k+1}) - f^* |}{|f(x_{k}) - f^*|^p} = \gamma > 0,
 \end{equation}
 we can state that the sequence of values $f(x_{k})$ produced by the algorithm has an order of convergence $p$. In our case, we can derive an alternative faster and rapid procedure to compute it. Considering the equation \ref{eq:rofFirst} we can obtain the following formula: 
 \begin{equation}
-p = lim_{k\to \infty}\frac{log |f(x_{k+1}) - \alpha | - log \gamma}{log|f(x_{k}) - \alpha|} \approx lim_{k\to \infty}\frac{log |f(x_{k+1}) - \alpha |}{log|f(x_{k}) - \alpha|}.
+p = lim_{k\to \infty}\frac{log |f(x_{k+1}) - f^* | - log \gamma}{log|f(x_{k}) - f^*|} \approx lim_{k\to \infty}\frac{log |f(x_{k+1}) - f^* |}{log|f(x_{k}) - f^*|}.
 \end{equation}
 If $p=1$ the convergence is linear and if $p=2$ the convergence is quadratic. We can observe in figure \ref{CR-Monk2} that L-BFGS reached a superlinear rate of convergence. 
 As we expect from the analysis we made, L-BFGS reached a superlinear convergence rate in some epoch. Also for the Momentum Descent Approach, we see that the convergence rate obtained is linear as we expected. Instead, for the Proximal Bundle method we had some convergences rate peaks that we didn't expect. In our opinion, this can be caused by the particular loss shape of Monks dataset.
@@ -331,7 +331,7 @@ Here we can observe that the behaviour of the algorithms follows what we stated 
 \end{figure}
 
 \subsubsection{Errors with respect to the minimum}
-\label{sec:residual_error}
+\label{sec:minimum_error}
 The error with respect to the minimum for each iteration is obtained by the following formula: $ f(x_k) - f^*$ where  $f(x_{k})$ is the residual obtained at the iteration $k$ plus the  regularization term if it is used and $f^*$ is the optimal value reached by the specific configuration of the problem (that includes the regularization term if it is used). The plots of the error with respect to the minimum value obtained from the configurations in the table \ref{tab:nets_comp} are shown below, also an enlargement for each of them is put to the side.
 
 An important thing to notice is that $f^*$ might not be 0 because it depends on the function that we minimize (that is only the MSE for not regularized network and the MSE plus the regularization term for regularized network). This function could be not convex and due to this fact, it could have multiple local minima in which we could stop. For this reason, to understand if an algorithm has converged to a local minimum, that cannot reach an error equal to zero, but it is still a minimum, the norm of the gradient has to be checked to understand how far from the stationary point (and how far from the end of convergence) we are. This can be seen in Monk 3 with L-BFGS optimizer without regularization in which the $f^*$ obtained is 8.198e-3 but the norm of the gradient is 1.9e-6, so the algorithm has converged near a local minimum.
