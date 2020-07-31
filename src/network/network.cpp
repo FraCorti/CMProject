@@ -54,7 +54,8 @@ double Network::Train(arma::mat validationSet, arma::mat validationLabelSet, arm
   arma::mat currentError = arma::zeros(1, 1);
   arma::mat deltaError;
   arma::mat previousError;
-  double thresholdStopCondition = 0.000001;
+  double thresholdStopConditionError = 1e-18;
+  double thresholdStopConditionNormGradient = 1e-5;
   bool stopCondition = false;
   double nDelta = 0.0;
   auto start = std::chrono::high_resolution_clock::now();
@@ -120,9 +121,19 @@ double Network::Train(arma::mat validationSet, arma::mat validationLabelSet, arm
     if (deltaError.at(0, 0) < 0) {
       nDelta++;
     }
-    if (currentError.has_nan() || (deltaError.at(0, 0) < thresholdStopCondition && deltaError.at(0, 0) > 0)) {
+    //! Stop condition on error
+    if (currentError.has_nan() || (deltaError.at(0, 0) < thresholdStopConditionError && deltaError.at(0, 0) > 0)) {
       stopCondition = true;
+      std::cout << "Stop condition on error achieved: " << thresholdStopConditionError << std::endl;
     }
+
+    //! Stop condition on norm of the gradient
+    if (currentNormGradient < thresholdStopConditionNormGradient) {
+      stopCondition = true;
+      std::cout << "Stop condition on norm of the gradient achieved: " << thresholdStopConditionError << std::endl;
+
+    }
+
     // shuffle the training set for the new epoch
     trainingSet = arma::shuffle(trainingSet);
   }
