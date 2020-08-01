@@ -115,7 +115,7 @@ set cbtics  norangelimit autofreq
 set rtics axis in scale 1,0.5 nomirror norotate  autojustify
 set rtics  norangelimit autofreq 
 unset ttics
-set title "Rate of convergence M2 Monk 2" 
+set title "Rate of convergence M1 Monk 3" 
 set title  font ",16" norotate
 set timestamp bottom 
 set timestamp "" 
@@ -130,7 +130,7 @@ set x2label  font "" textcolor lt -1 norotate
 set xrange [ * : * ] noreverse nowriteback
 set x2range [ * : * ] noreverse nowriteback
 set ylabel "convergence rate" 
-set ylabel  font ",13" textcolor lt -1 rotate offset -0.8
+set ylabel  font ",13" textcolor lt -1 rotate
 set y2label "" 
 set y2label  font "" textcolor lt -1 rotate
 set yrange [ * : * ] noreverse nowriteback
@@ -147,7 +147,7 @@ set rrange [ * : * ] noreverse nowriteback
 unset logscale
 unset jitter
 set zero 1e-08
-set lmargin  +11
+set lmargin  -1
 set bmargin  -1
 set rmargin  -1
 set tmargin  -1
@@ -166,10 +166,9 @@ set fontpath
 set psdir
 set fit brief errorvariables nocovariancevariables errorscaling prescale nowrap v5
 set key left bottom
-#set key right top
 set key font ",14"
 set tics font ", 13"
-set xtics 500
+
 
 f(x) = x
 GNUTERM = "qt"
@@ -178,10 +177,10 @@ GPFUN_f = "f(x) = x"
 GNUTERM = "qt"
 x = 0.0
 
-minimumMGD = 0.022648496556694056
-minimumNMGD = 0.022516608901728817
-minimumLBFGS = 0.000000026439131312
-minimumPBM = 0.000005958215815495
+minimumLBFGS = 0.080410636389656870
+minimumMGD = 0.019333436617110004
+minimumPBM = 0.087966874706983125
+minimumNMGD = 0.026182455754828485
 
 GPFUN_f = "f(x) = x"
 
@@ -200,5 +199,5 @@ errorMGD(currentResidual, pastResidual)= (log(abs(currentResidual -minimumMGD))/
 errorNMGD(currentResidual, pastResidual)= (log(abs(currentResidual -minimumNMGD))/log(abs(pastResidual -minimumNMGD)))
 errorPBM(currentResidual, pastResidual)= (log(abs(currentResidual -minimumPBM))/log(abs(pastResidual -minimumPBM)))
 
-plot [13000:][] "../../LBFGS/Monk2/LBFGS_L2_0.0003_Monk2_Results_SMI.txt" using 0:(shiftLBFGS($1), $0 < 1 ? 1/0 : errorLBFGS($1, previousError2LBFGS)) w lines title "LBGFS 3e-4" lt rgb "red" lw 2, "../../MGD/Monk2/NM/NMGD_0.6_L2_0.0003_Monk2_Results_SMI.txt" using 0:(shiftNMGD($1), $0 < 1 ? 1/0 : errorNMGD($1, previousError2NMGD)) w lines title "NMGD 3e-4" lt rgb "black" lw 2 , "../../MGD/Monk2/M/MGD_0.6_L2_0.0003_Monk2_Results_SMI.txt" using 0:(shiftMGD($1), $0 < 1 ? 1/0 : errorMGD($1, previousError2MGD)) w lines title "MGD 3e-4" lt rgb "blue" lw 2, "../../PBM/Monk2/PBM_L2_0.3_Monk2_Results_SMI.txt" using 0:(shiftPBM($1), $0 < 1 ? 1/0 : errorPBM($1, previousError2PBM)) w lines title "PBM 3e-4" lt rgb "#005A32" lw 2
+plot "../../LBFGS/Monk3/LBFGS_L1_0.3_Monk3_Results_SMI.txt" using 0:(shiftLBFGS($1), $0 < 1 ? 1/0 : errorLBFGS($1, previousError2LBFGS)) w lines title "LBGFS 3e-4" lt rgb "red" lw 2, "../../MGD/Monk3/NM/NMGD_0.9_L2_0.0003_Monk3_Results_SMI.txt" using 0:(shiftNMGD($1), $0 < 1 ? 1/0 : errorNMGD($1, previousError2NMGD)) w lines title "NMGD 3e-4" lt rgb "black" lw 2 , "../../MGD/Monk3/M/MGD_0.9_L1_0.0003_Monk3_Results_SMI.txt" using 0:(shiftMGD($1), $0 < 1 ? 1/0 : errorMGD($1, previousError2MGD)) w lines title "MGD 3e-4" lt rgb "blue" lw 2, "../../PBM/Monk3/PBM_L1_0.3_Monk3_Results_SMI.txt" using 0:(shiftPBM($1), $0 < 1 ? 1/0 : errorPBM($1, previousError2PBM)) w lines title "PBM 3e-4" lt rgb "#005A32" lw 2
 #    EOF
