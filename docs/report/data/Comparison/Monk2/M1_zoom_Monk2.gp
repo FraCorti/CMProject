@@ -124,7 +124,7 @@ set trange [ * : * ] noreverse nowriteback
 set urange [ * : * ] noreverse nowriteback
 set vrange [ * : * ] noreverse nowriteback
 set xlabel "iteration" 
-set xlabel  font ",14" textcolor lt -1 norotate
+set xlabel  font ",14" textcolor lt -1 norotate offset -1.5
 set x2label "" 
 set x2label  font "" textcolor lt -1 norotate
 set xrange [ * : * ] noreverse nowriteback
@@ -147,7 +147,7 @@ set rrange [ * : * ] noreverse nowriteback
 unset logscale
 unset jitter
 set zero 1e-08
-set lmargin  -1
+set lmargin  +9
 set bmargin  -1
 set rmargin  -1
 set tmargin  -1
@@ -165,7 +165,7 @@ set loadpath
 set fontpath 
 set psdir
 set fit brief errorvariables nocovariancevariables errorscaling prescale nowrap v5
-set key right bottom
+set key left bottom
 set key font ",14"
 set tics font ", 13"
 set logscale y 10
@@ -174,7 +174,7 @@ set format y "10^{%L}"
 minimumLBFGS = 0.090313721066937039
 minimumMGD = 0.013742702235183110
 minimumNMGD = 0.022516608901728817
-minimumPBM = 0.372572974615303643
+minimumPBM = 0.000006979035522109
 
 f(x) = x
 GNUTERM = "qt"
