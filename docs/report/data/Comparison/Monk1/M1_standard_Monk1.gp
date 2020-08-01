@@ -172,7 +172,7 @@ set logscale y 10
 set format y "10^{%L}"
 
 minimumLBFGS = 0.079390123135621868
-minimumMGD = 0.021014676125298937
+minimumMGD = 0.013009303283574502
 minimumPBM = 0.087966874706983125
 minimumNMGD = 0.011437199482971963
 
@@ -184,5 +184,5 @@ GPFUN_f = "f(x) = x"
 actualResidual(lossValue, optimalMinimum) = (lossValue - optimalMinimum)
 
 # add smooth bezier to the end to have curves more smooth
-plot "../../LBFGS/Monk1/LBFGS_L1_0.3_Monk1_Results_SMI.txt" using 0:(actualResidual($1,minimumLBFGS)) w lines title "LBGFS 3e-4" lt rgb "red" lw 2, "../../MGD/Monk1/NM/NMGD_0.9_L1_0.0003_Monk1_Results_SMI.txt" using 0:(actualResidual($1,minimumNMGD)) w lines title "NMGD 3e-4" lt rgb "black" lw 2, "../../MGD/Monk1/M/MGD_0.6_L2_0.0003_Monk1_Results_SMI.txt" using 0:(actualResidual($1,minimumMGD)) w lines title "MGD 3e-4" lt rgb "blue" lw 2, "../../PBM/Monk1/PBM_L1_0.3_Monk1_Results_SMI.txt" using 0:(actualResidual($1,minimumPBM)) w lines title "PBM 3e-4" lt rgb "#005A32" lw 2
+plot "../../LBFGS/Monk1/LBFGS_L1_0.3_Monk1_Results_SMI.txt" using 0:(actualResidual($1,minimumLBFGS)) w lines title "LBGFS 3e-4" lt rgb "red" lw 2, "../../MGD/Monk1/NM/NMGD_0.9_L1_0.0003_Monk1_Results_SMI.txt" using 0:(actualResidual($1,minimumNMGD)) w lines title "NMGD 3e-4" lt rgb "black" lw 2, "../../MGD/Monk1/M/MGD_0.9_L1_0.0003_Monk1_Results_SMI.txt" using 0:(actualResidual($1,minimumMGD)) w lines title "MGD 3e-4" lt rgb "blue" lw 2, "../../PBM/Monk1/PBM_L1_0.3_Monk1_Results_SMI.txt" using 0:(actualResidual($1,minimumPBM)) w lines title "PBM 3e-4" lt rgb "#005A32" lw 2
 #    EOF
