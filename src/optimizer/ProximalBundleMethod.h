@@ -27,6 +27,7 @@ class ProximalBundleMethod : public Optimizer {
   double tL_tolerance;
   double mR;
   double mL;
+  double percentage_constraints_skipped;
   void init(Network *currNet, const arma::mat &&partialDerivativeOutput);
   double lineSearchL(Network *currNet, double v, arma::Col<double> &&c, const arma::Col<double> &&d);
   double lineSearchR(Network *currNet,
@@ -46,7 +47,7 @@ class ProximalBundleMethod : public Optimizer {
                              arma::mat &&secondGradeCoeff, arma::mat &&firstGradeCoeff);
  public:
   ~ProximalBundleMethod() override = default;
-  ProximalBundleMethod();
+  ProximalBundleMethod(double percentage_constraints_skipped_ = 0.0);
   void OptimizeBackward(Network *currNet,
                         const arma::mat &&partialDerivativeOutput,
                         const double momentum = 0.0) override;

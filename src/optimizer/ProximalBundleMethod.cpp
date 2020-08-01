@@ -356,7 +356,10 @@ void ProximalBundleMethod::optimize(arma::Col<double> &&updatedParameters,
 
   model.update();
   // Constraint Declaration
-  for (int i = 0; i < constraintCoeff.n_cols; i++) {
+
+  int n_constraint_skipped = constraintCoeff.n_cols * percentage_constraints_skipped;
+
+  for (int i = n_constraint_skipped; i < constraintCoeff.n_cols; i++) {
     GRBLinExpr LHS = 0;
     for (int j = 0; j < constraintCoeff.n_rows; j++) {
       LHS += constraintCoeff(j, i) * x[j];
@@ -390,9 +393,18 @@ void ProximalBundleMethod::optimize(arma::Col<double> &&updatedParameters,
   for (int i = 1; i < columnParameters.n_elem + 1; i++) {
     updatedParameters(i - 1) = x[i].get(GRB_DoubleAttr_X);
   }
+
 }
-ProximalBundleMethod::ProximalBundleMethod()
-    : env(true), mu(1), gamma(0.5), r_max(1), accuracy_tolerance(0.001), tL_tolerance(0.5), mR(0.99), mL(0.1) {
+ProximalBundleMethod::ProximalBundleMethod(double percentage_constraints_skipped_)
+    : env(true),
+      mu(1),
+      gamma(0.5),
+      r_max(1),
+      accuracy_tolerance(0.001),
+      tL_tolerance(0.5),
+      mR(0.99),
+      mL(0.1),
+      percentage_constraints_skipped(percentage_constraints_skipped_) {
   // Create an environment
   env.set("LogFile", "mip1.log");
   env.start();
