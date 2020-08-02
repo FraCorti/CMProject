@@ -171,10 +171,10 @@ set tics font ", 13"
 set logscale y 10
 set format y "10^{%L}"
 
-minimumLBFGS = 0.080410636389656870
+minimumLBFGS = 0.056089732203563003
 minimumMGD = 0.019333436617110004
-minimumNMGD = 0.022303746054131657
-minimumPBM = 
+minimumPBM = 0.074231723313424425
+minimumNMGD = 0.015876454717254809
 
 f(x) = x
 GNUTERM = "qt"

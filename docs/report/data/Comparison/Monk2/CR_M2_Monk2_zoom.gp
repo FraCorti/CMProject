@@ -30,6 +30,7 @@ set style ellipse size graph 0.05, 0.03 angle 0 units xy
 set dummy x, y
 set format x "% h" 
 set format y "%h" 
+#set format y "10^{%L}"
 set format x2 "% h" 
 set format y2 "% h" 
 set format z "% h" 
@@ -180,8 +181,8 @@ x = 0.0
 
 minimumMGD = 0.022648496556694056
 minimumNMGD = 0.022516608901728817
-minimumLBFGS = 0.000000026439131312
-minimumPBM = 0.000005958215815495
+minimumLBFGS = 0.045427242505547555
+minimumPBM = 0.204797191980075788
 
 GPFUN_f = "f(x) = x"
 
