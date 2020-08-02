@@ -10,12 +10,17 @@ To test the correctness of the algorithms we used the MONK's datasets. To use th
 
 
 
-To obtain a deterministic behaviour of the algorithms, we used the entire MONKS datasets as the input of the network. We obtained three matrices that had dimensions: 124x18 (Monk 1), 169x17 (Monk 2), and 122x17 (Monk 3). To compare the behaviour of the algorithms, we collected three parameters for every iteration: the error of the network (that is MSE for not regularized network and MSE plus the regularization term for regularized network), the norm of the gradient and the computational time spent on completing the iteration. These parameters were used to make the rate of convergence and the errors with respect to the minima plots shown below. For a better visualization of the plots the y-axis is plotted on a logarithmic scale (except for \S \ref{sec:rate_of_convergence} "Rate of convergence") and an enlargement version of each plots is put on the side. Before showing the plots a table with all the configurations used and the values obtained is shown.
+To obtain a deterministic behaviour of the algorithms, we used the entire MONKS datasets as the input of the network. We obtained three matrices that had dimensions: 124x18 (Monk 1), 169x17 (Monk 2), and 122x17 (Monk 3). To compare the behaviour of the algorithms, we collected three parameters for every iteration: the error of the network (that is MSE for not regularized network and MSE plus the regularization term for regularized network), the norm of the gradient and the computational time spent on completing the iteration. These parameters were used to make the rate of convergence and the errors with respect to the minima plots shown below. For a better visualization of the plots the y-axis is plotted on a logarithmic scale (except for \S \ref{sec:rate_of_convergence} "Rate of convergence") and an enlargement version of each plots is put on the side or down below. Before showing the plots a table with all the configurations used and the values obtained is shown.
 
 \subsection{Configuration tested}
-The notation $f^*$ specifies the optimal value reached by a specific configuration of the problem (that includes the regularization term if it is used). 
+The notation $f^*$ specifies the optimal value reached by a specific configuration of the problem (that includes the regularization term if it is used). Our goal was to compare the optimization performance of the algorithms described in \S \ref{Method} on the following model: 
+\begin{itemize}
+	\item M1 is a neural network with topology and activation function of your choice, provided it is differentiable, but mandatory L1 regularization;
+	\item M2 is a neural network with topology and activation function of your choice, but mandatory L2 regularization.
+\end{itemize}
+As mentioned in \S \ref{sec:minimum_error}, we decided to use as stop condition the norm of the gradient, the error plus the regularization term and the number of iteration 
 
-\begin{center}
+ \begin{center}
 	\small\addtolength{\tabcolsep}{-3pt}
 		\centering
 		\begin{longtable}{|c|c|c|c|c|c|c|c|c|c|}
@@ -131,15 +136,16 @@ we can state that the sequence of values $f(x_{k})$ produced by the algorithm ha
 \begin{equation}
 p = lim_{k\to \infty}\frac{log |f(x_{k+1}) - f^* | - log \gamma}{log|f(x_{k}) - f^*|} \approx lim_{k\to \infty}\frac{log |f(x_{k+1}) - f^* |}{log|f(x_{k}) - f^*|}.
 \end{equation}
-If $p=1$ the convergence is linear and if $p=2$ the convergence is quadratic. We can observe in figure \ref{CR-Monk2} that L-BFGS reached a superlinear rate of convergence. 
+If $p=1$ the convergence is linear and if $p=2$ the convergence is quadratic. We can observe in figure \ref{fig:CR-M1-Monk2-Standard} that L-BFGS reached a superlinear rate of convergence. 
 As we expect from the analysis we made, L-BFGS reached a superlinear convergence rate in some epoch. Also for the Momentum Descent Approach, we see that the convergence rate obtained is linear as we expected. Instead, for the Proximal Bundle method we had some convergences rate peaks that we didn't expect. In our opinion, this can be caused by the particular loss shape of Monks dataset.
 It's interesting to view that all of these methods, even with a noisy dataset as Monk 3, converge with the same convergence rate as mentioned in the theory. The rate of convergence curves obtained, also with an enlargement for each of them put to the side, are shown below.
+\textbf{Scrivere right zoom e left zoom}
 
 \subsubsection{M1 comparison}
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=0.6\linewidth]{data/Comparison/Monk1/Monk1_M1_CR_standard.png}
-	\caption{M1 converge rate comparison Monk 1 of configurations defined in table \ref{tab:nets_comp}.}
+	\caption{M1 converge rate comparison Monk 1 of configurations defined in table \ref{tab:nets_res}.}
 	\label{fig:CR-M1-Monk1-Standard}
 \end{figure}
 
@@ -153,14 +159,14 @@ It's interesting to view that all of these methods, even with a noisy dataset as
 		\includegraphics[width=\linewidth]{data/Comparison/Monk1/Monk1_M1_CR_zoomRight.png}
 		\subcaption{Right zoom}
 	\end{minipage}
-	\caption{M1 converge rate comparison Monk 1 of configurations defined in table \ref{tab:nets_comp}.}
+	\caption{M1 converge rate comparison Monk 1 of configurations defined in table \ref{tab:nets_res}.}
 	\label{fig:CR-M1-Monk1-Zoom}
 \end{figure}
 
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=0.6\linewidth]{data/Comparison/Monk2/Monk2_M1_CR_standard.png}
-	\caption{M1 converge rate comparison Monk 2 of configurations defined in table \ref{tab:nets_comp}.}
+	\caption{M1 converge rate comparison Monk 2 of configurations defined in table \ref{tab:nets_res}.}
 	\label{fig:CR-M1-Monk2-Standard}
 \end{figure}
 
@@ -174,14 +180,14 @@ It's interesting to view that all of these methods, even with a noisy dataset as
 		\includegraphics[width=\linewidth]{data/Comparison/Monk2/Monk2_M1_CR_zoomRight.png}
 		\subcaption{Right zoom}
 	\end{minipage}
-	\caption{M1 converge rate comparison Monk 2 of configurations defined in table \ref{tab:nets_comp}.}
+	\caption{M1 converge rate comparison Monk 2 of configurations defined in table \ref{tab:nets_res}.}
 	\label{fig:CR-M1-Monk2-Zoom}
 \end{figure}
 
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=0.6\linewidth]{data/Comparison/Monk3/Monk3_M1_CR_standard.png}
-	\caption{M1 converge rate comparison Monk 3 of configurations defined in table \ref{tab:nets_comp}.}
+	\caption{M1 converge rate comparison Monk 3 of configurations defined in table \ref{tab:nets_res}.}
 	\label{fig:CR-M1-Monk3-Standard}
 \end{figure}
 
@@ -195,7 +201,7 @@ It's interesting to view that all of these methods, even with a noisy dataset as
 		\includegraphics[width=\linewidth]{data/Comparison/Monk3/Monk3_M1_CR_zoomRight.png}
 		\subcaption{Right zoom}
 	\end{minipage}
-	\caption{M1 converge rate comparison Monk 3 of configurations defined in table \ref{tab:nets_comp}.}
+	\caption{M1 converge rate comparison Monk 3 of configurations defined in table \ref{tab:nets_res}.}
 	\label{fig:CR-M1-Monk3-Zoom}
 \end{figure}
 
@@ -203,7 +209,7 @@ It's interesting to view that all of these methods, even with a noisy dataset as
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=0.6\linewidth]{data/Comparison/Monk1/Monk1_M2_CR_standard.png}
-	\caption{M2 converge rate comparison Monk 1 of configurations defined in table \ref{tab:nets_comp}.}
+	\caption{M2 converge rate comparison Monk 1 of configurations defined in table \ref{tab:nets_res}.}
 	\label{fig:CR-M2-Monk1-Standard}
 \end{figure}
 
@@ -217,14 +223,14 @@ It's interesting to view that all of these methods, even with a noisy dataset as
 		\includegraphics[width=\linewidth]{data/Comparison/Monk1/Monk1_M2_CR_zoomRight.png}
 		\subcaption{Right zoom}
 	\end{minipage}
-	\caption{M2 converge rate comparison Monk 1 of configurations defined in table \ref{tab:nets_comp}.}
+	\caption{M2 converge rate comparison Monk 1 of configurations defined in table \ref{tab:nets_res}.}
 	\label{fig:CR-M2-Monk1-Zoom}
 \end{figure}
 
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=0.6\linewidth]{data/Comparison/Monk2/Monk2_M2_CR_standard.png}
-	\caption{M2 converge rate comparison Monk 2 of configurations defined in table \ref{tab:nets_comp}.}
+	\caption{M2 converge rate comparison Monk 2 of configurations defined in table \ref{tab:nets_res}.}
 	\label{fig:CR-M2-Monk2-Standard}
 \end{figure}
 
@@ -238,14 +244,14 @@ It's interesting to view that all of these methods, even with a noisy dataset as
 		\includegraphics[width=\linewidth]{data/Comparison/Monk2/Monk2_M2_CR_zoomRight.png}
 		\subcaption{Right zoom}
 	\end{minipage}
-	\caption{M2 converge rate comparison Monk 2 of configurations defined in table \ref{tab:nets_comp}.}
+	\caption{M2 converge rate comparison Monk 2 of configurations defined in table \ref{tab:nets_res}.}
 	\label{fig:CR-M2-Monk2-Zoom}
 \end{figure}
 
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=0.6\linewidth]{data/Comparison/Monk3/Monk3_M2_CR_standard.png}
-	\caption{M2 converge rate comparison Monk 3 of configurations defined in table \ref{tab:nets_comp}.}
+	\caption{M2 converge rate comparison Monk 3 of configurations defined in table \ref{tab:nets_res}.}
 	\label{fig:CR-M2-Monk3-Standard}
 \end{figure}
 
@@ -259,7 +265,7 @@ It's interesting to view that all of these methods, even with a noisy dataset as
 		\includegraphics[width=\linewidth]{data/Comparison/Monk3/Monk3_M2_CR_zoomRight.png}
 		\subcaption{Right zoom}
 	\end{minipage}
-	\caption{M2 converge rate comparison Monk 3 of configurations defined in table \ref{tab:nets_comp}.}
+	\caption{M2 converge rate comparison Monk 3 of configurations defined in table \ref{tab:nets_res}.}
 	\label{fig:CR-M2-Monk3-Zoom}
 \end{figure}
 
