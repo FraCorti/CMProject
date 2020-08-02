@@ -12,13 +12,13 @@ int main() {
   arma::cout.precision(18);
   arma::cout.setf(std::ios::fixed);
 
-  Preprocessing cupPreprocessing("../../data/monk/monks1_train_formatted.csv");
+  Preprocessing cupPreprocessing("../../data/monk/monks3_train_formatted.csv");
   arma::mat trainingSet;
   arma::mat validationSet;
   arma::mat testSet;
 
   cupPreprocessing.GetSplit(100, 0, 0, std::move(trainingSet), std::move(validationSet), std::move(testSet));
-  testSet.load("../../data/monk/monks1_train_formatted.csv");
+  testSet.load("../../data/monk/monks3_train_formatted.csv");
   int labelCol = 1;
 
 
@@ -96,40 +96,43 @@ int main() {
   */
 
 
+  for(int i=2 ; i < 100; i++){
+    //! ML CUP network, training and testing
+    Network cupNetwork;
+    cupNetwork.SetLossFunction("meanSquaredError");
+    int seed = i;
+    std::cout << "Current seed: " <<  seed << std::endl;
+    Layer firstLayer(trainingSet.n_cols - labelCol, 15, "tanhFunction");
+    Layer lastLayer(15, labelCol, "logisticFunction"); // logisticFunction linearFunction
+    cupNetwork.Add(firstLayer);
+    cupNetwork.Add(lastLayer);
+    cupNetwork.SetRegularizer("L1");//L1 L2
+    //Optimizer *opt = new LBFGS(2,15, seed);
+    Optimizer *opt = new GradientDescent();//LBFGS gradientDescent proximalBundleMethod
+    //Optimizer *opt = new ProximalBundleMethod();
+    cupNetwork.SetOptimizer(opt);//LBFGS gradientDescent proximalBundleMethod
+    cupNetwork.SetNesterov(false);
 
-  //! ML CUP network, training and testing
-  Network cupNetwork;
-  cupNetwork.SetLossFunction("meanSquaredError");
-  int seed = 20;
-  Layer firstLayer(trainingSet.n_cols - labelCol, 15, "tanhFunction");
-  Layer lastLayer(15, labelCol, "logisticFunction"); // logisticFunction linearFunction
-  cupNetwork.Add(firstLayer);
-  cupNetwork.Add(lastLayer);
-  cupNetwork.SetRegularizer("L2");//L1 L2
-  //Optimizer *opt = new LBFGS(2,15, seed);
-  Optimizer *opt = new GradientDescent();//LBFGS gradientDescent proximalBundleMethod
-  //Optimizer *opt = new ProximalBundleMethod();
-  cupNetwork.SetOptimizer(opt);//LBFGS gradientDescent proximalBundleMethod
-  cupNetwork.SetNesterov(false);
+    cupNetwork.Init(+1, -1, seed);
+    std::cout << " Residual " << "Convergence speed " << "Computational time" << std::endl;
+    cupNetwork.Train(trainingData,
+                     trainingLabels,
+                     trainingSet,
+                     trainingLabels.n_cols,
+                     5000,
+                     trainingLabels.n_rows,
+                     0.9,
+                     3e-4,
+                     0.9);
 
-  cupNetwork.Init(+1, -1, seed);
-  std::cout << " Residual " << "Convergence speed " << "Computational time" << std::endl;
-  cupNetwork.Train(trainingData,
-                   trainingLabels,
-                   trainingSet,
-                   trainingLabels.n_cols,
-                   15000,
-                   trainingLabels.n_rows,
-                   0.9,
-                   0.0,
-                   0.0);
+    arma::mat mat;
 
-  arma::mat mat;
+    cupNetwork.TestWithThreshold(std::move(testData), std::move(testLabels), 0.5);
 
-  cupNetwork.TestWithThreshold(std::move(testData), std::move(testLabels), 0.5);
+    //cupNetwork.Test(std::move(testData), std::move(testLabels), std::move(mat));
+    mat.print("result");
+  }
 
-  //cupNetwork.Test(std::move(testData), std::move(testLabels), std::move(mat));
-  mat.print("result");
   //! Cross validation implementation
   /*
   CrossValidation cross_validation;

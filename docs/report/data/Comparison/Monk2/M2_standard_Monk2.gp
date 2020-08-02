@@ -165,7 +165,7 @@ set loadpath
 set fontpath 
 set psdir
 set fit brief errorvariables nocovariancevariables errorscaling prescale nowrap v5
-set key right top
+set key left bottom
 set key font ",14"
 set tics font ", 13"
 set logscale y 10
