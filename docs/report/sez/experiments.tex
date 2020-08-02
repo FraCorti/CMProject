@@ -37,7 +37,7 @@ The notation $f^*$ specifies the optimal value reached by a specific configurati
 			Monk2 & L-BFGS & M1 & 381 & 0.9 & 3e-4  & 0 & 6.845e-1 & 9.43e-2 & 27206 \\
 			Monk2 & L-BFGS & M2 & 481 & 0.9 & 3e-4  & 0 & 4.542e-2 & 4.294e-1 & 26744 \\
 			Monk2 & PBM & M1 & 270 & 0.9 & 3e-4  & 0 & 1.176e-1  & 9.973e-6 & 24036 \\
-			Monk2 & PBM & M2 & 2000 & 0.9 & 3e-4  & 0 & 5.958e-6 & 2.647e-4 & 399099 \\
+			Monk2 & PBM & M2 & 2000 & 0.9 & 3e-4  & 0 & 1.96e-1  & 6.971e-2 & 3654 \\
 			
 			Monk3 & MDA & M1 & 15000 & 0.9 & 3e-4  & 0.9 & 3.458e-2 & 7.675e-2 & 22280 \\
 			Monk3 & MDA & M2 & 15000 & 0.9 & 3e-4  & 0.6 & 2.794e-2 & 3.502e-2 & 3458 \\
@@ -59,64 +59,66 @@ The notation $f^*$ specifies the optimal value reached by a specific configurati
 As mentioned in \S\ref{LF:convexity}, the objective function is not convex. For this reason, we try to understand if the methods used were approaching the same optimal value or different ones.
 First of all, we analysed the $f^{*}$ value of each configuration to understand at which optimal values the algorithms converge. 
 
-\begin{longtable}{|c|c|c|c|c|c|}
+\begin{longtable}{|c|c|c|c|c|c|c|c|}
 	\hline
 	\centering
-	\textbf{Optimizer}&\textbf{Iteration} & \textbf{L rate} & \multicolumn{1}{l|}{\textbf{Lambda}} & \textbf{Mom} & \textbf{$f^{*}$} \\ \hline 
-	L-BFGS & 50 & - & 3e-4  & 0 & 6.396e-2 \\
-	L-BFGS & 50 & - & 5e-4  & 0 & 8.553e-2 \\
-	L-BFGS & 50 & - & 7e-4  & 0 & 1.201e-1 \\
-	PBM & 400 & - & 5e-4  & 0 & 1.352e-1  \\
-	PBM & 400 & - & 7e-4  & 0 & 1.893e-1  \\
-	PBM & 400 & - & 3e-4  & 0 & 8.114e-1  \\
+	\textbf{Optimizer}&\textbf{Model} &\textbf{Iteration} & \textbf{L rate} & \multicolumn{1}{l|}{\textbf{Lambda}} & \textbf{Mom} & \textbf{$f^{*}$} \\ \hline 
+	Monk1 & NMDA & M1 & 15000 & 0.9 & 3e-4  & 0.9 & 1.143e-2 	\\
+	Monk1 & MDA & M1 & 15000 & 0.9 & 3e-4  & 0.9 & 1.301e-2  		\\
+	Monk1 & L-BFGS & M1 & 32 & 0.9 & 3e-4  & 0 &  7.939e-2 			\\
+	Monk1 & PBM & M1 & 2000 & 0.9 & 3e-4  & 0 & 8.796e-2  			\\
+	Monk1 & NMDA & M2 & 15000 & 0.9 & 3e-4  & 0.6 & 1.105e-2 	\\
+	Monk1 & MDA & M2 & 15000 & 0.9 & 3e-4  & 0.6 & 2.101e-2 		\\
+	Monk1 & L-BFGS & M2 & 500 & 0.9 & 3e-4  & 0 &   4.327e-2 		\\
+	Monk1 & PBM & M2 & 54 & 0.9 & 3e-4  & 0 & 8.491e-2 				\\
 	\hline
-	\caption{Monk 1 optimizer configuration displayed in increasing order of $f^*$.}
+	\caption{Monk 1 optimizer configuration divided by model and displayed in increasing order of $f^*$.}
 	\label{tab:nets_res_plots_Monk1}
 \end{longtable}
 
-As can be seen from table \ref{tab:nets_res_plots_Monk1}, the different configuration of the optimizers MDA and NMDA with 900 iterations converge to the same optimal values. This can be stated because their optimal values differ between 3e-6 and 6e-6. Also for the L-BFGS optimizer with 5e-4 as regularization parameter using 50 iterations and the NMDA with 0.0 as momentum parameter using 900 iterations the optimal values obtained differ of 1e-3.
+As can be seen from table \ref{tab:nets_res_plots_Monk1}, the different M1 configuration of the optimizers MDA and NMDA with 1500 iterations converge to the same optimal values. This can be stated because their optimal values differ of 1.5e-3. The other configuration have not value enough similar to state that the algorithms were converging to the same value.
 
-\begin{longtable}{|c|c|c|c|c|c|}
+
+\begin{longtable}{|c|c|c|c|c|c|c|c|}
 	\hline
 	\centering
-	\textbf{Optimizer}&\textbf{Iteration} & \textbf{L rate} & \multicolumn{1}{l|}{\textbf{Lambda}} & \textbf{Mom} & \textbf{$f^{*}$} \\ \hline
-	L-BFGS & &  &  & &2 \\ 
-	PBM &  & &   &  & \\ 
+	\textbf{Optimizer}&\textbf{Model} &\textbf{Iteration} & \textbf{L rate} & \multicolumn{1}{l|}{\textbf{Lambda}} & \textbf{Mom} & \textbf{$f^{*}$} \\ \hline 
+	Monk2 & MDA & M1 & 15000 & 0.9 & 3e-4  & 0.9 & 1.374e-2 		\\
+	Monk2 & NMDA & M1 & 15000 & 0.9 & 3e-4  & 0.9 &  1.374e-2 	\\
+	Monk2 & PBM & M1 & 270 & 0.9 & 3e-4  & 0 & 1.176e-1  				\\
+	Monk2 & L-BFGS & M1 & 381 & 0.9 & 3e-4  & 0 & 6.845e-1 			\\
+	Monk2 & NMDA & M2 & 15000 & 0.9 & 3e-4  & 0.6 & 2.251e-2 	\\
+	Monk2 & MDA & M2 & 15000 & 0.9 & 3e-4  & 0.6 & 2.264e-2 		\\
+	Monk2 & L-BFGS & M2 & 481 & 0.9 & 3e-4  & 0 & 4.542e-2 			\\
+	Monk2 & PBM & M2 & 2000 & 0.9 & 3e-4  & 0 & 1.96e-1 				\\
 	\hline
-		\caption{Monk 2 optimizer configuration displayed in increasing order of $f^*$.}
+	\caption{Monk 2 optimizer configuration divided by model and displayed in increasing order of $f^*$.}
 	\label{tab:nets_res_plots_Monk2}
 \end{longtable}
 
-As can be seen from table \ref{tab:nets_res_plots_Monk2}, the different configurations, with 0.3 and 0.6 as momentum parameter and 0.9 as learning rate, of the optimizers MDA and NMDA with 900 iterations differ of 9e-4 and 5e-4. Also the MDA and NMDA with 0 as momentum parameter obtained the same optimal values. In the end, for the L-BFGS with 5e-4 as regularization parameter and the PBM with 3e-4 as regularization parameter the optimal values obtained differ of 6e-2.  
+As can be seen from table \ref{tab:nets_res_plots_Monk2}, the different configurations of M2 model of the optimizers MDA and NMDA with 15000 iterations differ of value smaller than 1e-4. Also the MDA and NMDA of model M1 obtained the same optimal values.
 
-\begin{longtable}{|c|c|c|c|c|c|}
+
+\begin{longtable}{|c|c|c|c|c|c|c|c|}
 	\hline
 	\centering
-	\textbf{Optimizer}&\textbf{Iteration} & \textbf{L rate} & \multicolumn{1}{l|}{\textbf{Lambda}} & \textbf{Mom} & \textbf{$f^{*}$} \\ \hline 
-	L-BFGS & 50 & - & 0  & 0 & 8.196e-3 		\\
-	PBM & 400 & - & 0  & 0 & 1.231e-2 			\\
-	MDA & 900 & 0.9 & 0  & 0.9 & 1.254e-2 	\\
-	NMDA & 900 & 0.9 & 0  & 0.9 & 1.254e-2 	\\
-	MDA & 900 & 0.9 & 0  & 0.6 & 1.754e-2 	\\
-	NMDA & 900 & 0.9 & 0  & 0.6 & 1.754e-2 	\\
-	NMDA & 900 & 0.9 & 0  & 0.3 & 1.863e-2 	\\
-	MDA & 900 & 0.9 & 0  & 0.3 & 1.864e-2 	\\
-	MDA & 900 & 0.9 & 0  & 0 & 1.968e-2 		\\
-	NMDA & 900 & 0.9 & 0  & 0 & 1.968e-2 	\\
-	L-BFGS & 50 & - & 3e-4  & 0  & 5.781e-2 	\\
-	L-BFGS & 50 & - & 7e-4  & 0  & 7.940e-2 	\\
-	PBM & 400 & - & 3e-4  & 0 & 7.988e-2 		\\
-	L-BFGS & 50 & - & 5e-4  & 0  & 8.555e-2 	\\
-	PBM & 400 & - & 5e-4  & 0 & 1.249e-1 		\\
-	PBM & 400 & - & 7e-4  & 0 & 1.699e-1 		\\
+	\textbf{Optimizer}&\textbf{Model} &\textbf{Iteration} & \textbf{L rate} & \multicolumn{1}{l|}{\textbf{Lambda}} & \textbf{Mom} & \textbf{$f^{*}$} \\ \hline 
+	Monk3 & NMDA & M1 & 15000 & 0.9 & 3e-4  & 0.9 & 1.587e-2 \\
+	Monk3 & MDA & M1 & 15000 & 0.9 & 3e-4  & 0.9 & 3.458e-2 	\\
+	Monk3 & L-BFGS & M1 & 251 & 0.9 & 3e-4  & 0 & 5.608e-2 		\\
+	Monk3 & PBM & M1 & 1433 & 0.9 & 3e-4  & 0 & 7.423e-2 		\\
+	Monk3 & NMDA & M2 & 15000 & 0.9 & 3e-4  & 0.6 & 2.15e-2 	\\
+	Monk3 & MDA & M2 & 15000 & 0.9 & 3e-4  & 0.6 & 2.794e-2 	\\
+	Monk3 & L-BFGS & M2 & 201 & 0.9 & 3e-4  & 0 & 4.354e-2 		\\
+	Monk3 & PBM & M2 & 1434 & 0.9 & 3e-4  & 0 & 7.971e-2 		\\
 	\hline
-		\caption{Monk 3 optimizer configuration displayed in increasing order of $f^*$.}
+	\caption{Monk 3 optimizer configuration divided by model and displayed in increasing order of $f^*$.}
 	\label{tab:nets_res_plots_Monk3}
 \end{longtable}
 
-As can be seen from table \ref{tab:nets_res_plots_Monk3}, the different configuration, with 0.0, 0.3, 0.6 and 0.9 as momentum parameter and 0.9 as learning rate, of the optimizers MDA and NMDA with 900 iterations differ of a maximum of 1e-5. In the end, for the L-BFGS with 7e-4 as regularization parameter and the PBM with 3e-4 as regularization parameter the optimal values obtained differ of 5e-4. 
+As can be seen from table \ref{tab:nets_res_plots_Monk3}, the different configuration of model M2 of the optimizers MDA and NMDA with 15000 iterations differ of a maximum of 7e-3. 
 
-After further analysis, we observed that the weights initialization influences the  optimal values reached by all the networks after the optimization process.
+After further analysis, we observed that the weights initialization influences the  optimal values reached by all the networks after the optimization process. 
 
 \subsection{Rate of convergence}
 \label{sec:rate_of_convergence}
