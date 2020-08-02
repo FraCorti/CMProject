@@ -29,7 +29,7 @@ set style circle radius graph 0.02
 set style ellipse size graph 0.05, 0.03 angle 0 units xy
 set dummy x, y
 set format x "% h" 
-set format y "% h" 
+set format y "%h" 
 set format x2 "% h" 
 set format y2 "% h" 
 set format z "% h" 
@@ -115,7 +115,7 @@ set cbtics  norangelimit autofreq
 set rtics axis in scale 1,0.5 nomirror norotate  autojustify
 set rtics  norangelimit autofreq 
 unset ttics
-set title "M1 comparison Monk 3" 
+set title "Rate of convergence M2 Monk 3" 
 set title  font ",16" norotate
 set timestamp bottom 
 set timestamp "" 
@@ -129,8 +129,8 @@ set x2label ""
 set x2label  font "" textcolor lt -1 norotate
 set xrange [ * : * ] noreverse nowriteback
 set x2range [ * : * ] noreverse nowriteback
-set ylabel "error" 
-set ylabel  font ",14" textcolor lt -1 rotate offset -1.5
+set ylabel "convergence rate" 
+set ylabel  font ",13" textcolor lt -1 rotate
 set y2label "" 
 set y2label  font "" textcolor lt -1 rotate
 set yrange [ * : * ] noreverse nowriteback
@@ -147,7 +147,7 @@ set rrange [ * : * ] noreverse nowriteback
 unset logscale
 unset jitter
 set zero 1e-08
-set lmargin  +9
+set lmargin  +11
 set bmargin  -1
 set rmargin  -1
 set tmargin  -1
@@ -168,21 +168,36 @@ set fit brief errorvariables nocovariancevariables errorscaling prescale nowrap 
 set key right top
 set key font ",14"
 set tics font ", 13"
-set logscale y 10
-set format y "10^{%L}"
-
-minimumLBFGS = 0.056089732203563003
-minimumMGD = 0.019333436617110004
-minimumPBM = 0.074231723313424425
-minimumNMGD = 0.015876454717254809
+set ytics 0.003
 
 f(x) = x
 GNUTERM = "qt"
 x = 0.0
 GPFUN_f = "f(x) = x"
+GNUTERM = "qt"
+x = 0.0
 
-actualResidual(lossValue, optimalMinimum) = (lossValue - optimalMinimum)
+minimumLBFGS = 0.056089732203563003
+minimumMGD = 0.019333436617110004
+minimumPBM = 0.074231723313424425
+minimumNMGD = 0.021508588735979290
 
-# add smooth bezier to the end to have curves more smooth
-plot "../../LBFGS/Monk3/LBFGS_L1_0.3_Monk3_Results_SMI.txt" using 0:(actualResidual($1,minimumLBFGS)) w lines title "LBGFS 3e-4" lt rgb "red" lw 2, "../../MGD/Monk3/NM/NMGD_0.9_L1_0.0003_Monk3_Results_SMI.txt" using 0:(actualResidual($1,minimumNMGD)) w lines title "NMGD 3e-4" lt rgb "black" lw 2, "../../MGD/Monk3/M/MGD_0.9_L1_0.0003_Monk3_Results_SMI.txt" using 0:(actualResidual($1,minimumMGD)) w lines title "MGD 3e-4" lt rgb "blue" lw 2, "../../PBM/Monk3/PBM_L1_0.3_Monk3_Results_SMI.txt" using 0:(actualResidual($1,minimumPBM)) w lines title "PBM 3e-4" lt rgb "#005A32" lw 2
+GPFUN_f = "f(x) = x"
+
+previousError2LBFGS = previousError1LBFGS = 0;  
+previousError2NMGD = previousError1NMGD = 0; 
+previousError2MGD = previousError1MGD = 0; 
+previousError2PBM = previousError1PBM = 0; 
+
+shiftLBFGS(x)= (previousError2LBFGS= previousError1LBFGS, previousError1LBFGS = x)
+shiftNMGD(x) = (previousError2NMGD= previousError1NMGD, previousError1NMGD = x)
+shiftMGD(x)= (previousError2MGD= previousError1MGD, previousError1MGD = x)
+shiftPBM(x)= (previousError2PBM= previousError1PBM, previousError1PBM = x)
+
+errorLBFGS(currentResidual, pastResidual)= (log(abs(currentResidual -minimumLBFGS))/log(abs(pastResidual -minimumLBFGS)))
+errorMGD(currentResidual, pastResidual)= (log(abs(currentResidual -minimumMGD))/log(abs(pastResidual -minimumMGD)))
+errorNMGD(currentResidual, pastResidual)= (log(abs(currentResidual -minimumNMGD))/log(abs(pastResidual -minimumNMGD)))
+errorPBM(currentResidual, pastResidual)= (log(abs(currentResidual -minimumPBM))/log(abs(pastResidual -minimumPBM)))
+
+plot [8000:][] "../../LBFGS/Monk3/LBFGS_L2_0.0003_Monk3_Results_SMI.txt" using 0:(shiftLBFGS($1), $0 < 1 ? 1/0 : errorLBFGS($1, previousError2LBFGS)) w lines title "LBGFS 3e-4" lt rgb "red" lw 2, "../../MGD/Monk3/NM/NMGD_0.9_L2_0.0003_Monk3_Results_SMI.txt" using 0:(shiftNMGD($1), $0 < 1 ? 1/0 : errorNMGD($1, previousError2NMGD)) w lines title "NMGD 3e-4" lt rgb "black" lw 2 , "../../MGD/Monk3/M/MGD_0.9_L2_0.0003_Monk3_Results_SMI.txt" using 0:(shiftMGD($1), $0 < 1 ? 1/0 : errorMGD($1, previousError2MGD)) w lines title "MGD 3e-4" lt rgb "blue" lw 2, "../../PBM/Monk3/PBM_L2_0.3_Monk3_Results_SMI.txt" using 0:(shiftPBM($1), $0 < 1 ? 1/0 : errorPBM($1, previousError2PBM)) w lines title "PBM 3e-4" lt rgb "#005A32" lw 2
 #    EOF
