@@ -9,180 +9,39 @@ All network tested with L2 regularization were composed by 1 hidden layer of 15 
 	\begin{tabular}{|c|c|c|c|c|}
 		\hline
 		\textbf{Task} &	\textbf{Method} &\textbf{ Variant} & \textbf{Initialization} &\textbf{Seed} \\ \hline
-		MONK 1        &    MDA & M  0/0.3/0.6/0.9 & 1e-2, -1e-2 & 30  \\ \hline
-		MONK 2        &    MDA & M  0/0.3/0.6/0.9 & 1e-2, -1e-2 & 30  \\ \hline
-		MONK 3        &    MDA & M  0/0.3/0.6/0.9 & 1e-2, -1e-2 & 30  \\ \hline			
-		MONK 1        &    PBM & L1  0/3e-4/5e-4/7e-4 & 1e-2, -1e-2 & 69  \\ \hline
-		MONK 2        &    PBM & L1  0/3e-4/5e-4/7e-4 & 1e-2, -1e-2 & 86  \\ \hline
-		MONK 3        &    PBM & L1  0/3e-4/5e-4/7e-4 & 1e-2, -1e-2 & 13  \\ \hline			
-		MONK 1        &    L-BFGS & L2  0 & 1, -1 & 594  \\ \hline
-		MONK 1        &    L-BFGS & L2  3e-4 & 1, -1 & 26  \\ \hline
-		MONK 1        &    L-BFGS & L2  5e-4 & 1, -1 & 333  \\ \hline
-		MONK 1        &    L-BFGS & L2  7e-4 & 1, -1 & 113  \\ \hline
-		MONK 2        &    L-BFGS & L2  0 & 1, -1 & 21  \\ \hline
-		MONK 2        &    L-BFGS & L2  3e-4 & 1, -1 & 420  \\ \hline
-		MONK 2        &    L-BFGS & L2  5e-4 & 1, -1 & 610  \\ \hline
-		MONK 2        &    L-BFGS & L2  7e-4 & 1, -1 & 459  \\ \hline
-		MONK 3        &    L-BFGS & L2  0 & 1, -1 & 5  \\ \hline
-		MONK 3        &    L-BFGS & L2  3e-4 & 1, -1 & 294  \\ \hline
-		MONK 3        &    L-BFGS & L2  5e-4 & 1, -1 & 57  \\ \hline
-		MONK 3        &    L-BFGS & L2  7e-4 & 1, -1 & 57  \\ \hline
 		MONK 1        &    MDA & M  0.6 L2 3e-4 & 1e-2, -1e-2 & 107  \\ \hline
 		MONK 2        &    MDA & M  0.6 L2 3e-4 & 1e-2, -1e-2 & 196  \\ \hline
 		MONK 3        &    MDA & M  0.6/0.9 L2 3e-4 & 1e-2, -1e-2 & 89  \\ \hline
 		MONK 1        &    NMDA & M  0.6 L2 3e-4 & 1e-2, -1e-2 & 70  \\ \hline
 		MONK 2        &    NMDA & M  0.6 L2 3e-4 & 1e-2, -1e-2 & 24  \\ \hline
 		MONK 3        &    NMDA & M  0.6/0.9 L2 3e-4 & 1e-2, -1e-2 & 31  \\ \hline
-		MONK 1        &    PBM & L2 3e-4 & 1e-2, -1e-2 & 16  \\ \hline
-		MONK 2        &    PBM & L2 3e-4 & 1e-2, -1e-2 & 5  \\ \hline
-		MONK 3        &    PBM & L2 3e-4 & 1e-2, -1e-2 & 19  \\ \hline
-		MONK 1        &    L-BFGS & L2 3e-4 & 1, -1 & 26  \\ \hline
-		MONK 2        &    L-BFGS & L2 3e-4 & 1, -1 & 383  \\ \hline
-		MONK 3        &    L-BFGS & L2 3e-4 & 1, -1 & 2  \\ \hline
+		MONK 1        &    PBM  & L2 3e-4 & 1, -1 & 87  \\ \hline
+		MONK 2        &    PBM & L2 3e-4 & 1, -1 & 222 *  \\ \hline
+		MONK 3        &    PBM & L2 3e-4 & 1e-2, -1e-2 & 33 *  \\ \hline
+		MONK 1        &    L-BFGS & L2 3e-4 & 1, -1 & 507  \\ \hline
+		MONK 2        &    L-BFGS & L2 3e-4 & 1, -1 & 295  \\ \hline
+		MONK 3        &    L-BFGS & L2 3e-4 & 1, -1 & 4  \\ \hline
+		
+		MONK 1        &    MDA & M  0.6 L1 3e-4 & 1e-2, -1e-2 & 82  \\ \hline
+		MONK 2        &    MDA & M  0.6 L1 3e-4 & 1e-2, -1e-2 & 7  \\ \hline
+		MONK 3        &    MDA & M  0.6/0.9 L1 3e-4 & 1e-2, -1e-2 & 61  \\ \hline
+		MONK 1        &    NMDA & M  0.6 L1 3e-4 & 1e-2, -1e-2 & 82  \\ \hline
+		MONK 2        &    NMDA & M  0.6 L1 3e-4 & 1e-2, -1e-2 & 7  \\ \hline
+		MONK 3        &    NMDA & M  0.6/0.9 L1 3e-4 & 1e-2, -1e-2 & 61  \\ \hline
+		MONK 1        &    PBM & L1 3e-4 & 1e-2, -1e-2 & 4  \\ \hline
+		MONK 2        &    PBM & L1 3e-4 & 0, 0 & 30  \\ \hline
+		MONK 3        &    PBM & L1 3e-4 & 1e-2, -1e-2 & 33 *  \\ \hline
+		MONK 1        &    L-BFGS & L1 3e-4 & 1, -1 & 86  \\ \hline
+		MONK 2        &    L-BFGS & L1 3e-4 & 1, -1 & 295  \\ \hline
+		MONK 3        &    L-BFGS & L1 3e-4 & 1, -1 & 4  \\ \hline
 	\end{tabular}
 	\caption{MONK's problems parameter.}
 	\label{tab:dati}
 \end{table}
+* With "percentage\_constraints\_skipped" parameter set to 0.5 of percentage in the algorithm.
 \section{Monks curves}
-% Momentum 
-\begin{comment}
-\begin{figure}[H]
-	\centering
-	\begin{minipage}[t]{0.5\linewidth}
-		\includegraphics[width=\linewidth]{data/MGD/Monk2/M/Monk2_MGD_Residual_standard.png}
-		%\subcaption{MSE}
-	\end{minipage}%
-	\begin{minipage}[tVedelago, 31050 TV]{0.5\linewidth}
-		\includegraphics[width=\linewidth]{data/MGD/Monk2/M/Monk2_MGD_Residual_zoom.png}
-		%\subcaption{Accuracy}
-	\end{minipage}
-	\caption{MDA on Monk2 dataset residual.}
-\end{figure}
-\begin{figure}[H]
-	\centering
-	\begin{minipage}[t]{0.5\linewidth}
-		\includegraphics[width=\linewidth]{data/MGD/Monk3/M/Monk3_MGD_Residual_standard.png}
-		%\subcaption{MSE}
-	\end{minipage}%
-	\begin{minipage}[t]{0.5\linewidth}
-		\includegraphics[width=\linewidth]{data/MGD/Monk3/M/Monk3_MGD_Residual_zoom.png}
-		%\subcaption{Accuracy}
-	\end{minipage}
-	\caption{MDA on Monk3 dataset residual.}
-\end{figure}
-%Nesterov Momentum
-\begin{figure}[H]
-	\centering
-	\begin{minipage}[t]{0.5\linewidth}
-		\includegraphics[width=\linewidth]{data/MGD/Monk1/NM/Monk1_NMGD_Residual_standard.png}
-		%\subcaption{MSE}
-	\end{minipage}%
-	\begin{minipage}[t]{0.5\linewidth}
-		\includegraphics[width=\linewidth]{data/MGD/Monk1/NM/Monk1_NMGD_Residual_zoom.png}
-		%\subcaption{Accuracy}
-	\end{minipage}
-	\caption{Nesterov MDA on Monk1 dataset residual.}
-\end{figure}
-\begin{figure}[H]
-	\centering
-	\begin{minipage}[t]{0.5\linewidth}
-		\includegraphics[width=\linewidth]{data/MGD/Monk2/NM/Monk2_NMGD_Residual_standard.png}
-		%\subcaption{MSE}
-	\end{minipage}%
-	\begin{minipage}[t]{0.5\linewidth}
-		\includegraphics[width=\linewidth]{data/MGD/Monk2/NM/Monk2_NMGD_Residual_zoom.png}
-		%\subcaption{Accuracy}
-	\end{minipage}
-	\caption{Nesterov MDA on Monk2 dataset residual.}
-\end{figure}
-\begin{figure}[H]
-	\centering
-	\begin{minipage}[t]{0.5\linewidth}
-		\includegraphics[width=\linewidth]{data/MGD/Monk3/NM/Monk3_NMGD_Residual_standard.png}
-		%\subcaption{MSE}
-	\end{minipage}%
-	\begin{minipage}[t]{0.5\linewidth}
-		\includegraphics[width=\linewidth]{data/MGD/Monk3/NM/Monk3_NMGD_Residual_zoom.png}
-		%\subcaption{Accuracy}
-	\end{minipage}
-	\caption{Nesterov MDA on Monk3 dataset residual.}
-\end{figure}
-% Bundle
-\begin{figure}[H]
-	\centering
-	\begin{minipage}[t]{0.5\linewidth}
-		\includegraphics[width=\linewidth]{data/PBM/Monk1/Monk1_PBM_Residual_standard.png}
-		%\subcaption{MSE}
-	\end{minipage}%
-	\begin{minipage}[t]{0.5\linewidth}
-		\includegraphics[width=\linewidth]{data/PBM/Monk1/Monk1_PBM_Residual_zoom.png}
-		%\subcaption{Accuracy}
-	\end{minipage}
-	\caption{PBM on Monk1 dataset residual.}
-\end{figure}
-\begin{figure}[H]
-	\centering
-	\begin{minipage}[t]{0.5\linewidth}
-		\includegraphics[width=\linewidth]{data/PBM/Monk2/Monk2_PBM_Residual_standard.png}
-		%\subcaption{MSE}
-	\end{minipage}%
-	\begin{minipage}[t]{0.5\linewidth}
-		\includegraphics[width=\linewidth]{data/PBM/Monk2/Monk2_PBM_Residual_zoom.png}
-		%\subcaption{Accuracy}
-	\end{minipage}
-	\caption{PBM on Monk2 dataset residual.}
-\end{figure}
-\begin{figure}[H]
-	\centering
-	\begin{minipage}[t]{0.5\linewidth}
-		\includegraphics[width=\linewidth]{data/PBM/Monk3/Monk3_PBM_Residual_standard.png}
-		%\subcaption{MSE}
-	\end{minipage}%
-	\begin{minipage}[t]{0.5\linewidth}
-		\includegraphics[width=\linewidth]{data/PBM/Monk3/Monk3_PBM_Residual_zoom.png}
-		%\subcaption{Accuracy}
-	\end{minipage}
-	\caption{PBM on Monk3 dataset residual.}
-\end{figure}
-%L-BFGS
-\begin{figure}[H]
-	\centering
-	\begin{minipage}[t]{0.5\linewidth}
-		\includegraphics[width=\linewidth]{data/LBFGS/Monk1/Monk1_LBFGS_Residual_standard.png}
-		%\subcaption{MSE}
-	\end{minipage}%
-	\begin{minipage}[t]{0.5\linewidth}
-		\includegraphics[width=\linewidth]{data/LBFGS/Monk1/Monk1_LBFGS_Residual_zoom.png}
-		%\subcaption{Accuracy}
-	\end{minipage}
-	\caption{L-BFGS on Monk1 dataset residual.}
-\end{figure}
-\begin{figure}[H]
-	\centering
-	\begin{minipage}[t]{0.5\linewidth}
-		\includegraphics[width=\linewidth]{data/LBFGS/Monk2/Monk2_LBFGS_Residual_standard.png}
-		%\subcaption{MSE}
-	\end{minipage}%
-	\begin{minipage}[t]{0.5\linewidth}
-		\includegraphics[width=\linewidth]{data/LBFGS/Monk2/Monk2_LBFGS_Residual_zoom.png}
-		%\subcaption{Accuracy}
-	\end{minipage}
-	\caption{L-BFGS on Monk2 dataset residual.}
-\end{figure}
-\begin{figure}[H]
-	\centering
-	\begin{minipage}[t]{0.5\linewidth}
-		\includegraphics[width=\linewidth]{data/LBFGS/Monk3/Monk3_LBFGS_Residual_standard.png}
-		%\subcaption{MSE}
-	\end{minipage}%
-	\begin{minipage}[t]{0.5\linewidth}
-		\includegraphics[width=\linewidth]{data/LBFGS/Monk3/Monk3_LBFGS_Residual_zoom.png}
-		%\subcaption{Accuracy}
-	\end{minipage}
-	\caption{L-BFGS on Monk3 dataset residual.}
-\end{figure}
-\end{comment}
-\subsubsection{Computational time} 
+
+\subsection{Computational time} 
 \begin{figure}[H]
 	\centering
 	\begin{minipage}[t]{0.5\linewidth}
