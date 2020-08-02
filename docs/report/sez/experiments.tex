@@ -10,22 +10,36 @@ To test the correctness of the algorithms we used the MONK's datasets. To use th
 
 
 
-To obtain a deterministic behaviour of the algorithms, we used the entire MONKS datasets as the input of the network. We obtained three matrices that had dimensions: 124x18 (Monk 1), 169x17 (Monk 2), and 122x17 (Monk 3). To compare the behaviour of the algorithms, we collected three parameters for every iteration: the error of the network (that is MSE for not regularized network and MSE plus the regularization term for regularized network), the norm of the gradient and the computational time spent on completing the iteration. These parameters were used to make the rate of convergence and the errors with respect to the minima plots shown below. For a better visualization of the plots the y-axis is plotted on a logarithmic scale (except for \S \ref{sec:rate_of_convergence} "Rate of convergence") and an enlargement version of each plots is put on the side or down below. Before showing the plots a table with all the configurations used and the values obtained is shown.
+To obtain a deterministic behaviour of the algorithms, we used the entire MONKS datasets as the input of the network. We obtained three matrices that had dimensions: 124x18 (Monk 1), 169x17 (Monk 2), and 122x17 (Monk 3). To compare the behaviour of the algorithms, we collected three parameters for every iteration: the error of the network (that is MSE for not regularized network and MSE plus the regularization term for regularized network), the norm of the gradient and the computational time spent on completing the iteration. These parameters were used to make the rate of convergence and the errors with respect to the minima plots shown below. For better visualization of the plots the y-axis is plotted on a logarithmic scale (except for \S \ref{sec:rate_of_convergence} "Rate of convergence") and an enlargement version of each plots is put on the side or down below. Before showing the plots a table with all the configurations used and the values obtained are shown.
 
 \subsection{Configuration tested}
-The notation $f^*$ specifies the optimal value reached by a specific configuration of the problem (that includes the regularization term if it is used). Our goal was to compare the optimization performance of the algorithms described in \S \ref{Method} on the following model: 
+Our goal was to compare the optimization performance of the algorithms described in \S \ref{Method} on the following model: 
 \begin{itemize}
 	\item M1 is a neural network with topology and activation function of your choice, provided it is differentiable, but mandatory L1 regularization;
 	\item M2 is a neural network with topology and activation function of your choice, but mandatory L2 regularization.
 \end{itemize}
-As mentioned in \S \ref{sec:minimum_error}, we decided to use as stop condition the norm of the gradient, the error plus the regularization term and the number of iteration 
+As mentioned in \S \ref{sec:minimum_error}, we decided to use as stop condition the norm of the gradient, the error plus the regularization term and the number of iteration. This was done to obtain a solution in a feasible amount of time after an analysis of each algorithm. The table \ref{tab:threshold} summarizes the threshold used for the stop condition of each algorithm. 
+\begin{longtable}{|c|c|c|c|}
+	\hline
+	\centering
+	\textbf{Optimizer} &\textbf{Iteration} &   \textbf{$\Vert \nabla f_{k}\Vert$ }& \textbf{$f^{*}$} \\ \hline 
+	MDA &  15000 & 1-e3 & 1e-2   \\
+	NMDA & 15000 & 1-e3  & 1e-2  \\
+	L-BFGS & 500 & 5e-1 & 1e-2   \\
+	PBM & 2000 & 5e-5 &  9e-2 \\
+	\hline
+	\caption{Threshold used for the stop condition of each algorithm.}
+	\label{tab:threshold}
+\end{longtable}
 
+
+The notation $f^*$ specifies the optimal value reached by a specific configuration of the problem (that includes the regularization term if it is used). The notation LS specifies the usage of the Line Search method to find an appropriate step length for each iteration of the algorithms that use it.
  \begin{center}
 	\small\addtolength{\tabcolsep}{-3pt}
 		\centering
 		\begin{longtable}{|c|c|c|c|c|c|c|c|c|c|}
 			\hline
-			\textbf{Task}& \textbf{Optimizer}&\textbf{Model}&\textbf{Iteration} & \textbf{L rate} & \multicolumn{1}{l|}{\textbf{Lambda}} & \textbf{Mom} & \textbf{$f^{*}$}& \textbf{$\Vert \nabla f_{k}\Vert$ }& \textbf{Time(ms)}\\ \hline 
+			\textbf{Task}& \textbf{Optimizer}&\textbf{Model}&\textbf{Iteration} & \textbf{Step length} & \multicolumn{1}{l|}{\textbf{Lambda}} & \textbf{Mom} & \textbf{$f^{*}$}& \textbf{$\Vert \nabla f_{k}\Vert$ }& \textbf{Time(ms)}\\ \hline 
 			Monk1 & MDA & M1 & 15000 & 0.9 & 3e-4  & 0.9 & 1.301e-2  & 7.855e-3 & 9161 \\
 			Monk1 & MDA & M2 & 15000 & 0.9 & 3e-4  & 0.6 & 2.101e-2 & 6.740e-2 &  2321\\
 			Monk1 & NMDA & M1 & 15000 & 0.9 & 3e-4  & 0.9 & 1.143e-2 & 8.343e-3 & 14695 \\
@@ -67,7 +81,7 @@ First of all, we analysed the $f^{*}$ value of each configuration to understand 
 \begin{longtable}{|c|c|c|c|c|c|c|c|}
 	\hline
 	\centering
-	\textbf{Task}&\textbf{Optimizer}&\textbf{Model} &\textbf{Iteration} & \textbf{L rate} & \multicolumn{1}{l|}{\textbf{Lambda}} & \textbf{Mom} & \textbf{$f^{*}$} \\ \hline 
+	\textbf{Task}&\textbf{Optimizer}&\textbf{Model} &\textbf{Iteration} & \textbf{Step length} & \multicolumn{1}{l|}{\textbf{Lambda}} & \textbf{Mom} & \textbf{$f^{*}$} \\ \hline 
 	Monk1 & NMDA & M1 & 15000 & 0.9 & 3e-4  & 0.9 & 1.143e-2 	\\
 	Monk1 & MDA & M1 & 15000 & 0.9 & 3e-4  & 0.9 & 1.301e-2  		\\
 	Monk1 & L-BFGS & M1 & 32 & LS & 3e-4  & 0 &  7.939e-2 			\\
@@ -87,7 +101,7 @@ As can be seen from table \ref{tab:nets_res_plots_Monk1}, the different M1 confi
 \begin{longtable}{|c|c|c|c|c|c|c|c|}
 	\hline
 	\centering
-	\textbf{Task}&\textbf{Optimizer}&\textbf{Model} &\textbf{Iteration} & \textbf{L rate} & \multicolumn{1}{l|}{\textbf{Lambda}} & \textbf{Mom} & \textbf{$f^{*}$} \\ \hline 
+	\textbf{Task}&\textbf{Optimizer}&\textbf{Model} &\textbf{Iteration} & \textbf{Step length} & \multicolumn{1}{l|}{\textbf{Lambda}} & \textbf{Mom} & \textbf{$f^{*}$} \\ \hline 
 	Monk2 & MDA & M1 & 15000 & 0.9 & 3e-4  & 0.9 & 1.374e-2 		\\
 	Monk2 & NMDA & M1 & 15000 & 0.9 & 3e-4  & 0.9 &  1.374e-2 	\\
 	Monk2 & PBM & M1 & 270 & LS & 3e-4  & 0 & 1.176e-1  				\\
@@ -100,14 +114,13 @@ As can be seen from table \ref{tab:nets_res_plots_Monk1}, the different M1 confi
 	\caption{Monk 2 optimizer configuration divided by model and displayed in increasing order of $f^*$.}
 	\label{tab:nets_res_plots_Monk2}
 \end{longtable}
-
 As can be seen from table \ref{tab:nets_res_plots_Monk2}, the different configurations of M2 model of the optimizers MDA and NMDA with 15000 iterations differ of value smaller than 1e-4. Also the MDA and NMDA of model M1 obtained the same optimal values.
 
 
 \begin{longtable}{|c|c|c|c|c|c|c|c|}
 	\hline
 	\centering
-	\textbf{Task}&\textbf{Optimizer}&\textbf{Model} &\textbf{Iteration} & \textbf{L rate} & \multicolumn{1}{l|}{\textbf{Lambda}} & \textbf{Mom} & \textbf{$f^{*}$} \\ \hline 
+	\textbf{Task}&\textbf{Optimizer}&\textbf{Model} &\textbf{Iteration} & \textbf{Step length} & \multicolumn{1}{l|}{\textbf{Lambda}} & \textbf{Mom} & \textbf{$f^{*}$} \\ \hline 
 	Monk3 & NMDA & M1 & 15000 & 0.9 & 3e-4  & 0.9 & 1.587e-2 \\
 	Monk3 & MDA & M1 & 15000 & 0.9 & 3e-4  & 0.9 & 3.458e-2 	\\
 	Monk3 & L-BFGS & M1 & 251 & LS & 3e-4  & 0 & 5.608e-2 		\\
@@ -123,23 +136,23 @@ As can be seen from table \ref{tab:nets_res_plots_Monk2}, the different configur
 
 As can be seen from table \ref{tab:nets_res_plots_Monk3}, the different configuration of model M2 of the optimizers MDA and NMDA with 15000 iterations differ of a maximum of 7e-3. 
 
-After further analysis, we observed that the weights initialization influences the  optimal values reached by all the networks after the optimization process. Moreover, as said previously, this value are strong dependant on the function shape and for this reason the algorithms could converge to different minimum values if there are more of them. 
+After further analysis, we observed that the weights initialization influences the  optimal values reached by all the models after the optimization process. Moreover, as said previously, this value are strong dependant on the function shape and for this reason the algorithms could converge to different minimum values. 
 
 \subsection{Rate of convergence}
-\label{sec:rate_of_convergence}
-To compute the rate of convergence for each algorithm, we consider $f^*$ as the optimal value obtained by each of the optimization algorithm (that includes the regularization term if it is used) and $f(x_{k})$ as the optimal value obtained at the iteration $k$ plus the regularization term if it is used. If exists a real positive constant $\gamma$ such that
+\label{sec:rate_of_convergence}r
+To compute the rate of convergence for each algorithm, we consider $f^*$ as the optimal value obtained by each of the optimization algorithm plus the regularization term and $f(x_{k})$ as the optimal value obtained at the iteration $k$ plus the regularization term. If exists a real positive constant $\gamma$ such that
 \begin{equation}
 \label{eq:rofFirst}
 lim_{k\to \infty}\frac{|f(x_{k+1}) - f^* |}{|f(x_{k}) - f^*|^p} = \gamma > 0,
 \end{equation}
-we can state that the sequence of values $f(x_{k})$ produced by the algorithm has an order of convergence $p$. In our case, we can derive an alternative faster and rapid procedure to compute it. Considering the equation \ref{eq:rofFirst} we can obtain the following formula: 
+we can state that the sequence of values $f(x_{k})$ produced by the algorithm has an order of convergence $p$. In our case, we can derive an alternative faster and rapid procedure to compute it. Considering equation \ref{eq:rofFirst} we can obtain the following formula: 
 \begin{equation}
 p = lim_{k\to \infty}\frac{log |f(x_{k+1}) - f^* | - log \gamma}{log|f(x_{k}) - f^*|} \approx lim_{k\to \infty}\frac{log |f(x_{k+1}) - f^* |}{log|f(x_{k}) - f^*|}.
 \end{equation}
 If $p=1$ the convergence is linear and if $p=2$ the convergence is quadratic. We can observe in figure \ref{fig:CR-M1-Monk2-Standard} that L-BFGS reached a superlinear rate of convergence. 
-As we expect from the analysis we made, L-BFGS reached a superlinear convergence rate in some epoch. Also for the Momentum Descent Approach, we see that the convergence rate obtained is linear as we expected. Instead, for the Proximal Bundle method we had some convergences rate peaks that we didn't expect. In our opinion, this can be caused by the particular loss shape of Monks dataset.
-It's interesting to view that all of these methods, even with a noisy dataset as Monk 3, converge with the same convergence rate as mentioned in the theory. The rate of convergence curves obtained, also with an enlargement for each of them put to the side, are shown below.
-\textbf{Scrivere right zoom e left zoom}
+As we expect from the analysis we made, L-BFGS reached a superlinear convergence rate in some epoch. Also for the Momentum Descent Approach, we see that the convergence rate obtained is linear as we expected until the last few iterates. Instead, for the Proximal Bundle method we had some convergences rate peaks that we did not expect. In our opinion, this can be caused by the particular loss shape of Monks dataset.
+It is interesting to view that all of these methods, even with a noisy dataset as Monk 3, converge with the same convergence rate as mentioned in the theory. Also, as the theory says, the PBM algorithm in the M1 model should have better convergence rate than the other algorithms that use gradient instead of subgradient. This is due to L1 regularization that introduces non-differentiability, and in most of the cases we saw this advantage (see figure \ref{fig:left-zoom-M1-Monk1} and figure \ref{fig:left-zoom-M1-Monk3}). It is interesting to see that L-BFGS continues to have a superlinear rate of convergence even in the M1 model, see figure \ref{fig:left-zoom-M1-Monk2}.
+The rate of convergence curves obtained, also with an enlargement of the right and left side for each of them, are shown below. 
 
 \subsubsection{M1 comparison}
 \begin{figure}[H]
@@ -154,6 +167,7 @@ It's interesting to view that all of these methods, even with a noisy dataset as
 	\begin{minipage}[t]{0.525\linewidth}		
 		\includegraphics[width=\linewidth]{data/Comparison/Monk1/Monk1_M1_CR_zoomLeft.png}
 		\subcaption{Left zoom}
+		\label{fig:left-zoom-M1-Monk1}
 	\end{minipage}%
 	\begin{minipage}[t]{0.525\linewidth}
 		\includegraphics[width=\linewidth]{data/Comparison/Monk1/Monk1_M1_CR_zoomRight.png}
@@ -175,6 +189,7 @@ It's interesting to view that all of these methods, even with a noisy dataset as
 	\begin{minipage}[t]{0.525\linewidth}		
 		\includegraphics[width=\linewidth]{data/Comparison/Monk2/Monk2_M1_CR_zoomLeft.png}
 		\subcaption{Left zoom}
+		\label{fig:left-zoom-M1-Monk2}
 	\end{minipage}%
 	\begin{minipage}[t]{0.525\linewidth}
 		\includegraphics[width=\linewidth]{data/Comparison/Monk2/Monk2_M1_CR_zoomRight.png}
@@ -196,6 +211,7 @@ It's interesting to view that all of these methods, even with a noisy dataset as
 	\begin{minipage}[t]{0.525\linewidth}		
 		\includegraphics[width=\linewidth]{data/Comparison/Monk3/Monk3_M1_CR_zoomLeft.png}
 		\subcaption{Left zoom}
+		\label{fig:left-zoom-M1-Monk3}
 	\end{minipage}%
 	\begin{minipage}[t]{0.525\linewidth}
 		\includegraphics[width=\linewidth]{data/Comparison/Monk3/Monk3_M1_CR_zoomRight.png}
@@ -239,6 +255,7 @@ It's interesting to view that all of these methods, even with a noisy dataset as
 	\begin{minipage}[t]{0.525\linewidth}		
 		\includegraphics[width=\linewidth]{data/Comparison/Monk2/Monk2_M2_CR_zoomLeft.png}
 		\subcaption{Left zoom}
+		\label{fig:left-zoom-M2-Monk2}
 	\end{minipage}%
 	\begin{minipage}[t]{0.525\linewidth}
 		\includegraphics[width=\linewidth]{data/Comparison/Monk2/Monk2_M2_CR_zoomRight.png}
@@ -272,9 +289,9 @@ It's interesting to view that all of these methods, even with a noisy dataset as
 
 \subsection{Errors with respect to the minima}
 \label{sec:minimum_error}
-The error with respect to the minimum for each iteration is obtained by the following formula: $ f(x_k) - f^*$ where  $f(x_{k})$ is the MSE obtained at the iteration $k$ plus the  regularization term if it is used and $f^*$ is the optimal value reached by the specific configuration of the problem (that includes the regularization term if it is used). The plots of the error with respect to the minimum value obtained from the configurations in the table \ref{tab:nets_comp} are shown below, also an enlargement for each of them is put to the side.
+The error with respect to the minimum for each iteration is obtained by the following formula: $ f(x_k) - f^*$ where  $f(x_{k})$ is the MSE obtained at the iteration $k$ plus the  regularization term and $f^*$ is the optimal value reached by the specific configuration of the problem plus the  regularization term. The plots of the error with respect to the minimum value obtained from the configurations in table \ref{tab:nets_res} are shown below, also an enlargement for each of them is put to the side.
 
-An important thing to notice is that $f^*$ might not be 0 because it depends on the function that we minimize (that is only the MSE for not regularized network and the MSE plus the regularization term for regularized network). This function could be not convex and due to this fact, it could have multiple local minima in which we could stop. For this reason, to understand if an algorithm has converged to a local minimum, that cannot reach an error equal to zero, but it is still a minimum, the norm of the gradient has to be checked to understand how far from the stationary point (and how far from the end of convergence) we are. This can be seen in model M2, dataset Monk 3 with PBM optimizer with 3e-4 of regularization in which the $f^*$ obtained is 7.971e-2 but the norm of the gradient is 4.992e-5, so the algorithm has converged near a local minimum.
+An important thing to notice is that $f^*$ might not be 0 because it depends on the function that we minimize (that is the MSE plus the regularization term). This function in our case is not convex and due to this fact, it  has multiple local minima in which the algorithm could stop. For this reason, to understand if an algorithm has converged to a local minimum, that cannot reach an error equal to zero, but it is still a minimum, the norm of the gradient has to be checked to understand how far from the stationary point (and how far from the end of convergence) we are. This can be seen in model M2, dataset Monk 3 with PBM optimizer with 3e-4 of regularization in which the $f^*$ obtained is 7.971e-2 but the norm of the gradient is 4.992e-5, so the algorithm has converged near a local minimum.
 
 \subsubsection{M1 comparison}
 
