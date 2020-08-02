@@ -65,12 +65,12 @@ First of all, we analysed the $f^{*}$ value of each configuration to understand 
 	\textbf{Task}&\textbf{Optimizer}&\textbf{Model} &\textbf{Iteration} & \textbf{L rate} & \multicolumn{1}{l|}{\textbf{Lambda}} & \textbf{Mom} & \textbf{$f^{*}$} \\ \hline 
 	Monk1 & NMDA & M1 & 15000 & 0.9 & 3e-4  & 0.9 & 1.143e-2 	\\
 	Monk1 & MDA & M1 & 15000 & 0.9 & 3e-4  & 0.9 & 1.301e-2  		\\
-	Monk1 & L-BFGS & M1 & 32 & 0.9 & 3e-4  & 0 &  7.939e-2 			\\
-	Monk1 & PBM & M1 & 2000 & 0.9 & 3e-4  & 0 & 8.796e-2  			\\
+	Monk1 & L-BFGS & M1 & 32 & LS & 3e-4  & 0 &  7.939e-2 			\\
+	Monk1 & PBM & M1 & 2000 & LS & 3e-4  & 0 & 8.796e-2  			\\
 	Monk1 & NMDA & M2 & 15000 & 0.9 & 3e-4  & 0.6 & 1.105e-2 	\\
 	Monk1 & MDA & M2 & 15000 & 0.9 & 3e-4  & 0.6 & 2.101e-2 		\\
-	Monk1 & L-BFGS & M2 & 500 & 0.9 & 3e-4  & 0 &   4.327e-2 		\\
-	Monk1 & PBM & M2 & 54 & 0.9 & 3e-4  & 0 & 8.491e-2 				\\
+	Monk1 & L-BFGS & M2 & 500 & LS & 3e-4  & 0 &   4.327e-2 		\\
+	Monk1 & PBM & M2 & 54 & LS & 3e-4  & 0 & 8.491e-2 				\\
 	\hline
 	\caption{Monk 1 optimizer configuration divided by model and displayed in increasing order of $f^*$.}
 	\label{tab:nets_res_plots_Monk1}
@@ -85,12 +85,12 @@ As can be seen from table \ref{tab:nets_res_plots_Monk1}, the different M1 confi
 	\textbf{Task}&\textbf{Optimizer}&\textbf{Model} &\textbf{Iteration} & \textbf{L rate} & \multicolumn{1}{l|}{\textbf{Lambda}} & \textbf{Mom} & \textbf{$f^{*}$} \\ \hline 
 	Monk2 & MDA & M1 & 15000 & 0.9 & 3e-4  & 0.9 & 1.374e-2 		\\
 	Monk2 & NMDA & M1 & 15000 & 0.9 & 3e-4  & 0.9 &  1.374e-2 	\\
-	Monk2 & PBM & M1 & 270 & 0.9 & 3e-4  & 0 & 1.176e-1  				\\
-	Monk2 & L-BFGS & M1 & 381 & 0.9 & 3e-4  & 0 & 6.845e-1 			\\
+	Monk2 & PBM & M1 & 270 & LS & 3e-4  & 0 & 1.176e-1  				\\
+	Monk2 & L-BFGS & M1 & 381 & LS & 3e-4  & 0 & 6.845e-1 			\\
 	Monk2 & NMDA & M2 & 15000 & 0.9 & 3e-4  & 0.6 & 2.251e-2 	\\
 	Monk2 & MDA & M2 & 15000 & 0.9 & 3e-4  & 0.6 & 2.264e-2 		\\
-	Monk2 & L-BFGS & M2 & 481 & 0.9 & 3e-4  & 0 & 4.542e-2 			\\
-	Monk2 & PBM & M2 & 2000 & 0.9 & 3e-4  & 0 & 1.96e-1 				\\
+	Monk2 & L-BFGS & M2 & 481 & LS & 3e-4  & 0 & 4.542e-2 			\\
+	Monk2 & PBM & M2 & 2000 & LS & 3e-4  & 0 & 1.96e-1 				\\
 	\hline
 	\caption{Monk 2 optimizer configuration divided by model and displayed in increasing order of $f^*$.}
 	\label{tab:nets_res_plots_Monk2}
@@ -105,12 +105,12 @@ As can be seen from table \ref{tab:nets_res_plots_Monk2}, the different configur
 	\textbf{Task}&\textbf{Optimizer}&\textbf{Model} &\textbf{Iteration} & \textbf{L rate} & \multicolumn{1}{l|}{\textbf{Lambda}} & \textbf{Mom} & \textbf{$f^{*}$} \\ \hline 
 	Monk3 & NMDA & M1 & 15000 & 0.9 & 3e-4  & 0.9 & 1.587e-2 \\
 	Monk3 & MDA & M1 & 15000 & 0.9 & 3e-4  & 0.9 & 3.458e-2 	\\
-	Monk3 & L-BFGS & M1 & 251 & 0.9 & 3e-4  & 0 & 5.608e-2 		\\
-	Monk3 & PBM & M1 & 1433 & 0.9 & 3e-4  & 0 & 7.423e-2 		\\
+	Monk3 & L-BFGS & M1 & 251 & LS & 3e-4  & 0 & 5.608e-2 		\\
+	Monk3 & PBM & M1 & 1433 & LS & 3e-4  & 0 & 7.423e-2 		\\
 	Monk3 & NMDA & M2 & 15000 & 0.9 & 3e-4  & 0.6 & 2.15e-2 	\\
 	Monk3 & MDA & M2 & 15000 & 0.9 & 3e-4  & 0.6 & 2.794e-2 	\\
-	Monk3 & L-BFGS & M2 & 201 & 0.9 & 3e-4  & 0 & 4.354e-2 		\\
-	Monk3 & PBM & M2 & 1434 & 0.9 & 3e-4  & 0 & 7.971e-2 		\\
+	Monk3 & L-BFGS & M2 & 201 & LS & 3e-4  & 0 & 4.354e-2 		\\
+	Monk3 & PBM & M2 & 1434 & LS & 3e-4  & 0 & 7.971e-2 		\\
 	\hline
 	\caption{Monk 3 optimizer configuration divided by model and displayed in increasing order of $f^*$.}
 	\label{tab:nets_res_plots_Monk3}
