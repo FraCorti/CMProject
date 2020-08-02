@@ -166,7 +166,7 @@ set fontpath
 set psdir
 set fit brief errorvariables nocovariancevariables errorscaling prescale nowrap v5
 #set key left bottom
-set key right top
+set key left top
 set key font ",14"
 set tics font ", 13"
 #set xtics 500
@@ -181,7 +181,7 @@ x = 0.0
 minimumMGD = 0.021014676125298937
 minimumNMGD = 0.011056991721519504
 minimumLBFGS = 0.043279561263646710
-minimumPBM = 0.095998635295664880
+minimumPBM = 0.084915076200051121
 
 GPFUN_f = "f(x) = x"
 
@@ -200,5 +200,5 @@ errorMGD(currentResidual, pastResidual)= (log(abs(currentResidual -minimumMGD))/
 errorNMGD(currentResidual, pastResidual)= (log(abs(currentResidual -minimumNMGD))/log(abs(pastResidual -minimumNMGD)))
 errorPBM(currentResidual, pastResidual)= (log(abs(currentResidual -minimumPBM))/log(abs(pastResidual -minimumPBM)))
 
-plot [:150][] "../../LBFGS/Monk1/LBFGS_L2_0.0003_Monk1_Results_SMI.txt" using 0:(shiftLBFGS($1), $0 < 1 ? 1/0 : errorLBFGS($1, previousError2LBFGS)) w lines title "LBGFS 3e-4" lt rgb "red" lw 2, "../../MGD/Monk1/NM/NMGD_0.6_L2_0.0003_Monk1_Results_SMI.txt" using 0:(shiftNMGD($1), $0 < 1 ? 1/0 : errorNMGD($1, previousError2NMGD)) w lines title "NMGD 3e-4" lt rgb "black" lw 2 , "../../MGD/Monk1/M/MGD_0.6_L2_0.0003_Monk1_Results_SMI.txt" using 0:(shiftMGD($1), $0 < 1 ? 1/0 : errorMGD($1, previousError2MGD)) w lines title "MGD 3e-4" lt rgb "blue" lw 2, "../../PBM/Monk1/PBM_L2_0.3_Monk1_Results_SMI.txt" using 0:(shiftPBM($1), $0 < 1 ? 1/0 : errorPBM($1, previousError2PBM)) w lines title "PBM 3e-4" lt rgb "#005A32" lw 2
+plot [13000:][] "../../LBFGS/Monk1/LBFGS_L2_0.0003_Monk1_Results_SMI.txt" using 0:(shiftLBFGS($1), $0 < 1 ? 1/0 : errorLBFGS($1, previousError2LBFGS)) w lines title "LBGFS 3e-4" lt rgb "red" lw 2, "../../MGD/Monk1/NM/NMGD_0.6_L2_0.0003_Monk1_Results_SMI.txt" using 0:(shiftNMGD($1), $0 < 1 ? 1/0 : errorNMGD($1, previousError2NMGD)) w lines title "NMGD 3e-4" lt rgb "black" lw 2 , "../../MGD/Monk1/M/MGD_0.6_L2_0.0003_Monk1_Results_SMI.txt" using 0:(shiftMGD($1), $0 < 1 ? 1/0 : errorMGD($1, previousError2MGD)) w lines title "MGD 3e-4" lt rgb "blue" lw 2, "../../PBM/Monk1/PBM_L2_0.3_Monk1_Results_SMI.txt" using 0:(shiftPBM($1), $0 < 1 ? 1/0 : errorPBM($1, previousError2PBM)) w lines title "PBM 3e-4" lt rgb "#005A32" lw 2
 #    EOF
