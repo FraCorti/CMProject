@@ -118,7 +118,7 @@ As can be seen from table \ref{tab:nets_res_plots_Monk2}, the different configur
 
 As can be seen from table \ref{tab:nets_res_plots_Monk3}, the different configuration of model M2 of the optimizers MDA and NMDA with 15000 iterations differ of a maximum of 7e-3. 
 
-After further analysis, we observed that the weights initialization influences the  optimal values reached by all the networks after the optimization process. 
+After further analysis, we observed that the weights initialization influences the  optimal values reached by all the networks after the optimization process. Moreover, as said previously, this value are strong dependant on the function shape and for this reason the algorithms could converge to different minimum values if there are more of them. 
 
 \subsection{Rate of convergence}
 \label{sec:rate_of_convergence}
@@ -157,51 +157,91 @@ It's interesting to view that all of these methods, even with a noisy dataset as
 \label{sec:minimum_error}
 The error with respect to the minimum for each iteration is obtained by the following formula: $ f(x_k) - f^*$ where  $f(x_{k})$ is the MSE obtained at the iteration $k$ plus the  regularization term if it is used and $f^*$ is the optimal value reached by the specific configuration of the problem (that includes the regularization term if it is used). The plots of the error with respect to the minimum value obtained from the configurations in the table \ref{tab:nets_comp} are shown below, also an enlargement for each of them is put to the side.
 
-An important thing to notice is that $f^*$ might not be 0 because it depends on the function that we minimize (that is only the MSE for not regularized network and the MSE plus the regularization term for regularized network). This function could be not convex and due to this fact, it could have multiple local minima in which we could stop. For this reason, to understand if an algorithm has converged to a local minimum, that cannot reach an error equal to zero, but it is still a minimum, the norm of the gradient has to be checked to understand how far from the stationary point (and how far from the end of convergence) we are. \texttt{This can be seen in Monk 3 with L-BFGS optimizer without regularization in which the $f^*$ obtained is 8.198e-3 but the norm of the gradient is 1.9e-6, so the algorithm has converged near a local minimum.}
+An important thing to notice is that $f^*$ might not be 0 because it depends on the function that we minimize (that is only the MSE for not regularized network and the MSE plus the regularization term for regularized network). This function could be not convex and due to this fact, it could have multiple local minima in which we could stop. For this reason, to understand if an algorithm has converged to a local minimum, that cannot reach an error equal to zero, but it is still a minimum, the norm of the gradient has to be checked to understand how far from the stationary point (and how far from the end of convergence) we are. This can be seen in model M2, dataset Monk 3 with PBM optimizer with 3e-4 of regularization in which the $f^*$ obtained is 7.971e-2 but the norm of the gradient is 4.992e-5, so the algorithm has converged near a local minimum.
 
 \subsubsection{M1 comparison}
 
 \begin{figure}[H]
 	\centering
 	\begin{minipage}[t]{0.5\linewidth}
-		\includegraphics[width=\linewidth]{data/Comparison/Monk1/Monk1_R_Comparison_log_standard.png}
+		\includegraphics[width=\linewidth]{data/Comparison/Monk1/Monk1_M1_error_standard.png}
 		\subcaption{Original}
 	\end{minipage}%
 	\begin{minipage}[t]{0.5\linewidth}
-		\includegraphics[width=\linewidth]{data/Comparison/Monk1/Monk1_R_Comparison_log_zoom.png}
+		\includegraphics[width=\linewidth]{data/Comparison/Monk1/Monk1_M1_error_zoom.png}
 		\subcaption{Zoom}
 	\end{minipage}
-	\caption{Errors with respect to the minimum comparison Monk 1 of configurations defined in table \ref{tab:nets_comp}}
-	\label{R-Monk1}
+	\caption{Errors with respect to the minimum comparison Monk 1 of Model M1 of configurations defined in table \ref{tab:nets_res}}
+	\label{R-Monk1-M1}
 \end{figure}
 
+\begin{figure}[H]
+	\centering
+	\begin{minipage}[t]{0.5\linewidth}
+		\includegraphics[width=\linewidth]{data/Comparison/Monk2/Monk2_M1_error_standard.png}
+		\subcaption{Original}
+	\end{minipage}%
+	\begin{minipage}[t]{0.5\linewidth}
+		\includegraphics[width=\linewidth]{data/Comparison/Monk2/Monk2_M1_error_zoom.png}
+		\subcaption{Zoom}
+	\end{minipage}
+	\caption{Errors with respect to the minimum comparison Monk 2 of Model M1 of configurations defined in table \ref{tab:nets_res}}
+	\label{R-Monk2-M1}
+\end{figure}
+\begin{figure}[H]
+	\centering
+	\begin{minipage}[t]{0.5\linewidth}
+		\includegraphics[width=\linewidth]{data/Comparison/Monk3/Monk3_M1_error_standard.png}
+		\subcaption{Original}
+	\end{minipage}%
+	\begin{minipage}[t]{0.5\linewidth}
+		\includegraphics[width=\linewidth]{data/Comparison/Monk3/Monk3_M1_error_zoom.png}
+		\subcaption{Zoom}
+	\end{minipage}
+	\caption{Errors with respect to the minimum comparison Monk 3 of Model M1 of configurations defined in table \ref{tab:nets_res}}
+	\label{R-Monk3-M1}
+\end{figure}
 
 \subsubsection{M2 comparison}
 
+\begin{figure}[H]
+	\centering
+	\begin{minipage}[t]{0.5\linewidth}
+		\includegraphics[width=\linewidth]{data/Comparison/Monk1/Monk1_M2_error_standard.png}
+		\subcaption{Original}
+	\end{minipage}%
+	\begin{minipage}[t]{0.5\linewidth}
+		\includegraphics[width=\linewidth]{data/Comparison/Monk1/Monk1_M2_error_zoom.png}
+		\subcaption{Zoom}
+	\end{minipage}
+	\caption{Errors with respect to the minimum comparison Monk 1 of Model M1 of configurations defined in table \ref{tab:nets_res}}
+	\label{R-Monk1-M2}
+\end{figure}
 
 \begin{figure}[H]
 	\centering
 	\begin{minipage}[t]{0.5\linewidth}
-		\includegraphics[width=\linewidth]{data/Comparison/Monk2/Monk2_R_Comparison_log_standard.png}
+		\includegraphics[width=\linewidth]{data/Comparison/Monk2/Monk2_M2_error_standard.png}
 		\subcaption{Original}
 	\end{minipage}%
 	\begin{minipage}[t]{0.5\linewidth}
-		\includegraphics[width=\linewidth]{data/Comparison/Monk2/Monk2_R_Comparison_log_zoom.png}
+		\includegraphics[width=\linewidth]{data/Comparison/Monk2/Monk2_M2_error_zoom.png}
 		\subcaption{Zoom}
 	\end{minipage}
-	\caption{Errors with respect to the minimum comparison Monk 2 of configurations defined in table \ref{tab:nets_comp}}
-	\label{R-Monk2}
+	\caption{Errors with respect to the minimum comparison Monk 2 of Model M1 of configurations defined in table \ref{tab:nets_res}}
+	\label{R-Monk2-M2}
 \end{figure}
 \begin{figure}[H]
 	\centering
 	\begin{minipage}[t]{0.5\linewidth}
-		\includegraphics[width=\linewidth]{data/Comparison/Monk3/Monk3_R_Comparison_log_standard.png}
+		\includegraphics[width=\linewidth]{data/Comparison/Monk3/Monk3_M2_error_standard.png}
 		\subcaption{Original}
 	\end{minipage}%
 	\begin{minipage}[t]{0.5\linewidth}
-		\includegraphics[width=\linewidth]{data/Comparison/Monk3/Monk3_R_Comparison_log_zoom.png}
+		\includegraphics[width=\linewidth]{data/Comparison/Monk3/Monk3_M2_error_zoom.png}
 		\subcaption{Zoom}
 	\end{minipage}
-	\caption{Errors with respect to the minimum comparison Monk 3 of configurations defined in table \ref{tab:nets_comp}}
-	\label{R-Monk3}
+	\caption{Errors with respect to the minimum comparison Monk 3 of Model M1 of configurations defined in table \ref{tab:nets_res}}
+	\label{R-Monk3-M2}
 \end{figure}
+
