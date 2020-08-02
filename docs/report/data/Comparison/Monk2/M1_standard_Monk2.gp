@@ -147,7 +147,7 @@ set rrange [ * : * ] noreverse nowriteback
 unset logscale
 unset jitter
 set zero 1e-08
-set lmargin  +9
+set lmargin  +10
 set bmargin  -1
 set rmargin  -1
 set tmargin  -1
