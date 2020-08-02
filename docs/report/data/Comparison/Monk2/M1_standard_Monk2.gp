@@ -130,7 +130,7 @@ set x2label  font "" textcolor lt -1 norotate
 set xrange [ * : * ] noreverse nowriteback
 set x2range [ * : * ] noreverse nowriteback
 set ylabel "error" 
-set ylabel  font ",14" textcolor lt -1 rotate
+set ylabel  font ",14" textcolor lt -1 rotate offset -1.5
 set y2label "" 
 set y2label  font "" textcolor lt -1 rotate
 set yrange [ * : * ] noreverse nowriteback
@@ -147,7 +147,7 @@ set rrange [ * : * ] noreverse nowriteback
 unset logscale
 unset jitter
 set zero 1e-08
-set lmargin  -1
+set lmargin  +9
 set bmargin  -1
 set rmargin  -1
 set tmargin  -1
@@ -174,7 +174,7 @@ set format y "10^{%L}"
 minimumLBFGS = 0.090313721066937039
 minimumMGD = 0.013742702235183110
 minimumNMGD = 0.022516608901728817
-minimumPBM = 0.372572974615303643
+minimumPBM = 0.000006979035522109
 
 
 f(x) = x

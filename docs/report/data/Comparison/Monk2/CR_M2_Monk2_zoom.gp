@@ -130,7 +130,7 @@ set x2label  font "" textcolor lt -1 norotate
 set xrange [ * : * ] noreverse nowriteback
 set x2range [ * : * ] noreverse nowriteback
 set ylabel "convergence rate" 
-set ylabel  font ",13" textcolor lt -1 rotate
+set ylabel  font ",13" textcolor lt -1 rotate offset -0.8
 set y2label "" 
 set y2label  font "" textcolor lt -1 rotate
 set yrange [ * : * ] noreverse nowriteback
@@ -147,7 +147,7 @@ set rrange [ * : * ] noreverse nowriteback
 unset logscale
 unset jitter
 set zero 1e-08
-set lmargin  -1
+set lmargin  +11
 set bmargin  -1
 set rmargin  -1
 set tmargin  -1
