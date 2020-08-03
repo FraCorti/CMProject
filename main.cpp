@@ -78,7 +78,7 @@ int main() {
   network.SetRegularizer("L1"); //L1 L2
   // Optimizer *opt = new LBFGS(2,15, seed);
   Optimizer *opt = new GradientDescent(); //LBFGS gradientDescent proximalBundleMethod
-  // Optimizer *opt = new ProximalBundleMethod();
+  //Optimizer *opt = new ProximalBundleMethod();
   network.SetOptimizer(opt);//LBFGS gradientDescent proximalBundleMethod
   network.SetNesterov(false);
 

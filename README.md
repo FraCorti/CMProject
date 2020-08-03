@@ -40,7 +40,7 @@ At the end to build the project type:
  `cmake --build .` 
 
 If all the process is done correctly a */bin* folder is created with a binary file inside. This file can be executed with:
-`./CMProject`
+`./main`
 
 The *Error* (plus the regularization term), *Gradient Norm* and *Computational time* values on the training set are printed during the execution.
 
