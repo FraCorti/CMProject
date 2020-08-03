@@ -40,6 +40,13 @@ If all the process is done correctly a */bin* folder is created with a binary fi
 
 The *Error* (plus the regularization term), *Gradient Norm* and *Computational time* values on the training set are printed during the execution.
 
+## Plotting
+To obtain the plots used in the report open [Gnuplot](http://www.gnuplot.info/) in the folder `docs/report/data/Comparison` and load the scripts with
+
+`load "<script-name.gp>"`
+
+Since the comparisons were made on the MONK's datasets the Gnuplot script files are all saved inside the `Comparison` folder inside the `Monk1`, `Monk2` and `Monk3` folders. All the data used to obtain the plots are saved inside the folder `docs/report/data`. Each algorithm has a folder that contains all the data obtained in Monk1, Monk2 and Monk3 on M1 and M2. For example the data obtained and the Gnuplot scripts for L-BFGS on Monk1 are stored inside the folder `docs/report/data/LBFGS/Monk1` . 
+
 ## Results
 Here we show some plots we obtained during the optimization phase. 
  
@@ -49,12 +56,13 @@ Here we show some plots we obtained during the optimization phase.
 
 <img src="/docs/report/data/Comparison/Monk1/Monk1_M2_CR_zoomLeft.png" width="350"><img src="/docs/report/data/Comparison/Monk1/Monk1_M2_CR_zoomRight.png" width="350">
 
-## Plotting
-To obtain the plots used in the report open [Gnuplot](http://www.gnuplot.info/) in the folder `docs/report/data/Comparison` and load the scripts with
+## Project structure 
+The project has the following structure: 
 
-`load "<script-name.gp>"`
+<img src="docs/report/img/uml.jpg" width="1500">
 
-Since the comparisons were made on the MONK's datasets the Gnuplot script files are all saved inside the `Comparison` folder inside the `Monk1`, `Monk2` and `Monk3` folders.
+More optimizers can be added by creating a class that derives from the *Optimizer* abstract class that implement the pure virtual methods *OptimizeBackward(Network\*)* and *OptimizeUpdateWeight(Network\*)*. After that is sufficient to create the object *Network* and pass the new optimizer by using the method *SetOptimizer(Optimizer\*)*  before calling the public *Network* method *Train()* with all the parameters. 
+
 ## Acknowledgments
 This project was developed for the course of [Computational Mathematics for Learning and Data Analysis](https://esami.unipi.it/esami2/programma.php?c=42267&aa=2019&docente=FRANGIONI&insegnamento=&sd=0) at the University of Pisa under the guide of [Prof. Antonio Frangioni](http://pages.di.unipi.it/frangio/) and [Prof. Federico Poloni](http://pages.di.unipi.it/fpoloni/).
 
